@@ -33,7 +33,7 @@ const Collection = () => {
   const applyFilter = () => {
     let filteredProducts = products.map((item) => ({
       ...item,
-      price: parseFloat(item.price).toFixed(2), // Ensure price is a number with two decimal places
+      price: parseFloat(item.price), // Ensure price is a number
     }));
 
     if (showSearch && search) {
@@ -204,7 +204,7 @@ const Collection = () => {
               key={index}
               id={item._id}
               name={item.name}
-              price={item.price.toFixed(2)} // Ensure price has two decimal places
+              price={item.price} // Ensure price is displayed as a number
               image={item.image}
             />
           ))}

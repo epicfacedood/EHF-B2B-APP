@@ -6,6 +6,7 @@ import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(false);
   const {
     showSearch,
     setShowSearch,
@@ -57,7 +58,9 @@ const Navbar = () => {
         <div className="group relative">
           <Link to="/login">
             <img
-              onClick={() => (token ? null : navigate("/login"))}
+              onClick={() =>
+                token ? setProfileVisible(true) : navigate("/login")
+              }
               className="w-5 cursor-pointer"
               src={assets.profile_icon}
               alt=""
@@ -102,7 +105,50 @@ const Navbar = () => {
         />
       </div>
 
-      {/* this is sidebar menu for small screens*/}
+      {/* sidebar menu for small screens for the profile */}
+      <div
+        className={`fixed top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
+          profileVisible ? "w-full" : "w-0"
+        }`}
+      >
+        <div className="flex flex-col text-gray-600 h-full">
+          <div
+            onClick={() => {
+              setProfileVisible(false);
+            }}
+            className="flex items-center gap-4 p-3 cursor-pointer border-t border-l border-r"
+          >
+            <img src={assets.dropdown_icon} className="h-4 rotate-180" alt="" />
+            <p>Back</p>
+          </div>
+          <NavLink
+            onClick={() => setProfileVisible(false)}
+            className="py-2 pl-6 border-t border-l border-r"
+            to="/"
+          >
+            My Profile
+          </NavLink>
+          <NavLink
+            onClick={() => setProfileVisible(false)}
+            className="py-2 pl-6 border-t border-l border-r"
+            to="/orders"
+          >
+            Orders
+          </NavLink>
+          <NavLink
+            onClick={() => {
+              setProfileVisible(false);
+              logout();
+            }}
+            className="py-2 pl-6 border-t border-l border-r border-b"
+            to="/about"
+          >
+            Logout
+          </NavLink>
+        </div>
+      </div>
+
+      {/* this is sidebar menu for small screens for the menu lines*/}
       <div
         className={`fixed top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
           visible ? "w-full" : "w-0"
