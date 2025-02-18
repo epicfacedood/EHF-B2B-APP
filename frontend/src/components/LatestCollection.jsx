@@ -23,19 +23,20 @@ const LatestCollection = () => {
         </p>
       </div>
 
-      {/* Rendering products */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
+      {/* Updated grid layout - one column on mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
         {latestProducts.map((item, index) => (
           <ProductItem
             key={index}
             id={item._id}
-            image={item.image}
-            name={item.name}
+            name={item.itemName}
             price={item.price}
             pcode={item.pcode}
             cartonQuantity={item.cartonQuantity}
             unitPrice={item.unitPrice}
             uom={item.uom}
+            uoms={item.uoms}
+            packagingSize={item.packagingSize}
           />
         ))}
       </div>

@@ -1,107 +1,198 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import { Link, useNavigate } from "react-router-dom";
+import { getProductImage } from "../utils/imageUtils";
+import NoImage from "../components/NoImage";
+import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
+import { toast } from "react-toastify";
+
+const EmptyCart = () => (
+  <div className="text-center py-8">
+    <h2 className="text-2xl mb-4">Your cart is empty</h2>
+    <Link to="/" className="text-blue-500 hover:text-blue-600">
+      Continue Shopping
+    </Link>
+  </div>
+);
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, navigate } =
+  const navigate = useNavigate();
+  const { products, currency, cartItems, updateQuantity } =
     useContext(ShopContext);
+  const [imageError, setImageError] = useState({});
 
-  const [cartData, setCartData] = useState([]);
+  const handleQuantityAdjust = (productId, currentValue, uom, increment) => {
+    const newValue = increment
+      ? currentValue + 1
+      : Math.max(0, currentValue - 1);
+    handleQuantityChange(productId, newValue, uom);
+  };
 
-  useEffect(() => {
-    const tempData = [];
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
-          tempData.push({
-            _id: items,
-            size: item,
-            quantity: cartItems[items][item],
-          });
-        }
-      }
+  const handleQuantityChange = (productId, value, uom) => {
+    const newQuantity = value === "" ? "" : Math.max(0, parseInt(value) || 0);
+    if (newQuantity !== null) {
+      updateQuantity(productId, newQuantity, uom);
     }
-    setCartData(tempData);
-  }, [cartItems, products]);
+  };
+
+  const handleImageError = (productId) => {
+    setImageError((prev) => ({ ...prev, [productId]: true }));
+  };
+
+  // Calculate total
+  const total = Object.entries(cartItems).reduce(
+    (acc, [productId, uomData]) => {
+      const product = products.find((p) => p._id === productId);
+      if (product) {
+        const productTotal = Object.entries(uomData).reduce(
+          (sum, [uom, quantity]) => sum + product.price * quantity,
+          0
+        );
+        return acc + productTotal;
+      }
+      return acc;
+    },
+    0
+  );
 
   return (
-    <div className="border-t pt-14">
-      <div className="text-2xl mb-3">
-        <Title text1={"YOUR"} text2={"CART"} />
-      </div>
-      <div>
-        {cartData.map((item, index) => {
-          const productData = products.find(
-            (product) => product._id === item._id
-          );
-          return (
-            <div
-              key={index}
-              className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid:cols-[4fr_2fr_0.5fr] items-center gap-4"
-            >
-              <div className="flex items-start gap-6">
-                <img
-                  className="w-16 sm:w-20"
-                  src={productData.image[0]}
-                  alt=""
-                />
-                <div>
-                  <p className="text-xs sm:text-lg font-medium">
-                    {productData.name}
-                  </p>
-                  <div className="flex items center gap-5 mt-2">
-                    <p>
-                      {currency}
-                      {productData.price}
-                    </p>
-                    <p className="px-2 sm:px-3 sm:py-1 border bg-slate-50">
-                      {item.size}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <input
-                onChange={(e) =>
-                  e.target.value === "" || e.target.value === "0"
-                    ? null
-                    : updateQuantity(
-                        item._id,
-                        item.size,
-                        Number(e.target.value)
-                      )
-                }
-                className="border max-w-10 sm:max-w-20 px-1 sm:px-2 py-1"
-                type="number"
-                min={1}
-                defaultValue={item.quantity}
-              />
-              <img
-                onClick={() => updateQuantity(item._id, item.size, 0)}
-                className="w-4 mr04 sm:w-5 cursor-pointer"
-                src={assets.bin_icon}
-                alt=""
-              />
-            </div>
-          );
-        })}
-      </div>
+    <div className="p-4 max-w-6xl mx-auto">
+      {cartItems && Object.keys(cartItems).length === 0 ? (
+        <EmptyCart />
+      ) : (
+        <div>
+          <Title title="Shopping Cart" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-4">
+              {Object.entries(cartItems).map(([productId, quantities]) => {
+                const product = products.find((p) => p._id === productId);
+                if (!product) return null;
 
-      <div className="flex justify-end my-20">
-        <div className="w-full sm:w-[450px]">
-          <CartTotal />
-          <div className="w-full text-end">
-            <button
-              onClick={() => navigate("/place-order")}
-              className="bg-black text-white text-sm my-8 px-8 py-3"
-            >
-              {" "}
-              PROCEED TO CHECKOUT
-            </button>
+                return (
+                  <div
+                    key={productId}
+                    className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded shadow"
+                  >
+                    {/* Image section */}
+                    <div className="w-full sm:w-24 h-40 sm:h-24 flex-shrink-0">
+                      {!imageError[productId] ? (
+                        <img
+                          src={getProductImage(product.pcode)}
+                          alt={product.itemName}
+                          className="w-full h-full object-contain"
+                          onError={() => handleImageError(productId)}
+                        />
+                      ) : (
+                        <NoImage
+                          pcode={product.pcode}
+                          name={product.itemName}
+                        />
+                      )}
+                    </div>
+
+                    {/* Product details */}
+                    <div className="flex-grow">
+                      <div>
+                        <h3 className="font-medium text-lg">
+                          {product.itemName}
+                        </h3>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {product.pcode}
+                        </p>
+                        <p className="text-sm text-gray-500 mt-1">
+                          {formatPackagingSize(product.packagingSize)}
+                        </p>
+                      </div>
+
+                      {/* Quantities */}
+                      <div className="mt-4 space-y-3">
+                        {Object.entries(quantities).map(([uom, quantity]) => (
+                          <div
+                            key={uom}
+                            className="flex flex-wrap items-center gap-4"
+                          >
+                            <span className="w-20 text-sm">{uom}</span>
+                            <div className="flex items-center gap-2">
+                              {/* Quantity Controls */}
+                              <div className="flex items-center border rounded">
+                                <button
+                                  onClick={() =>
+                                    handleQuantityAdjust(
+                                      productId,
+                                      quantity,
+                                      uom,
+                                      false
+                                    )
+                                  }
+                                  className="px-3 py-1 text-gray-600 hover:bg-gray-100 border-r"
+                                >
+                                  -
+                                </button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  value={quantity || ""}
+                                  onChange={(e) =>
+                                    handleQuantityChange(
+                                      productId,
+                                      e.target.value,
+                                      uom
+                                    )
+                                  }
+                                  className="w-16 px-2 py-1 text-center focus:outline-none"
+                                />
+                                <button
+                                  onClick={() =>
+                                    handleQuantityAdjust(
+                                      productId,
+                                      quantity,
+                                      uom,
+                                      true
+                                    )
+                                  }
+                                  className="px-3 py-1 text-gray-600 hover:bg-gray-100 border-l"
+                                >
+                                  +
+                                </button>
+                              </div>
+                              <span className="text-gray-600 min-w-[80px]">
+                                {currency}
+                                {formatPrice(product.price * quantity)}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Cart summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-white p-4 rounded shadow sticky top-4">
+                <div className="flex justify-between mb-4">
+                  <span className="text-lg">Subtotal</span>
+                  <span className="text-lg font-medium">
+                    {currency}
+                    {formatPrice(total)}
+                  </span>
+                </div>
+                <button
+                  onClick={() => navigate("/place-order")}
+                  className="w-full bg-blue-500 text-white py-3 rounded hover:bg-blue-600 transition-colors"
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -4,11 +4,18 @@ import { assets } from "../assets/assets";
 import { useLocation } from "react-router-dom";
 
 const SearchBar = () => {
-  const { search, setSearch, showSearch, setShowSearch } =
-    useContext(ShopContext);
-  const [visible, setVisible] = useState(false);
+  const context = useContext(ShopContext);
+  // Add default values if context is not yet available
+  const {
+    search = "",
+    setSearch = () => {},
+    showSearch = false,
+    setShowSearch = () => {},
+  } = context || {};
 
+  const [visible, setVisible] = useState(false);
   const location = useLocation();
+
   useEffect(() => {
     if (location.pathname.includes("collection")) {
       setVisible(true);
@@ -16,6 +23,9 @@ const SearchBar = () => {
       setVisible(false);
     }
   }, [location]);
+
+  // Only render if context is available
+  if (!context) return null;
 
   return showSearch && visible ? (
     <div className="border-t border-b bg-gray-50 text-center">

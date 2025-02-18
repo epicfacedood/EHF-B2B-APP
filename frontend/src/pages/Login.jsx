@@ -1,44 +1,62 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
-import { use } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Sign up");
   const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [email, setEmail] = useState("");
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    customerId: "",
+    phoneNumber: "",
+    address: {
+      street: "",
+      postalCode: "",
+      country: "Australia",
+    },
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name.includes(".")) {
+      // Handle nested address fields
+      const [parent, child] = name.split(".");
+      setFormData((prev) => ({
+        ...prev,
+        [parent]: { ...prev[parent], [child]: value },
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
+  };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     try {
       if (currentState === "Sign up") {
-        const response = await axios.post(backendUrl + "/api/user/register", {
-          name,
-          email,
-          password,
-        });
+        const response = await axios.post(
+          backendUrl + "/api/user/register",
+          formData
+        );
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-          console.log(response.data.name);
-
-          localStorage.setItem("name", name); // Store name in localStorage
+          localStorage.setItem("name", formData.name);
         } else {
           toast.error(response.data.message);
         }
       } else {
         const response = await axios.post(backendUrl + "/api/user/login", {
-          email,
-          password,
+          customerId: formData.customerId,
+          password: formData.password,
         });
         if (response.data.success) {
           setToken(response.data.token);
           localStorage.setItem("token", response.data.token);
-          console.log(response.data.name);
-          localStorage.setItem("name", response.data.name); // Store name in localStorage
+          localStorage.setItem("name", response.data.name);
         } else {
           toast.error(response.data.message);
         }
@@ -64,35 +82,92 @@ const Login = () => {
         <p className="prata-regular text-3xl">{currentState}</p>
         <hr className="border-none h-[1.5px] w-8 bg-gray-800" />
       </div>
-      {currentState === "Login" ? (
-        ""
+
+      {currentState === "Sign up" ? (
+        <>
+          <input
+            name="name"
+            onChange={handleChange}
+            value={formData.name}
+            type="text"
+            className="w-full px-3 py-2 border border-gray-800"
+            placeholder="Name"
+            required
+          />
+
+          <input
+            name="email"
+            onChange={handleChange}
+            value={formData.email}
+            type="email"
+            className="w-full px-3 py-2 border border-gray-800"
+            placeholder="Email"
+            required
+          />
+
+          <input
+            name="customerId"
+            onChange={handleChange}
+            value={formData.customerId}
+            type="text"
+            className="w-full px-3 py-2 border border-gray-800"
+            placeholder="Customer ID"
+            required
+          />
+
+          <input
+            name="phoneNumber"
+            onChange={handleChange}
+            value={formData.phoneNumber}
+            type="tel"
+            className="w-full px-3 py-2 border border-gray-800"
+            placeholder="Phone Number"
+          />
+
+          {/* Address Fields */}
+          <div className="w-full space-y-4">
+            <input
+              name="address.street"
+              onChange={handleChange}
+              value={formData.address.street}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-800"
+              placeholder="Street Address"
+            />
+
+            <input
+              name="address.postalCode"
+              onChange={handleChange}
+              value={formData.address.postalCode}
+              type="text"
+              className="w-full px-3 py-2 border border-gray-800"
+              placeholder="Postal Code"
+            />
+          </div>
+        </>
       ) : (
+        // Login form fields
         <input
-          onChange={(e) => setName(e.target.value)}
-          value={name}
+          name="customerId"
+          onChange={handleChange}
+          value={formData.customerId}
           type="text"
           className="w-full px-3 py-2 border border-gray-800"
-          placeholder="Name"
+          placeholder="Customer ID"
           required
         />
       )}
 
       <input
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        type="email"
-        className="w-full px-3 py-2 border border-gray-800"
-        placeholder="Email"
-        required
-      />
-      <input
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
+        name="password"
+        onChange={handleChange}
+        value={formData.password}
         type="password"
         className="w-full px-3 py-2 border border-gray-800"
         placeholder="Password"
         required
       />
+
       <div className="w-full flex justify-between text-sm mt-[-8px]">
         <p className="cursor-pointer">Forgot your password</p>
         {currentState === "Login" ? (
@@ -111,6 +186,7 @@ const Login = () => {
           </p>
         )}
       </div>
+
       <button className="bg-black text-white font-light px-8 py-2 mt-4">
         {currentState === "Login" ? "Sign in" : "Sign up"}
       </button>

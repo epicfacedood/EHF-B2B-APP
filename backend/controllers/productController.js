@@ -6,23 +6,21 @@ import productModel from "../models/productModel.js";
 const addProduct = async (req, res) => {
   try {
     const {
-      name,
+      itemName,
       pcode,
-      cartonQuantity,
-      unitPrice,
-      uom,
-      description,
       price,
+      baseUnit,
+      packagingSize,
+      uom,
+      uoms,
       category,
-      subCategory,
-      sizes,
       bestseller,
     } = req.body;
 
     const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image1[0];
-    const image3 = req.files.image3 && req.files.image1[0];
-    const image4 = req.files.image4 && req.files.image1[0];
+    const image2 = req.files.image2 && req.files.image2[0];
+    const image3 = req.files.image3 && req.files.image3[0];
+    const image4 = req.files.image4 && req.files.image4[0];
 
     const images = [image1, image2, image3, image4].filter(
       (item) => item !== undefined
@@ -38,22 +36,20 @@ const addProduct = async (req, res) => {
     );
 
     const productData = {
-      name,
+      itemName,
       pcode,
-      cartonQuantity,
-      unitPrice: Number(unitPrice),
-      uom,
-      description,
-      category,
       price: Number(price),
-      subCategory,
+      baseUnit,
+      packagingSize,
+      uom,
+      uoms,
+      category,
       bestseller: bestseller === "true" ? true : false,
-      sizes: JSON.parse(sizes),
       image: imagesURL,
       date: Date.now(),
     };
 
-    console.log(productData);
+    console.log("Product Data:", productData);
     const product = new productModel(productData);
     await product.save();
 

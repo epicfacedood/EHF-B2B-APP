@@ -3,8 +3,9 @@ import { assets } from "../assets/assets";
 import { NavLink, Link } from "react-router-dom";
 import { useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+import PropTypes from "prop-types";
 
-const Navbar = () => {
+const Navbar = ({ setToken }) => {
   const [visible, setVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
   const {
@@ -13,15 +14,28 @@ const Navbar = () => {
     getCartCount,
     navigate,
     token,
-    setToken,
     setCartItems,
   } = useContext(ShopContext);
 
-  const logout = () => {
+  const handleLogout = () => {
+    if (typeof setToken === "function") {
+      setToken("");
+    }
     navigate("/login");
-    localStorage.removeItem("token");
-    setToken("");
     setCartItems({});
+  };
+
+  const handleProfileClick = (e) => {
+    // Only handle click for mobile screens
+    if (window.innerWidth < 640) {
+      // 640px is Tailwind's sm breakpoint
+      e.preventDefault(); // Prevent default link behavior
+      if (token) {
+        setProfileVisible(true);
+      } else {
+        navigate("/login");
+      }
+    }
   };
 
   return (
@@ -49,25 +63,16 @@ const Navbar = () => {
       </ul>
 
       <div className="flex items-center gap-6">
-        <img
-          onClick={() => setShowSearch(!showSearch)}
-          className="w-5 cursor-pointer"
-          src={assets.search_icon}
-          alt="Search"
-        />
         <div className="group relative">
-          <Link to="/login">
+          <Link to="/login" onClick={handleProfileClick}>
             <img
-              onClick={() =>
-                token ? setProfileVisible(true) : navigate("/login")
-              }
               className="w-5 cursor-pointer"
               src={assets.profile_icon}
               alt=""
             />
           </Link>
           {token && (
-            <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
+            <div className="hidden group-hover:block dropdown-menu absolute right-0 pt-4">
               <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
                 <p className="cursor-pointer hover:text-black">My Profile</p>
                 <p
@@ -76,7 +81,10 @@ const Navbar = () => {
                 >
                   Orders
                 </p>
-                <p onClick={logout} className="cursor-pointer hover:text-black">
+                <p
+                  onClick={handleLogout}
+                  className="cursor-pointer hover:text-black"
+                >
                   Logout
                 </p>
               </div>
@@ -105,9 +113,9 @@ const Navbar = () => {
         />
       </div>
 
-      {/* sidebar menu for small screens for the profile */}
+      {/* Mobile profile menu */}
       <div
-        className={`fixed top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
+        className={`fixed sm:hidden top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
           profileVisible ? "w-full" : "w-0"
         }`}
       >
@@ -124,9 +132,9 @@ const Navbar = () => {
           <NavLink
             onClick={() => setProfileVisible(false)}
             className="py-2 pl-6 border-t border-l border-r"
-            to="/"
+            to="/account"
           >
-            My Profile
+            My Account
           </NavLink>
           <NavLink
             onClick={() => setProfileVisible(false)}
@@ -138,7 +146,7 @@ const Navbar = () => {
           <NavLink
             onClick={() => {
               setProfileVisible(false);
-              logout();
+              handleLogout();
             }}
             className="py-2 pl-6 border-t border-l border-r border-b"
             to="/about"
@@ -148,11 +156,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* this is sidebar menu for small screens for the menu lines*/}
+      {/* Mobile menu */}
       <div
-        className={`fixed top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
+        className={`fixed sm:hidden top-0 right-0 bottom-0 overflow-y-auto bg-white transition-all ${
           visible ? "w-full" : "w-0"
-        } z-50`} // Changed to fixed and added overflow-y-auto
+        } z-50`}
       >
         <div className="flex flex-col text-gray-600 h-full">
           <div
@@ -192,10 +200,21 @@ const Navbar = () => {
           >
             Contact
           </NavLink>
+          <NavLink
+            onClick={() => setProfileVisible(false)}
+            className="py-2 pl-6 border-t border-l border-r"
+            to="/account"
+          >
+            My Account
+          </NavLink>
         </div>
       </div>
     </div>
   );
+};
+
+Navbar.propTypes = {
+  setToken: PropTypes.func.isRequired,
 };
 
 export default Navbar;

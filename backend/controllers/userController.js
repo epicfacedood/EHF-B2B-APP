@@ -11,24 +11,28 @@ const createToken = (id) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { customerId, password } = req.body;
 
-    const user = await userModel.findOne({ email });
+    const user = await userModel.findOne({ customerId });
 
     if (!user) {
-      return res.json({ success: false, message: "user does not exist" });
+      return res.json({ success: false, message: "Invalid Customer ID" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (isMatch) {
       const token = createToken(user._id);
-      res.json({ success: true, token });
+      res.json({
+        success: true,
+        token,
+        name: user.name,
+      });
     } else {
-      res.json({ success: false, message: "invalid credentials" });
+      res.json({ success: false, message: "Invalid password" });
     }
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Login error:", error);
+    res.json({ success: false, message: "Login failed. Please try again." });
   }
 };
 
@@ -36,47 +40,88 @@ const loginUser = async (req, res) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      name,
+      email,
+      password,
+      customerId,
+      address = {}, // Default empty object for address
+    } = req.body;
 
-    // checking if the user already exists or not
-    const exists = await userModel.findOne({ email });
+    // checking if the user already exists
+    const exists = await userModel.findOne({
+      $or: [
+        { email },
+        { customerId: customerId || null }, // Check customerId if provided
+      ],
+    });
 
     if (exists) {
-      return res.json({ success: false, message: "user already exists" });
+      return res.json({
+        success: false,
+        message:
+          exists.email === email
+            ? "Email already registered"
+            : "Customer ID already exists",
+      });
     }
 
     // validating email format and strong password
-
     if (!validator.isEmail(email)) {
       return res.json({
         success: false,
         message: "Please enter a valid email",
       });
     }
+
     if (password.length < 8) {
       return res.json({
         success: false,
-        message: "Please enter a strong password",
+        message: "Password must be at least 8 characters long",
       });
     }
 
-    //hashing user password
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user with all fields
     const newUser = new userModel({
       name,
       email,
       password: hashedPassword,
+      customerId,
+      address: {
+        street: address.street || "",
+        city: address.city || "",
+        state: address.state || "",
+        postalCode: address.postalCode || "",
+        country: address.country || "Australia",
+      },
+      productsAvailable: [], // Start with empty array
+      cartData: new Map(), // Initialize empty cart
     });
 
     const user = await newUser.save();
-
     const token = createToken(user._id);
 
-    res.json({ success: true, token });
+    // Return success without sensitive data
+    res.json({
+      success: true,
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+        customerId: user.customerId,
+        address: user.address,
+      },
+    });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Registration error:", error);
+    res.json({
+      success: false,
+      message: "Registration failed. Please try again.",
+    });
   }
 };
 
@@ -123,16 +168,26 @@ const getUserCartData = async (req, res) => {
 
 const getName = async (req, res) => {
   try {
-    const user = await userModel.findById(req.user.id).select("name");
+    const userId = req.user._id;
+    const user = await userModel.findById(userId).select("name");
+
     if (!user) {
-      return res
-        .status(404)
-        .json({ success: false, message: "User not found" });
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
     }
-    res.json({ success: true, name: user.name });
+
+    res.json({
+      success: true,
+      name: user.name,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("Get name error:", error);
+    res.json({
+      success: false,
+      message: "Failed to get user name",
+    });
   }
 };
 

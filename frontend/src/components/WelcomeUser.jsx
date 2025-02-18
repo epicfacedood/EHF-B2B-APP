@@ -6,7 +6,9 @@ const WelcomeUser = () => {
   const { name } = useContext(ShopContext);
   return (
     <div>
-      <h1 className="mb-2 text-gray-500">Welcome, {name}!</h1>
+      <h1 className="mb-2 text-gray-1000">
+        Welcome, <span className="font-bold">{name}</span>!
+      </h1>
     </div>
   );
 };

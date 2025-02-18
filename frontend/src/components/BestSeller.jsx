@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import { getProductImage, getFallbackImage } from "../utils/imageUtils";
 
 const BestSeller = () => {
   const { products } = useContext(ShopContext);
@@ -25,9 +26,12 @@ const BestSeller = () => {
           <ProductItem
             key={index}
             id={item._id}
-            name={item.name}
-            image={item.image}
+            name={item.itemName}
             price={item.price}
+            pcode={item.pcode}
+            cartonQuantity={item.cartonQuantity}
+            unitPrice={item.unitPrice}
+            uom={item.uom}
           />
         ))}
       </div>
