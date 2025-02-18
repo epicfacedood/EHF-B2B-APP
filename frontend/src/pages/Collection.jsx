@@ -4,16 +4,26 @@ import { useState } from "react";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Collection = () => {
-  const { products, search, setSearch, showSearch, setShowSearch } =
-    useContext(ShopContext);
+  const {
+    products,
+    search,
+    setSearch,
+    showSearch,
+    setShowSearch,
+    token,
+    productsAvailable,
+  } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12; // Show 12 products per page
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   // Available categories
   const categories = [
@@ -38,8 +48,25 @@ const Collection = () => {
 
   // Initialize filterProducts with all products
   useEffect(() => {
-    setFilterProducts(products);
-  }, [products]);
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get(`${backendUrl}/api/product/list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setFilterProducts(response.data.products);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to load products");
+      }
+    };
+
+    fetchProducts();
+  }, [token, productsAvailable]);
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {

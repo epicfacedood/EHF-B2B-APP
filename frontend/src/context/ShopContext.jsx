@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PropTypes from "prop-types";
 
-export const ShopContext = createContext();
+export const ShopContext = createContext(null);
 
 const ShopContextProvider = ({ children }) => {
   const currency = "$";
@@ -14,8 +14,11 @@ const ShopContextProvider = ({ children }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState("");
-  const [name, setName] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [name, setName] = useState(localStorage.getItem("name") || "");
+  const [productsAvailable, setProductsAvailable] = useState(
+    JSON.parse(localStorage.getItem("productsAvailable")) || []
+  );
   const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
@@ -214,6 +217,30 @@ const ShopContextProvider = ({ children }) => {
     }
   };
 
+  const handleLogin = (data) => {
+    if (data.success) {
+      setToken(data.token);
+      setName(data.name);
+      setProductsAvailable(data.productsAvailable || []);
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name);
+      localStorage.setItem(
+        "productsAvailable",
+        JSON.stringify(data.productsAvailable || [])
+      );
+    }
+    return data;
+  };
+
+  const handleLogout = () => {
+    setToken("");
+    setName("");
+    setProductsAvailable([]);
+    localStorage.removeItem("token");
+    localStorage.removeItem("name");
+    localStorage.removeItem("productsAvailable");
+  };
+
   // Add this useEffect back to load products
   useEffect(() => {
     getProductsData();
@@ -250,6 +277,9 @@ const ShopContextProvider = ({ children }) => {
     setCartItems,
     name,
     setName,
+    productsAvailable,
+    handleLogin,
+    handleLogout,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

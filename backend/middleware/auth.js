@@ -25,6 +25,7 @@ const authUser = async (req, res, next) => {
     // Set both req.user._id and req.body.userId for backward compatibility
     req.user = { _id: decoded.id };
     req.body.userId = decoded.id;
+    req.userId = decoded.id;
 
     next();
   } catch (error) {

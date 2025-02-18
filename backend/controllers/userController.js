@@ -4,6 +4,7 @@ import userModel from "../models/userModel.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
@@ -26,6 +27,7 @@ const loginUser = async (req, res) => {
         success: true,
         token,
         name: user.name,
+        productsAvailable: user.productsAvailable || [],
       });
     } else {
       res.json({ success: false, message: "Invalid password" });
@@ -191,4 +193,103 @@ const getName = async (req, res) => {
   }
 };
 
-export { loginUser, registerUser, adminLogin, getName };
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await userModel
+      .find({})
+      .select("-password -cartData")
+      .sort({ createdAt: -1 });
+
+    console.log(
+      "Found users:",
+      users.map((u) => ({ id: u._id, name: u.name }))
+    );
+
+    if (!users) {
+      return res.status(404).json({
+        success: false,
+        message: "No users found",
+      });
+    }
+
+    res.json({
+      success: true,
+      users: users.map((user) => ({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        customerId: user.customerId,
+        createdAt: user.createdAt,
+        productsAvailable: user.productsAvailable || [],
+      })),
+    });
+  } catch (error) {
+    console.error("Error in getAllUsers:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching users",
+    });
+  }
+};
+
+const getUserById = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log("Getting user with ID:", userId);
+
+    if (!userId || userId === "undefined") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid user ID provided" });
+    }
+
+    const user = await userModel.findById(userId).select("-password -cartData");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Ensure default values are set
+    user.phone = user.phone || "";
+    user.company = user.company || "";
+    user.address = user.address || "";
+    user.productsAvailable = user.productsAvailable || [];
+
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error("Error in getUserById:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const user = await userModel.findByIdAndUpdate(
+      req.params.userId,
+      {
+        $set: {
+          name: req.body.name,
+          email: req.body.email,
+          productsAvailable: req.body.productsAvailable,
+        },
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, user });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export {
+  loginUser,
+  registerUser,
+  adminLogin,
+  getName,
+  getAllUsers,
+  getUserById,
+  updateUser,
+};

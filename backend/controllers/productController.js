@@ -2,6 +2,7 @@
 
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import userModel from "../models/userModel.js";
 
 const addProduct = async (req, res) => {
   try {
@@ -62,11 +63,38 @@ const addProduct = async (req, res) => {
 
 const listProducts = async (req, res) => {
   try {
-    const products = await productModel.find({});
+    const { userId } = req;
+    let products;
+
+    if (userId) {
+      // If user is logged in, get their available products
+      const user = await userModel.findById(userId);
+      console.log(
+        "User found:",
+        user?._id,
+        "Available products:",
+        user?.productsAvailable
+      );
+
+      if (user && user.productsAvailable?.length > 0) {
+        products = await productModel
+          .find({ _id: { $in: user.productsAvailable } })
+          .sort({ createdAt: -1 });
+      } else {
+        products = [];
+      }
+    } else {
+      // If no user, return empty array (or you could return an error)
+      products = [];
+    }
+
+    console.log("Returning products:", products.length);
     res.json({ success: true, products });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error listing products:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching products" });
   }
 };
 
@@ -83,6 +111,18 @@ const singleProduct = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
+  }
+};
+
+export const getAllProducts = async (req, res) => {
+  try {
+    const products = await productModel.find({}).sort({ itemName: 1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error("Error getting products:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching products" });
   }
 };
 

@@ -4,9 +4,12 @@ import {
   listProducts,
   removeProduct,
   singleProduct,
+  getAllProducts,
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
+import authUser from "../middleware/auth.js";
+import productModel from "../models/productModel.js";
 
 const productRouter = express.Router();
 
@@ -27,6 +30,18 @@ productRouter.post(
 );
 productRouter.post("/remove", adminAuth, removeProduct);
 productRouter.post("/single", singleProduct);
-productRouter.get("/list", listProducts);
+productRouter.get("/list", authUser, listProducts);
+productRouter.get("/all", authUser, getAllProducts);
+productRouter.get("/admin/list", adminAuth, async (req, res) => {
+  try {
+    const products = await productModel.find().sort({ createdAt: -1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error("Error listing products:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching products" });
+  }
+});
 
 export default productRouter;

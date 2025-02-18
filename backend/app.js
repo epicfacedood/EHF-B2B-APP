@@ -36,13 +36,4 @@ app.use("*", (req, res) => {
   res.status(404).json({ message: "Not found" });
 });
 
-// PORT
-const PORT = process.env.PORT || 4000;
-
-// Run listen
-app.listen(PORT, () => {
-  console.log(`Server Running on port ${PORT}`);
-  console.log(`Test URL: http://localhost:${PORT}/api/cart/ping`);
-});
-
 export default app;
