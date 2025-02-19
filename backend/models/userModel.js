@@ -1,65 +1,69 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  customerId: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  company: {
-    type: String,
-    default: "",
-  },
-  address: {
-    street: {
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    customerId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    phone: {
       type: String,
       default: "",
     },
-    postalCode: {
+    company: {
       type: String,
       default: "",
     },
-  },
-  role: {
-    type: String,
-    default: "",
-  },
-  cartData: {
-    type: Object,
-    default: {},
-  },
-  productsAvailable: [
-    {
-      type: String,
+    address: {
+      street: {
+        type: String,
+        default: "",
+      },
+      postalCode: {
+        type: String,
+        default: "",
+      },
     },
-  ],
-  createdAt: {
-    type: Date,
-    default: Date.now,
+    role: {
+      type: String,
+      default: "",
+    },
+    cartData: {
+      type: Object,
+      default: {},
+    },
+    productsAvailable: {
+      type: Array,
+      default: [],
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    __v: {
+      type: Number,
+      default: 0,
+    },
   },
-  __v: {
-    type: Number,
-    default: 0,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 // Simplify the pre-save hook to only handle password hashing
 userSchema.pre("save", async function (next) {

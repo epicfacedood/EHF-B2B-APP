@@ -15,7 +15,7 @@ const addToCart = async (req, res) => {
       });
     }
 
-    // Initialize cartData as an object if it doesn't exist
+    // Initialize cartData if it doesn't exist
     if (!user.cartData) {
       user.cartData = {};
     }
@@ -27,9 +27,9 @@ const addToCart = async (req, res) => {
 
     // Add or update the quantity for the specific size
     const currentQty = user.cartData[itemId][size.uom] || 0;
-    user.cartData[itemId][size.uom] = currentQty + 1;
+    user.cartData[itemId][size.uom] = currentQty + size.quantity;
 
-    // Mark cartData as modified
+    // Mark cartData as modified since we're updating a nested object
     user.markModified("cartData");
     await user.save();
 
@@ -145,12 +145,9 @@ const getUserCartData = async (req, res) => {
       });
     }
 
-    // Since cartData is now an object, not a Map
-    const cartData = user.cartData || {};
-
     res.json({
       success: true,
-      cartData,
+      cartData: user.cartData || {},
     });
   } catch (error) {
     console.error("Get cart error:", error);
