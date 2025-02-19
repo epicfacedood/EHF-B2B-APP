@@ -5,7 +5,7 @@ import { assets } from "../assets/assets";
 const Contact = () => {
   return (
     <div>
-      <div className="text-center textl-2xl pt-10 border-t">
+      <div className="text-center text-2xl pt-10 border-t">
         <Title text1={"CONTACT"} text2={"US"} />
       </div>
       <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
@@ -17,11 +17,9 @@ const Contact = () => {
         <div className="flex flex-col justify-center items-start gap-6">
           <p className="font-semibold text-xl text-gray-600">Our Store</p>
           <p className="text-gray-500">
-            1000 Jalan Tepong <br /> Singapore 600000
+            5 Jalan Tepong <br /> Singapore 619325
           </p>
-          <p className="text-gray-500">
-            Contact Number: 6214 3231 <br /> Email: store@yessir.com
-          </p>
+          <p className="text-gray-500">Contact Number: +65 6779 1148</p>
         </div>
       </div>
     </div>

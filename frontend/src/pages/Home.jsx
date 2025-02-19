@@ -6,6 +6,7 @@ import BestSeller from "../components/BestSeller"; // Re-added BestSeller compon
 import OurPolicy from "../components/OurPolicy";
 import NewsLetterBox from "../components/NewsLetterBox";
 import WelcomeUser from "../components/WelcomeUser";
+import BrandCarousel from "../components/BrandCarousel";
 
 const Home = () => {
   const { name } = useContext(ShopContext); // Get the name from context
@@ -14,6 +15,8 @@ const Home = () => {
     <div className="home-container">
       <WelcomeUser />
       <Hero />
+      <BrandCarousel />
+
       <LatestCollection />
       <BestSeller />
       <OurPolicy />

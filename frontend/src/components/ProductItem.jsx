@@ -12,7 +12,6 @@ const ProductItem = ({
   price = 0,
   pcode = "No code",
   uoms = "[]",
-  cartonQuantity,
   packagingSize,
 }) => {
   const { currency, addToCart } = useContext(ShopContext);
@@ -93,7 +92,13 @@ const ProductItem = ({
           {details && <p className="text-sm text-gray-600">{details}</p>}
         </div>
         <p className="text-sm text-gray-500">
-          {formatPackagingSize(packagingSize)}
+          {
+            packagingSize &&
+            formatPackagingSize(packagingSize) &&
+            packagingSize !== "nan"
+              ? formatPackagingSize(packagingSize)
+              : "\u00A0" // Non-breaking space
+          }
         </p>
         <p className="text-lg sm:text-sm font-medium">
           {currency}

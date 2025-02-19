@@ -106,6 +106,15 @@ const EditUser = ({ token }) => {
     }
   };
 
+  const handleSelectAll = () => {
+    const allProductIds = products.map((product) => product._id);
+    setUser({ ...user, productsAvailable: allProductIds });
+  };
+
+  const handleDeselectAll = () => {
+    setUser({ ...user, productsAvailable: [] });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
 
@@ -233,9 +242,27 @@ const EditUser = ({ token }) => {
 
       {/* Products Section */}
       <div className="mt-8">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Manage Available Products
-        </h3>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium text-gray-900">
+            Manage Available Products
+          </h3>
+          <div className="space-x-4">
+            <button
+              type="button"
+              onClick={handleSelectAll}
+              className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
+            >
+              Select All
+            </button>
+            <button
+              type="button"
+              onClick={handleDeselectAll}
+              className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
+            >
+              Deselect All
+            </button>
+          </div>
+        </div>
 
         {/* Search Bar */}
         <div className="mb-4">
