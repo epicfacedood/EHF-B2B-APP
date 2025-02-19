@@ -92,7 +92,8 @@ const Cart = () => {
                       {product.pcode}
                     </p>
                     <p className="text-sm text-gray-500 mt-1">
-                      {formatPackagingSize(product.packagingSize)}
+                      {product.packagingSize !== "nan" &&
+                        formatPackagingSize(product.packagingSize)}
                     </p>
                   </div>
 
@@ -115,7 +116,7 @@ const Cart = () => {
                                   quantity - 1
                                 )
                               }
-                              className="w-8 h-8 rounded border flex items-center justify-center"
+                              className="m-1 w-6 h-6 rounded border flex items-center justify-center text-sm bg-black text-white"
                             >
                               -
                             </button>
@@ -128,7 +129,7 @@ const Cart = () => {
                                   quantity + 1
                                 )
                               }
-                              className="w-8 h-8 rounded border flex items-center justify-center"
+                              className="m-1 w-6 h-6 rounded border flex items-center justify-center text-sm bg-black text-white"
                             >
                               +
                             </button>

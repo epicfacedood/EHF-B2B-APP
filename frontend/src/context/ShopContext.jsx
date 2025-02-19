@@ -75,7 +75,8 @@ export const ShopContextProvider = ({ children }) => {
       if (!currentCart[itemId]) {
         currentCart[itemId] = {};
       }
-      currentCart[itemId][size] = (currentCart[itemId][size] || 0) + 1;
+      currentCart[itemId][size.uom] =
+        (currentCart[itemId][size.uom] || 0) + size.quantity;
 
       // Update state immediately for better UX
       setCartItems(currentCart);
@@ -101,7 +102,6 @@ export const ShopContextProvider = ({ children }) => {
           // Keep our optimistic update if server doesn't return cart data
           setCartItems(currentCart);
         }
-        toast.success("Product added to cart");
       } else {
         // Revert to previous state if operation failed
         setCartItems(previousCart);
@@ -198,8 +198,6 @@ export const ShopContextProvider = ({ children }) => {
 
         if (quantity === 0) {
           toast.success("Item removed from cart");
-        } else {
-          toast.success("Cart updated successfully");
         }
       } else {
         // If failed, revert to previous state

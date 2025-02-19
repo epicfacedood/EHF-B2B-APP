@@ -21,11 +21,22 @@ const ProductItem = ({
   const [selectedUOM, setSelectedUOM] = useState("");
   const [quantity, setQuantity] = useState(0);
 
-  const uomsArray = Array.isArray(uoms) ? uoms : JSON.parse(uoms || "[]");
+  // Parse UOMs safely
+  const uomsArray = React.useMemo(() => {
+    try {
+      return Array.isArray(uoms) ? uoms : JSON.parse(uoms || "[]");
+    } catch (error) {
+      console.error("Error parsing UOMs:", error);
+      return [];
+    }
+  }, [uoms]);
 
-  if (uomsArray.length > 0 && !selectedUOM) {
-    setSelectedUOM(uomsArray[0]);
-  }
+  // Set initial UOM if not set and options are available
+  React.useEffect(() => {
+    if (uomsArray.length > 0 && !selectedUOM) {
+      setSelectedUOM(uomsArray[0]);
+    }
+  }, [uomsArray, selectedUOM]);
 
   const handleQuantityAdjust = (increment) => {
     const newValue = increment ? quantity + 1 : Math.max(0, quantity - 1);
@@ -38,10 +49,23 @@ const ProductItem = ({
     setQuantity(newQuantity);
   };
 
-  const handleAddToCart = async (size) => {
+  const handleAddToCart = async () => {
+    if (quantity <= 0) {
+      toast.error("Please select a quantity");
+      return;
+    }
+
+    if (!selectedUOM) {
+      toast.error("Please select a unit of measure");
+      return;
+    }
+
     try {
-      // Call addToCart and wait for it to complete
-      await addToCart(id, size);
+      await addToCart(id, {
+        uom: selectedUOM,
+        quantity: quantity,
+      });
+      setQuantity(0); // Reset quantity after successful add
     } catch (error) {
       console.error("Error adding to cart:", error);
       toast.error("Failed to add item to cart");
@@ -117,7 +141,7 @@ const ProductItem = ({
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {unit}
+              {typeof unit === "object" ? unit.name || "Unknown" : unit}
             </button>
           ))}
         </div>
@@ -132,12 +156,7 @@ const ProductItem = ({
             placeholder="Qty"
           />
           <button
-            onClick={() =>
-              handleAddToCart({
-                quantity,
-                uom: selectedUOM,
-              })
-            }
+            onClick={handleAddToCart}
             disabled={quantity === 0}
             className={`px-3 py-1 text-xs rounded ${
               quantity === 0
@@ -172,12 +191,7 @@ const ProductItem = ({
             </button>
           </div>
           <button
-            onClick={() =>
-              handleAddToCart({
-                quantity,
-                uom: selectedUOM,
-              })
-            }
+            onClick={handleAddToCart}
             disabled={quantity === 0}
             className={`px-3 py-1 text-xs rounded ${
               quantity === 0
@@ -196,13 +210,9 @@ const ProductItem = ({
 ProductItem.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string,
-  price: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  price: PropTypes.number,
   pcode: PropTypes.string,
-  uoms: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.arrayOf(PropTypes.string),
-  ]),
-  cartonQuantity: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  uoms: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   packagingSize: PropTypes.string,
 };
 
