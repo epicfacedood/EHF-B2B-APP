@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import Users from "./pages/Users";
 import EditUser from "./pages/EditUser";
+import EditProduct from "./pages/EditProduct";
 
 const App = () => {
   const [token, setToken] = useState(
@@ -44,6 +45,10 @@ const App = () => {
                 <Route
                   path="/users/:userId"
                   element={<EditUser token={token} />}
+                />
+                <Route
+                  path="/admin/product/edit/:id"
+                  element={<EditProduct token={token} />}
                 />
               </Routes>
             </div>

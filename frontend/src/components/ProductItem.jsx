@@ -14,6 +14,7 @@ const ProductItem = ({
   pcode = "No code",
   uoms = "[]",
   packagingSize,
+  image = [],
 }) => {
   const { currency, addToCart } = useContext(ShopContext);
   const [imageError, setImageError] = useState(false);
@@ -21,10 +22,14 @@ const ProductItem = ({
   const [selectedUOM, setSelectedUOM] = useState("");
   const [quantity, setQuantity] = useState(0);
 
-  // Parse UOMs safely
+  // Parse UOMs safely - handle the JSON string format
   const uomsArray = React.useMemo(() => {
     try {
-      return Array.isArray(uoms) ? uoms : JSON.parse(uoms || "[]");
+      // If it's already an array, return it
+      if (Array.isArray(uoms)) return uoms;
+      // Parse the JSON string but don't modify the data
+      const parsed = JSON.parse(uoms || "[]");
+      return parsed;
     } catch (error) {
       console.error("Error parsing UOMs:", error);
       return [];
@@ -96,10 +101,13 @@ const ProductItem = ({
         {!imageError ? (
           <img
             className="w-full h-full object-contain hover:scale-110 transition-transform duration-300 ease-in-out"
-            src={getProductImage(pcode)}
+            src={image?.[0] || getProductImage(pcode)}
             alt={name}
             onLoad={() => setLoading(false)}
-            onError={() => setImageError(true)}
+            onError={(e) => {
+              console.error("Image load error:", e);
+              setImageError(true);
+            }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -141,7 +149,7 @@ const ProductItem = ({
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {typeof unit === "object" ? unit.name || "Unknown" : unit}
+              {unit.replace(/["\[\]]/g, "")}
             </button>
           ))}
         </div>
@@ -214,6 +222,7 @@ ProductItem.propTypes = {
   pcode: PropTypes.string,
   uoms: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   packagingSize: PropTypes.string,
+  image: PropTypes.array,
 };
 
 export default ProductItem;

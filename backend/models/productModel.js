@@ -35,8 +35,7 @@ const productSchema = new mongoose.Schema(
     },
     uoms: {
       type: String,
-      required: true,
-      trim: true,
+      required: false,
     },
     image: { type: Array, required: false },
     category: { type: String, required: false },

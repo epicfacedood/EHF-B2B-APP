@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema(
   {
-    orderId: { type: String, required: true, unique: true },
+    orderId: { type: String, required: true },
     date: { type: Date, required: true },
     time: { type: String, required: true },
     customerName: { type: String, required: true },
@@ -29,6 +29,19 @@ const orderSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Drop the existing unique index if it exists
+mongoose.connection.on("connected", async () => {
+  try {
+    await mongoose.connection.db.collection("orders").dropIndex("orderId_1");
+  } catch (error) {
+    // Index might not exist, that's okay
+    console.log("No orderId_1 index to drop");
+  }
+});
+
+// Create a compound index on orderId and productName to ensure unique products within an order
+orderSchema.index({ orderId: 1, productName: 1 });
 
 const orderModel =
   mongoose.models.order || mongoose.model("order", orderSchema);

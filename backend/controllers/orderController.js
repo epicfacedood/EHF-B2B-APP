@@ -27,14 +27,19 @@ const placeOrder = async (req, res) => {
       throw new Error("User not found");
     }
 
-    // Create an order document for each item
+    // Generate one orderId for the entire order
+    const orderId = generateOrderId();
+    const orderDate = new Date();
+    const orderTime = orderDate.toLocaleTimeString();
+
+    // Create an order document for each item, but use the same orderId
     const orderPromises = items.map(async (item) => {
       const orderData = {
-        orderId: generateOrderId(),
-        date: new Date(),
-        time: new Date().toLocaleTimeString(),
+        orderId, // Same orderId for all items in this order
+        date: orderDate,
+        time: orderTime,
         customerName: customerInfo.name,
-        customerId: user.customerId, // Use the actual customerId from user model
+        customerId: user.customerId,
         productName: item.itemName,
         pcode: item.pcode,
         uom: item.uom,
@@ -70,7 +75,11 @@ const placeOrder = async (req, res) => {
     await Promise.all(orderPromises);
     await userModel.findByIdAndUpdate(req.user._id, { cartData: {} });
 
-    res.json({ success: true, message: "Order Placed" });
+    res.json({
+      success: true,
+      message: "Order Placed",
+      orderId, // Send back the orderId in the response
+    });
   } catch (error) {
     console.error("Order placement error:", error);
     res.json({ success: false, message: error.message });
@@ -175,11 +184,21 @@ const allOrders = async (req, res) => {
 //user order data for frontend
 const userOrders = async (req, res) => {
   try {
-    const { userId } = req.body;
-    const orders = await orderModel.find({ userId });
+    // Get user's customerId from the database
+    const user = await userModel.findById(req.user._id);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Find all orders for this customer using their customerId
+    const orders = await orderModel.find({ customerId: user.customerId });
+
+    // Log for debugging
+    console.log("Found orders:", orders);
+
     res.json({ success: true, orders });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching user orders:", error);
     res.json({ success: false, message: error.message });
   }
 };

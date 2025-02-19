@@ -66,17 +66,23 @@ const Add = ({ token }) => {
       formData.append("baseUnit", baseUnit);
       formData.append("packagingSize", packagingSize);
       formData.append("uom", uom);
-      formData.append("uoms", uoms);
+      // Convert uoms string to array format
+      const uomsArray = uoms.split(",").map((item) => item.trim());
+      formData.append("uoms", JSON.stringify(uomsArray));
       formData.append("category", category);
       formData.append("bestseller", bestseller);
 
-      image1 && formData.append("image1", image1);
-      image2 && formData.append("image2", image2);
-      image3 && formData.append("image3", image3);
-      image4 && formData.append("image4", image4);
+      // Add images
+      if (image1) formData.append("image1", image1);
+      if (image2) formData.append("image2", image2);
+      if (image3) formData.append("image3", image3);
+      if (image4) formData.append("image4", image4);
 
       // Log the form data for debugging
-      console.log("UOMs being sent:", uoms);
+      console.log("UOMs being sent:", uomsArray);
+      for (let pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
 
       const response = await axios.post(
         `${backendUrl}/api/product/add`,
@@ -84,6 +90,7 @@ const Add = ({ token }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
