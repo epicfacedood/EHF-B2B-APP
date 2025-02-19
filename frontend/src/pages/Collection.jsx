@@ -68,6 +68,11 @@ const Collection = () => {
     fetchProducts();
   }, [token, productsAvailable]);
 
+  // Add debug logging
+  useEffect(() => {
+    console.log("Products in Collection:", products);
+  }, [products]);
+
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
       setCategory((prev) => prev.filter((item) => item !== e.target.value));

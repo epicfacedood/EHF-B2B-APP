@@ -183,21 +183,6 @@ const ShopContextProvider = ({ children }) => {
     return totalAmount;
   };
 
-  const getProductsData = async () => {
-    try {
-      const response = await axios.get(backendUrl + "/api/product/list");
-      if (response.data.success) {
-        setProducts(response.data.products);
-      } else {
-        toast.error(response.data.message);
-      }
-      console.log(response.data);
-    } catch (error) {
-      toast.error("Failed to fetch products");
-      console.error(error);
-    }
-  };
-
   const getUserName = async (token) => {
     try {
       const url = `${backendUrl}/api/user/name`;
@@ -241,10 +226,29 @@ const ShopContextProvider = ({ children }) => {
     localStorage.removeItem("productsAvailable");
   };
 
-  // Add this useEffect back to load products
+  // Add this useEffect to load products
   useEffect(() => {
-    getProductsData();
-  }, []);
+    const fetchProducts = async () => {
+      try {
+        if (!token) return;
+
+        const response = await axios.get(`${backendUrl}/api/product/list`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.data.success) {
+          setProducts(response.data.products);
+        }
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        toast.error("Failed to load products");
+      }
+    };
+
+    fetchProducts();
+  }, [token]);
 
   // Initialize app
   useEffect(() => {

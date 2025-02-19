@@ -50,8 +50,10 @@ const EditUser = ({ token }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get(`${backendUrl}/api/product/admin/list`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (response.data.success) {
