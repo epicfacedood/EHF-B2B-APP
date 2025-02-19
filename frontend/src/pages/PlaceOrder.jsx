@@ -65,27 +65,36 @@ const PlaceOrder = () => {
       const product = products.find((p) => p._id === itemId);
       if (product) {
         Object.entries(sizes).forEach(([uom, quantity]) => {
-          const itemTotal = product.price * quantity;
-          subtotal += itemTotal;
+          // Ensure all numbers are valid
+          const unitPrice = parseFloat(product.price) || 0;
+          const qty = parseInt(quantity) || 0;
+          const orderPrice = unitPrice * qty;
+
+          // Add to subtotal only if we have valid numbers
+          if (!isNaN(orderPrice)) {
+            subtotal += orderPrice;
+          }
+
           itemsWithDetails.push({
             itemName: product.itemName,
             pcode: product.pcode,
             uom,
-            quantity,
-            unitPrice: product.price,
-            orderPrice: itemTotal,
+            quantity: qty,
+            unitPrice: unitPrice,
+            orderPrice: orderPrice,
           });
         });
       }
     });
 
-    // Calculate GST (9%)
-    const gst = subtotal * 0.09;
-    const total = subtotal + gst;
+    // Ensure we have valid numbers for all calculations
+    const validSubtotal = parseFloat(subtotal) || 0;
+    const gst = validSubtotal * 0.09;
+    const total = validSubtotal + gst;
 
     return {
       items: itemsWithDetails,
-      subtotalPrice: subtotal,
+      subtotalPrice: validSubtotal,
       totalPrice: total,
     };
   };
@@ -108,22 +117,62 @@ const PlaceOrder = () => {
 
     setLoading(true);
     try {
+      const { items, subtotalPrice, totalPrice } = calculateTotals();
+
+      // Log the data we're about to send
+      console.log("Order Data:", {
+        items,
+        subtotalPrice,
+        totalPrice,
+      });
+
+      // Validate the data before sending
+      const formattedItems = items.map((item) => {
+        const formattedItem = {
+          itemName: item.itemName,
+          pcode: item.pcode,
+          uom: item.uom,
+          quantity: parseInt(item.quantity) || 0,
+          unitPrice: parseFloat(item.unitPrice) || 0,
+          orderPrice: parseFloat(item.orderPrice) || 0,
+        };
+
+        // Validate that all required numbers are valid
+        if (
+          isNaN(formattedItem.quantity) ||
+          isNaN(formattedItem.unitPrice) ||
+          isNaN(formattedItem.orderPrice)
+        ) {
+          throw new Error("Invalid number in order data");
+        }
+
+        return formattedItem;
+      });
+
+      const orderData = {
+        items: formattedItems,
+        customerInfo: {
+          name: orderInfo.customerName,
+          email: orderInfo.email,
+          phone: orderInfo.phone,
+          company: orderInfo.company,
+          address: orderInfo.address,
+          postalCode: orderInfo.postalCode,
+          remarks: orderInfo.remarks,
+        },
+        subtotalPrice: parseFloat(subtotalPrice) || 0,
+        totalPrice: parseFloat(totalPrice) || 0,
+        paymentMethod: "standard",
+      };
+
+      // Validate final numbers
+      if (isNaN(orderData.subtotalPrice) || isNaN(orderData.totalPrice)) {
+        throw new Error("Invalid total prices");
+      }
+
       const response = await axios.post(
         `${backendUrl}/api/order/place`,
-        {
-          items,
-          customerInfo: {
-            name: orderInfo.customerName,
-            email: orderInfo.email,
-            phone: orderInfo.phone,
-            company: orderInfo.company,
-            address: {
-              street: orderInfo.address,
-              postalCode: orderInfo.postalCode,
-            },
-            remarks: orderInfo.remarks,
-          },
-        },
+        orderData,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -138,7 +187,7 @@ const PlaceOrder = () => {
       }
     } catch (error) {
       console.error("Error placing order:", error);
-      toast.error("Failed to place order");
+      toast.error(error.message || "Failed to place order");
     } finally {
       setLoading(false);
     }

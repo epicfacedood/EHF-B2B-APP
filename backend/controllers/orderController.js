@@ -10,70 +10,69 @@ const deliveryCharge = 10;
 const GST_RATE = 0.09; // 9% GST
 
 const generateOrderId = () => {
-  // Generate a unique order ID - you can customize this format
   const timestamp = Date.now();
-  const random = Math.floor(Math.random() * 1000);
-  return `ORD-${timestamp}-${random}`;
+  const random = Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, "0");
+  return `ORD${timestamp}${random}`;
 };
 
 const placeOrder = async (req, res) => {
   try {
-    const { items, customerInfo, paymentMethod } = req.body;
+    const { items, customerInfo, subtotalPrice, totalPrice } = req.body;
 
-    const orderId = generateOrderId();
-    const now = new Date();
-
-    // Calculate subtotal of all items
-    const subtotalPrice = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const gstAmount = subtotalPrice * GST_RATE;
-    const totalPrice = subtotalPrice + gstAmount;
+    // Get the user's customerId from the database
+    const user = await userModel.findById(req.user._id);
+    if (!user) {
+      throw new Error("User not found");
+    }
 
     // Create an order document for each item
-    const orderPromises = items.map((item) => {
+    const orderPromises = items.map(async (item) => {
       const orderData = {
-        orderId,
-        date: now,
-        time: now.toLocaleTimeString(),
+        orderId: generateOrderId(),
+        date: new Date(),
+        time: new Date().toLocaleTimeString(),
         customerName: customerInfo.name,
-        customerId: req.user._id, // Assuming this comes from auth middleware
+        customerId: user.customerId, // Use the actual customerId from user model
         productName: item.itemName,
         pcode: item.pcode,
         uom: item.uom,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        orderPrice: item.price * item.quantity,
-        subtotalPrice,
-        totalPrice,
+        quantity: Number(item.quantity),
+        unitPrice: Number(item.unitPrice),
+        orderPrice: Number(item.orderPrice),
+        subtotalPrice: Number(subtotalPrice),
+        totalPrice: Number(totalPrice),
         email: customerInfo.email,
         phone: customerInfo.phone,
-        company: customerInfo.company,
+        company: customerInfo.company || "",
         address: customerInfo.address,
         postalCode: customerInfo.postalCode,
-        remarks: customerInfo.remarks,
-        paymentMethod,
-        payment: paymentMethod === "COD" ? false : false,
+        remarks: customerInfo.remarks || "",
+        paymentMethod: "standard",
       };
 
-      return new orderModel(orderData).save();
+      // Validate numbers before creating the order
+      if (
+        isNaN(orderData.quantity) ||
+        isNaN(orderData.unitPrice) ||
+        isNaN(orderData.orderPrice) ||
+        isNaN(orderData.subtotalPrice) ||
+        isNaN(orderData.totalPrice)
+      ) {
+        throw new Error("Invalid number values in order data");
+      }
+
+      const newOrder = new orderModel(orderData);
+      return newOrder.save();
     });
 
     await Promise.all(orderPromises);
-
-    // Clear user's cart
     await userModel.findByIdAndUpdate(req.user._id, { cartData: {} });
 
-    res.json({
-      success: true,
-      message: "Order Placed",
-      orderId,
-      subtotalPrice,
-      totalPrice,
-    });
+    res.json({ success: true, message: "Order Placed" });
   } catch (error) {
-    console.log(error);
+    console.error("Order placement error:", error);
     res.json({ success: false, message: error.message });
   }
 };
