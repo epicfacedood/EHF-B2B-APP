@@ -12,11 +12,11 @@ const Login = () => {
     email: "",
     password: "",
     customerId: "",
-    phoneNumber: "",
+    phone: "",
+    company: "",
     address: {
       street: "",
       postalCode: "",
-      country: "",
     },
   });
 
@@ -30,6 +30,7 @@ const Login = () => {
         [parent]: { ...prev[parent], [child]: value },
       }));
     } else {
+      console.log(`Updating ${name} to ${value}`);
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -42,14 +43,25 @@ const Login = () => {
         password: formData.password,
       });
 
+      console.log("Login response:", response.data);
+
       if (response.data.success) {
-        setToken(response.data.token);
-        // Check if user data exists before accessing name
-        if (response.data.user) {
-          setName(response.data.user.name);
+        try {
+          // First update token and name
+          setToken(response.data.token);
+          setName(response.data.name || "");
+
+          // Show success message
+          toast.success("Login successful!");
+
+          // Then navigate (after state updates are complete)
+          setTimeout(() => {
+            navigate("/");
+          }, 500); // Increased timeout to ensure state updates complete
+        } catch (stateError) {
+          console.error("State update error:", stateError);
+          toast.error("Error updating login state");
         }
-        navigate("/");
-        toast.success("Login successful!");
       } else {
         toast.error(response.data.message);
       }
@@ -63,10 +75,38 @@ const Login = () => {
     event.preventDefault();
     try {
       if (currentState === "Sign up") {
+        // Ensure all required fields are present
+        if (!formData.phone) {
+          toast.error("Phone number is required");
+          return;
+        }
+
+        // Create a clean registration object
+        const registrationData = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          customerId: formData.customerId,
+          phone: formData.phone.toString(), // Ensure phone is a string
+          company: formData.company || "", // Provide default for optional field
+          address: {
+            street: formData.address.street || "",
+            postalCode: formData.address.postalCode || "",
+          },
+        };
+
+        console.log("Submitting registration data:", registrationData);
+
         const response = await axios.post(
           `${backendUrl}/api/user/register`,
-          formData
+          registrationData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
+
         if (response.data.success) {
           setToken(response.data.token);
           setName(formData.name);
@@ -79,8 +119,8 @@ const Login = () => {
         await handleLogin(event);
       }
     } catch (error) {
-      console.error("Form submission error:", error);
-      toast.error("An error occurred");
+      console.error("Form submission error:", error.response?.data || error);
+      toast.error(error.response?.data?.message || "An error occurred");
     }
   };
 
@@ -133,12 +173,23 @@ const Login = () => {
           />
 
           <input
-            name="phoneNumber"
+            name="phone"
             onChange={handleChange}
-            value={formData.phoneNumber}
+            value={formData.phone}
             type="tel"
             className="w-full px-3 py-2 border border-gray-800"
             placeholder="Phone Number"
+            required
+          />
+
+          <input
+            id="company"
+            name="company"
+            type="text"
+            value={formData.company}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-800"
+            placeholder="Company Name"
           />
 
           {/* Address Fields */}

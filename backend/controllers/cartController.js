@@ -4,74 +4,106 @@ import userModel from "../models/userModel.js";
 
 const addToCart = async (req, res) => {
   try {
-    const userId = req.user._id; // Changed from req.body.userId
+    const userId = req.user._id;
     const { itemId, size } = req.body;
 
-    const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.json({ success: false, message: "User not found" });
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    let cartData = userData.cartData || new Map();
-
-    // Initialize product in cart if not exists
-    if (!cartData.has(itemId)) {
-      cartData.set(itemId, new Map());
+    // Initialize cartData as an object if it doesn't exist
+    if (!user.cartData) {
+      user.cartData = {};
     }
 
-    // Handle size object with uom and quantity
-    if (typeof size === "object" && size.uom) {
-      const currentQty = cartData.get(itemId).get(size.uom) || 0;
-      cartData.get(itemId).set(size.uom, currentQty + (size.quantity || 1));
+    // Initialize product entry if it doesn't exist
+    if (!user.cartData[itemId]) {
+      user.cartData[itemId] = {};
     }
 
-    // Update user's cart
-    await userModel.findByIdAndUpdate(userId, { cartData });
+    // Add or update the quantity for the specific size
+    const currentQty = user.cartData[itemId][size.uom] || 0;
+    user.cartData[itemId][size.uom] = currentQty + 1;
 
-    res.json({ success: true, message: "Added to cart" });
+    // Mark cartData as modified
+    user.markModified("cartData");
+    await user.save();
+
+    res.json({
+      success: true,
+      cartData: user.cartData,
+    });
   } catch (error) {
     console.error("Add to cart error:", error);
-    res.json({ success: false, message: error.message });
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 //update user cart
 const updateCart = async (req, res) => {
   try {
-    const userId = req.user._id; // Changed from req.body.userId
+    const userId = req.user._id;
     const { itemId, size } = req.body;
 
-    const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.json({ success: false, message: "User not found" });
+    console.log("Updating cart for user:", userId);
+    console.log("Update data:", { itemId, size });
+
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    let cartData = userData.cartData || new Map();
-
-    // Initialize product in cart if not exists
-    if (!cartData.has(itemId)) {
-      cartData.set(itemId, new Map());
+    // Initialize cartData as an object if it doesn't exist
+    if (!user.cartData) {
+      user.cartData = {};
     }
 
-    // Update quantity
-    if (typeof size === "object" && size.uom) {
-      if (size.quantity > 0) {
-        cartData.get(itemId).set(size.uom, size.quantity);
-      } else {
-        // Remove the UOM entry if quantity is 0
-        cartData.get(itemId).delete(size.uom);
-        // Remove the product if no UOMs left
-        if (cartData.get(itemId).size === 0) {
-          cartData.delete(itemId);
+    if (size.quantity === 0) {
+      // Remove the size if quantity is 0
+      if (user.cartData[itemId]) {
+        delete user.cartData[itemId][size.uom];
+        // Remove the product if no sizes left
+        if (Object.keys(user.cartData[itemId]).length === 0) {
+          delete user.cartData[itemId];
         }
       }
+    } else {
+      // Initialize product entry if it doesn't exist
+      if (!user.cartData[itemId]) {
+        user.cartData[itemId] = {};
+      }
+      // Update the quantity for the specific size
+      user.cartData[itemId][size.uom] = size.quantity;
     }
 
-    await userModel.findByIdAndUpdate(userId, { cartData });
-    res.json({ success: true, message: "Cart updated" });
+    console.log("Updated cart data:", user.cartData);
+
+    // Mark cartData as modified to ensure save
+    user.markModified("cartData");
+    await user.save();
+
+    console.log("Cart saved successfully");
+
+    res.json({
+      success: true,
+      cartData: user.cartData,
+    });
   } catch (error) {
     console.error("Update cart error:", error);
-    res.json({ success: false, message: error.message });
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -80,20 +112,24 @@ const removeFromCart = async (req, res) => {
     const userId = req.user._id;
     const { itemId } = req.body;
 
-    console.log("Removing item:", { userId, itemId }); // Debug log
-
     const userData = await userModel.findById(userId);
     if (!userData) {
       return res.json({ success: false, message: "User not found" });
     }
 
-    let cartData = userData.cartData || new Map();
+    // Change this to use plain object instead of Map
+    let cartData = userData.cartData || {};
 
-    // Remove the entire product entry
-    if (cartData.has(itemId)) {
-      cartData.delete(itemId);
-      await userModel.findByIdAndUpdate(userId, { cartData });
-      return res.json({ success: true, message: "Item removed from cart" });
+    // Update to use object methods instead of Map methods
+    if (cartData[itemId]) {
+      delete cartData[itemId];
+      userData.cartData = cartData;
+      await userData.save();
+      return res.json({
+        success: true,
+        message: "Item removed from cart",
+        cartData,
+      });
     }
 
     return res.json({ success: false, message: "Item not found in cart" });
@@ -106,25 +142,29 @@ const removeFromCart = async (req, res) => {
 // get user cart data
 const getUserCartData = async (req, res) => {
   try {
-    const userId = req.user._id; // Changed from req.body.userId
+    const userId = req.user._id;
+    const user = await userModel.findById(userId);
 
-    const userData = await userModel.findById(userId);
-    if (!userData) {
-      return res.json({ success: false, message: "User not found" });
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
     }
 
-    const cartData = userData.cartData || new Map();
+    // Since cartData is now an object, not a Map
+    const cartData = user.cartData || {};
 
-    // Convert Map to object for response
-    const cartObject = {};
-    for (const [productId, quantities] of cartData.entries()) {
-      cartObject[productId] = Object.fromEntries(quantities);
-    }
-
-    res.json({ success: true, cartData: cartObject });
+    res.json({
+      success: true,
+      cartData,
+    });
   } catch (error) {
     console.error("Get cart error:", error);
-    res.json({ success: false, message: error.message });
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 

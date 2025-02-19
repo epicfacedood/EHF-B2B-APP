@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useContext, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
 import About from "./pages/About";
@@ -16,9 +16,44 @@ import SearchBar from "./components/SearchBar";
 import { ToastContainer } from "react-toastify";
 import AdminUsers from "./pages/AdminUsers";
 import { ShopContext } from "./context/ShopContext";
+import axios from "axios";
 
 const App = () => {
-  const { token } = useContext(ShopContext);
+  const { token, setCartItems, setProductsAvailable } = useContext(ShopContext);
+  const location = useLocation();
+
+  // Combined data fetching into a single effect
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      if (!token) return;
+
+      try {
+        // Fetch both cart and products data concurrently
+        const [cartResponse, productsResponse] = await Promise.all([
+          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart/get`),
+          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/list`),
+        ]);
+
+        // Update states only if responses are successful
+        if (cartResponse.data.success) {
+          setCartItems(cartResponse.data.cartData || {});
+        }
+
+        if (productsResponse.data.success) {
+          setProductsAvailable(productsResponse.data.products || []);
+        }
+      } catch (error) {
+        console.error("Error fetching initial data:", error);
+      }
+    };
+
+    fetchInitialData();
+  }, [token]);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">

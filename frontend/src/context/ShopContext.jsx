@@ -14,7 +14,9 @@ export const ShopContextProvider = ({ children }) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [token, setToken] = useState(() => {
+    return localStorage.getItem("token") || null;
+  });
   const [name, setName] = useState(localStorage.getItem("name") || "");
   const [productsAvailable, setProductsAvailable] = useState(
     JSON.parse(localStorage.getItem("productsAvailable")) || []
@@ -61,25 +63,20 @@ export const ShopContextProvider = ({ children }) => {
       return;
     }
 
-    if (!size) {
-      toast.error("Please select a size");
-      return;
-    }
-
     try {
       // Store previous cart state for rollback
-      const previousCart = { ...cartItems };
+      const prevCartItems = { ...cartItems };
 
       // Create optimistic update
-      const currentCart = { ...cartItems };
-      if (!currentCart[itemId]) {
-        currentCart[itemId] = {};
+      const updatedCart = { ...cartItems };
+      if (!updatedCart[itemId]) {
+        updatedCart[itemId] = {};
       }
-      currentCart[itemId][size.uom] =
-        (currentCart[itemId][size.uom] || 0) + size.quantity;
+      updatedCart[itemId][size.uom] =
+        (updatedCart[itemId][size.uom] || 0) + size.quantity;
 
       // Update state immediately for better UX
-      setCartItems(currentCart);
+      setCartItems(updatedCart);
 
       const response = await axios.post(
         `${backendUrl}/api/cart/add`,
@@ -91,25 +88,14 @@ export const ShopContextProvider = ({ children }) => {
         }
       );
 
-      if (response.data.success) {
-        // Only update if we get valid cart data back
-        if (
-          response.data.cartData &&
-          Object.keys(response.data.cartData).length > 0
-        ) {
-          setCartItems(response.data.cartData);
-        } else {
-          // Keep our optimistic update if server doesn't return cart data
-          setCartItems(currentCart);
-        }
-      } else {
+      if (!response.data.success) {
         // Revert to previous state if operation failed
-        setCartItems(previousCart);
+        setCartItems(prevCartItems);
         toast.error(response.data.message || "Failed to add item to cart");
       }
     } catch (error) {
       // Revert to previous state on error
-      setCartItems(previousCart);
+      setCartItems(prevCartItems);
       console.error(
         "Add to cart error:",
         error.response?.data || error.message
@@ -147,30 +133,31 @@ export const ShopContextProvider = ({ children }) => {
 
     try {
       // Store the previous cart state for rollback
-      const previousCart = { ...cartItems };
+      const prevCartItems = { ...cartItems };
 
       // Optimistic update
-      const currentCart = { ...cartItems };
+      const updatedCart = { ...cartItems };
       if (quantity === 0) {
         // Remove the size if quantity is 0
-        if (currentCart[itemId]) {
-          delete currentCart[itemId][uom];
+        if (updatedCart[itemId]) {
+          delete updatedCart[itemId][uom];
           // Remove the product if no sizes left
-          if (Object.keys(currentCart[itemId]).length === 0) {
-            delete currentCart[itemId];
+          if (Object.keys(updatedCart[itemId]).length === 0) {
+            delete updatedCart[itemId];
           }
         }
       } else {
         // Update quantity
-        if (!currentCart[itemId]) {
-          currentCart[itemId] = {};
+        if (!updatedCart[itemId]) {
+          updatedCart[itemId] = {};
         }
-        currentCart[itemId][uom] = quantity;
+        updatedCart[itemId][uom] = quantity;
       }
 
       // Update local state immediately
-      setCartItems(currentCart);
+      setCartItems(updatedCart);
 
+      // Send update to server
       const response = await axios.post(
         `${backendUrl}/api/cart/update`,
         {
@@ -187,26 +174,14 @@ export const ShopContextProvider = ({ children }) => {
         }
       );
 
-      if (response.data.success) {
-        // Verify the server response has data before updating
-        if (response.data.cartData) {
-          setCartItems(response.data.cartData);
-        } else {
-          // If no cart data in response, keep the optimistic update
-          setCartItems(currentCart);
-        }
-
-        if (quantity === 0) {
-          toast.success("Item removed from cart");
-        }
-      } else {
-        // If failed, revert to previous state
-        setCartItems(previousCart);
+      if (!response.data.success) {
+        // Revert to previous state if server update failed
+        setCartItems(prevCartItems);
         toast.error(response.data.message || "Failed to update cart");
       }
     } catch (error) {
-      // If error, revert to previous state
-      setCartItems(previousCart);
+      // Revert to previous state on error
+      setCartItems(prevCartItems);
       console.error("Update cart error:", error);
       toast.error("Failed to update cart");
     }
@@ -323,7 +298,7 @@ export const ShopContextProvider = ({ children }) => {
     sessionStorage.clear();
 
     // Reset states
-    setToken("");
+    setToken(null);
     setName("");
     setCartItems({});
 
@@ -369,15 +344,13 @@ export const ShopContextProvider = ({ children }) => {
   }, []);
 
   // Update token
-  const updateToken = (newToken) => {
-    if (newToken) {
-      localStorage.setItem("token", newToken);
-      setToken(newToken);
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
     } else {
       localStorage.removeItem("token");
-      setToken("");
     }
-  };
+  }, [token]);
 
   // Update name
   const updateName = (newName) => {
@@ -407,11 +380,12 @@ export const ShopContextProvider = ({ children }) => {
     navigate,
     backendUrl,
     token,
-    setToken: updateToken,
+    setToken,
     setCartItems,
     name,
     setName: updateName,
     productsAvailable,
+    setProductsAvailable,
     handleLogin,
     logout: handleLogout,
   };

@@ -13,16 +13,26 @@ const createToken = (id) => {
 const loginUser = async (req, res) => {
   try {
     const { customerId, password } = req.body;
+    console.log("Login attempt for customerId:", customerId);
 
     const user = await userModel.findOne({ customerId });
+    console.log("User data:", {
+      id: user?._id,
+      name: user?.name,
+      productsAvailable: user?.productsAvailable,
+      cartData: user?.cartData,
+    });
 
     if (!user) {
       return res.json({ success: false, message: "Invalid Customer ID" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Password match:", isMatch);
+
     if (isMatch) {
       const token = createToken(user._id);
+      // Send only necessary data
       res.json({
         success: true,
         token,
@@ -47,7 +57,9 @@ const registerUser = async (req, res) => {
       email,
       password,
       customerId,
-      address = {}, // Default empty object for address
+      phone,
+      company,
+      address = {},
     } = req.body;
 
     // checking if the user already exists
@@ -83,25 +95,20 @@ const registerUser = async (req, res) => {
       });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create new user with all fields
+    // Create new user with all fields (password will be hashed by the model)
     const newUser = new userModel({
       name,
       email,
-      password: hashedPassword,
+      password, // Pass the plain password, let the model hash it
       customerId,
+      phone,
+      company,
       address: {
         street: address.street || "",
-        city: address.city || "",
-        state: address.state || "",
         postalCode: address.postalCode || "",
-        country: address.country || "Australia",
       },
-      productsAvailable: [], // Start with empty array
-      cartData: new Map(), // Initialize empty cart
+      productsAvailable: [],
+      cartData: {},
     });
 
     const user = await newUser.save();
@@ -115,6 +122,8 @@ const registerUser = async (req, res) => {
         name: user.name,
         email: user.email,
         customerId: user.customerId,
+        phone: user.phone,
+        company: user.company,
         address: user.address,
       },
     });
