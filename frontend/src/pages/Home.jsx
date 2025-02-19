@@ -16,7 +16,6 @@ const Home = () => {
       <WelcomeUser />
       <Hero />
       <BrandCarousel />
-
       <LatestCollection />
       <BestSeller />
       <OurPolicy />

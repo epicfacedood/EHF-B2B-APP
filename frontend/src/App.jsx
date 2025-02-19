@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
@@ -13,14 +13,17 @@ import Orders from "./pages/Orders";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import AdminUsers from "./pages/AdminUsers";
+import { ShopContext } from "./context/ShopContext";
 
 const App = () => {
+  const { token } = useContext(ShopContext);
+
   return (
     <div className="px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]">
       <ToastContainer />
-      <Navbar />
+      {token && <Navbar />}
       <SearchBar />
       <Routes>
         <Route path="/" element={<Home />} />

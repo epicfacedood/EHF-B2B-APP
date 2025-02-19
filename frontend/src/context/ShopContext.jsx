@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 export const ShopContext = createContext(null);
 
-const ShopContextProvider = ({ children }) => {
+export const ShopContextProvider = ({ children }) => {
   const currency = "$";
   const delivery_fee = 10;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
@@ -21,6 +21,40 @@ const ShopContextProvider = ({ children }) => {
   );
   const navigate = useNavigate();
 
+  // Initialize axios default headers when token changes
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+    }
+  }, [token]);
+
+  // Load cart data whenever token changes
+  useEffect(() => {
+    const loadCartData = async () => {
+      if (token) {
+        try {
+          const response = await axios.get(`${backendUrl}/api/cart/get`);
+          if (response.data.success) {
+            setCartItems(response.data.cartData || {});
+          }
+        } catch (error) {
+          console.error("Error loading cart:", error);
+          // If unauthorized, clear token
+          if (error.response?.status === 401) {
+            handleLogout();
+          }
+        }
+      } else {
+        setCartItems({});
+      }
+    };
+
+    loadCartData();
+  }, [token, backendUrl]);
+
+  // Add to cart
   const addToCart = async (itemId, size) => {
     if (!token) {
       toast.error("Please login to add items to cart");
@@ -47,7 +81,7 @@ const ShopContextProvider = ({ children }) => {
       );
 
       if (response.data.success) {
-        await getUserCart(token);
+        setCartItems(response.data.cartData);
         toast.success("Product added to cart");
       } else {
         toast.error(response.data.message);
@@ -218,12 +252,20 @@ const ShopContextProvider = ({ children }) => {
   };
 
   const handleLogout = () => {
+    // Clear all storage
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Reset states
     setToken("");
     setName("");
-    setProductsAvailable([]);
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("productsAvailable");
+    setCartItems({});
+
+    // Remove auth header
+    delete axios.defaults.headers.common["Authorization"];
+
+    // Navigate to login
+    navigate("/login");
   };
 
   // Add this useEffect to load products
@@ -260,6 +302,28 @@ const ShopContextProvider = ({ children }) => {
     }
   }, []);
 
+  // Update token
+  const updateToken = (newToken) => {
+    if (newToken) {
+      localStorage.setItem("token", newToken);
+      setToken(newToken);
+    } else {
+      localStorage.removeItem("token");
+      setToken("");
+    }
+  };
+
+  // Update name
+  const updateName = (newName) => {
+    if (newName) {
+      localStorage.setItem("name", newName);
+      setName(newName);
+    } else {
+      localStorage.removeItem("name");
+      setName("");
+    }
+  };
+
   const value = {
     products,
     currency,
@@ -277,13 +341,13 @@ const ShopContextProvider = ({ children }) => {
     navigate,
     backendUrl,
     token,
-    setToken,
+    setToken: updateToken,
     setCartItems,
     name,
-    setName,
+    setName: updateName,
     productsAvailable,
     handleLogin,
-    handleLogout,
+    logout: handleLogout,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

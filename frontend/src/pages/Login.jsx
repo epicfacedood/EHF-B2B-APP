@@ -5,7 +5,8 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Sign up");
-  const { token, setToken, navigate, backendUrl } = useContext(ShopContext);
+  const { token, setToken, setName, navigate, backendUrl } =
+    useContext(ShopContext);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -15,7 +16,7 @@ const Login = () => {
     address: {
       street: "",
       postalCode: "",
-      country: "Australia",
+      country: "",
     },
   });
 
@@ -33,37 +34,53 @@ const Login = () => {
     }
   };
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/login`, {
+        customerId: formData.customerId,
+        password: formData.password,
+      });
+
+      if (response.data.success) {
+        setToken(response.data.token);
+        // Check if user data exists before accessing name
+        if (response.data.user) {
+          setName(response.data.user.name);
+        }
+        navigate("/");
+        toast.success("Login successful!");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed");
+    }
+  };
+
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     try {
       if (currentState === "Sign up") {
         const response = await axios.post(
-          backendUrl + "/api/user/register",
+          `${backendUrl}/api/user/register`,
           formData
         );
         if (response.data.success) {
           setToken(response.data.token);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("name", formData.name);
+          setName(formData.name);
+          navigate("/");
+          toast.success("Registration successful!");
         } else {
           toast.error(response.data.message);
         }
       } else {
-        const response = await axios.post(backendUrl + "/api/user/login", {
-          customerId: formData.customerId,
-          password: formData.password,
-        });
-        if (response.data.success) {
-          setToken(response.data.token);
-          localStorage.setItem("token", response.data.token);
-          localStorage.setItem("name", response.data.name);
-        } else {
-          toast.error(response.data.message);
-        }
+        await handleLogin(event);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.error("Form submission error:", error);
+      toast.error("An error occurred");
     }
   };
 
