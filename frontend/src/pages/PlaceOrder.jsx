@@ -1,128 +1,61 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Title from "../components/Title";
-import CartTotal from "../components/CartTotal";
-import { assets } from "../assets/assets";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 import axios from "axios";
 
 const PlaceOrder = () => {
-  const [method, setMethod] = useState("cod");
-  const {
-    navigate,
-    backendUrl,
-    token,
-    cartItems,
-    setCartItems,
-    getCartAmount,
-    delivery_fee,
-    products,
-  } = useContext(ShopContext);
-
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    street: "",
-    city: "",
-    postalCode: "",
-    phoneNumber: "",
-  });
+  const { navigate, backendUrl, token, cartItems, setCartItems, products } =
+    useContext(ShopContext);
 
   const [loading, setLoading] = useState(false);
+  const [orderInfo, setOrderInfo] = useState({
+    customerName: "",
+    email: "",
+    phone: "",
+    company: "",
+    address: "",
+    postalCode: "",
+    remarks: "",
+  });
 
-  const onChangeHandler = (event) => {
-    const name = event.target.name;
-    const value = event.target.value;
+  // Fetch user data when component mounts
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!token) return;
 
-    setFormData((data) => ({ ...data, [name]: value }));
-  };
+      try {
+        const response = await axios.get(`${backendUrl}/api/user/profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
-    try {
-      let orderItems = [];
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
-            );
-            if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
-              orderItems.push(itemInfo);
-            }
-          }
+        if (response.data.success) {
+          const userData = response.data.user;
+          setOrderInfo({
+            customerName: userData.name || "",
+            email: userData.email || "",
+            phone: userData.phone || "",
+            company: userData.company || "",
+            address: userData.address || "", // Street address
+            postalCode: userData.postalCode || "",
+            remarks: "", // Remarks always start empty
+          });
         }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        toast.error("Failed to load user information");
       }
+    };
 
-      let orderData = {
-        address: formData,
-        items: orderItems,
-        amount: total,
-      };
-
-      console.log("Order Data:", orderData); // Log orderData to check its state
-      console.log("Method:", method); // Log method to check its state
-
-      switch (method) {
-        case "cod":
-          try {
-            const response = await axios.post(
-              backendUrl + "/api/order/place",
-              orderData,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-            if (response.data.success) {
-              setCartItems({});
-              navigate("/orders");
-            } else {
-              toast.error(response.data.message);
-            }
-          } catch (error) {
-            console.error("error placing order");
-            toast.error("failed to place order");
-          }
-          break;
-
-        case "stripe":
-          try {
-            const responseStripe = await axios.post(
-              backendUrl + "/api/order/stripe",
-              orderData,
-              { headers: { Authorization: `Bearer ${token}` } }
-            );
-            console.log("Stripe response:", responseStripe); // Log the full response
-
-            if (responseStripe.data.success) {
-              const { session_url } = responseStripe.data;
-              console.log("Redirecting to:", session_url); // Log the session URL
-              window.location.replace(session_url);
-            } else {
-              console.error("Stripe error:", responseStripe.data); // Log the error response
-              toast.error(responseStripe.data.message);
-            }
-          } catch (error) {
-            console.error("error with stripe payment", error);
-            toast.error("failed to initiate stripe payment");
-          }
-          break;
-
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error("error in onSubmitHandler", error);
-    }
-  };
+    fetchUserData();
+  }, [token, backendUrl]);
 
   // Format price to 2 decimal places
   const formatPrice = (price) => {
     return Number(price).toFixed(2);
   };
 
-  // Calculate cart totals
+  // Calculate cart totals with GST
   const calculateTotals = () => {
     let subtotal = 0;
     const itemsWithDetails = [];
@@ -131,15 +64,16 @@ const PlaceOrder = () => {
     Object.entries(cartItems).forEach(([itemId, sizes]) => {
       const product = products.find((p) => p._id === itemId);
       if (product) {
-        Object.entries(sizes).forEach(([size, quantity]) => {
+        Object.entries(sizes).forEach(([uom, quantity]) => {
           const itemTotal = product.price * quantity;
           subtotal += itemTotal;
           itemsWithDetails.push({
-            name: product.itemName,
-            size,
+            itemName: product.itemName,
+            pcode: product.pcode,
+            uom,
             quantity,
-            price: product.price,
-            total: itemTotal,
+            unitPrice: product.price,
+            orderPrice: itemTotal,
           });
         });
       }
@@ -147,19 +81,26 @@ const PlaceOrder = () => {
 
     // Calculate GST (9%)
     const gst = subtotal * 0.09;
+    const total = subtotal + gst;
 
     return {
       items: itemsWithDetails,
-      subtotal,
-      gst,
-      total: subtotal + gst,
+      subtotalPrice: subtotal,
+      totalPrice: total,
     };
   };
 
-  const { items, subtotal, gst, total } = calculateTotals();
+  const { items, subtotalPrice, totalPrice } = calculateTotals();
 
-  // Place order handler
-  const handlePlaceOrder = async () => {
+  const handleInputChange = (e) => {
+    setOrderInfo({
+      ...orderInfo,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
     if (!token) {
       toast.error("Please login to place an order");
       return;
@@ -168,26 +109,35 @@ const PlaceOrder = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        `${backendUrl}/api/order/create`,
+        `${backendUrl}/api/order/place`,
         {
-          items: cartItems,
-          amount: total,
+          items,
+          customerInfo: {
+            name: orderInfo.customerName,
+            email: orderInfo.email,
+            phone: orderInfo.phone,
+            company: orderInfo.company,
+            address: {
+              street: orderInfo.address,
+              postalCode: orderInfo.postalCode,
+            },
+            remarks: orderInfo.remarks,
+          },
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
       if (response.data.success) {
-        toast.success("Order placed successfully!");
+        setCartItems({});
         navigate("/orders");
+        toast.success("Order placed successfully!");
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Place order error:", error);
+      console.error("Error placing order:", error);
       toast.error("Failed to place order");
     } finally {
       setLoading(false);
@@ -197,170 +147,150 @@ const PlaceOrder = () => {
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex flex-col sm:flex-row justify-between gap-4 pt-5 sm:pt-14 min-h-[80vh] border-t"
+      className="container mx-auto max-w-3xl px-4 py-8"
     >
-      {/* ------- left side ------- */}
-      <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
-        <div className="text-xl sm:text-2xl my-3">
-          <Title text1={"DELIVERY"} text2={"INFORMATION"} />
-        </div>
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="firstName"
-            value={formData.firstName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="First Name"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="lastName"
-            value={formData.lastName}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="Last Name"
-          />
-        </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="email"
-          value={formData.email}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="email"
-          placeholder="Email Address"
-        />
-        <input
-          required
-          onChange={onChangeHandler}
-          name="street"
-          value={formData.street}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="text"
-          placeholder="Street Name"
-        />
-        <div className="flex gap-3">
-          <input
-            required
-            onChange={onChangeHandler}
-            name="city"
-            value={formData.city}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="text"
-            placeholder="City"
-          />
-          <input
-            required
-            onChange={onChangeHandler}
-            name="postalCode"
-            value={formData.postalCode}
-            className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-            type="number"
-            placeholder="Postal Code"
-          />
-        </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="phoneNumber"
-          value={formData.phoneNumber}
-          className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
-          type="number"
-          placeholder="Phone Number"
-        />
-      </div>
-
-      {/* RIGHT SIDE */}
-      <div className="w-full sm:max-w-[480px]">
-        <div className="text-xl sm:text-2xl my-3">
-          <Title text1={"ORDER"} text2={"SUMMARY"} />
+      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gray-50 border-b px-6 py-4">
+          <div className="text-xl sm:text-2xl">
+            <Title text1={"PLACE"} text2={"ORDER"} />
+          </div>
         </div>
 
-        {/* Cart Items List */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <div className="divide-y divide-gray-200">
-            {items.map((item, index) => (
-              <div
-                key={index}
-                className="py-4 flex justify-between items-start"
-              >
-                <div className="flex-1">
-                  <h3 className="font-medium">{item.name}</h3>
-                  <p className="text-sm text-gray-600">Size: {item.size}</p>
-                  <p className="text-sm text-gray-600">
-                    Quantity: {item.quantity}
-                  </p>
+        <div className="p-6 space-y-6">
+          {/* Customer Information Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Customer Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                required
+                name="customerName"
+                value={orderInfo.customerName}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full"
+                type="text"
+                placeholder="Full Name"
+              />
+              <input
+                required
+                name="email"
+                value={orderInfo.email}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full"
+                type="email"
+                placeholder="Email Address"
+              />
+              <input
+                required
+                name="phone"
+                value={orderInfo.phone}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full"
+                type="tel"
+                placeholder="Phone Number"
+              />
+              <input
+                name="company"
+                value={orderInfo.company}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full"
+                type="text"
+                placeholder="Company Name (Optional)"
+              />
+              <input
+                required
+                name="address"
+                value={orderInfo.address}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full md:col-span-2"
+                type="text"
+                placeholder="Delivery Address"
+              />
+              <input
+                required
+                name="postalCode"
+                value={orderInfo.postalCode}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded py-2 px-4 w-full"
+                type="text"
+                placeholder="Postal Code"
+              />
+            </div>
+            <textarea
+              name="remarks"
+              value={orderInfo.remarks}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded py-2 px-4 w-full"
+              placeholder="Remarks (Optional)"
+              rows="3"
+            />
+          </div>
+
+          {/* Order Details Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Order Details</h2>
+            <div className="divide-y divide-gray-200">
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="py-4 flex justify-between items-start"
+                >
+                  <div className="flex-1">
+                    <h3 className="font-medium">{item.itemName}</h3>
+                    <p className="text-sm text-gray-600">
+                      Product Code: {item.pcode}
+                    </p>
+                    <p className="text-sm text-gray-600">Size: {item.uom}</p>
+                    <p className="text-sm text-gray-600">
+                      Quantity: {item.quantity}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">
+                      ${formatPrice(item.unitPrice)} × {item.quantity}
+                    </p>
+                    <p className="font-medium">
+                      ${formatPrice(item.orderPrice)}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm text-gray-600">
-                    ${formatPrice(item.price)} × {item.quantity}
-                  </p>
-                  <p className="font-medium">${formatPrice(item.total)}</p>
+              ))}
+            </div>
+          </div>
+
+          {/* Order Summary Section */}
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold">Order Summary</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>${formatPrice(subtotalPrice)}</span>
+              </div>
+              <div className="flex justify-between text-gray-600">
+                <span>GST (9%)</span>
+                <span>${formatPrice(totalPrice - subtotalPrice)}</span>
+              </div>
+              <div className="border-t border-gray-200 pt-3">
+                <div className="flex justify-between font-semibold text-lg">
+                  <span>Total</span>
+                  <span>${formatPrice(totalPrice)}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Order Total */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <div className="space-y-3">
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span>${formatPrice(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>GST (9%)</span>
-              <span>${formatPrice(gst)}</span>
-            </div>
-            <div className="border-t border-gray-200 pt-3">
-              <div className="flex justify-between font-semibold text-lg">
-                <span>Total</span>
-                <span>${formatPrice(total)}</span>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* Payment Method Selection */}
-        <div className="bg-white rounded-lg shadow p-4 mb-4">
-          <h3 className="font-medium mb-3">Payment Method</h3>
-          <div className="space-y-2">
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                value="cod"
-                checked={method === "cod"}
-                onChange={(e) => setMethod(e.target.value)}
-                className="form-radio"
-              />
-              <span>Cash on Delivery</span>
-            </label>
-            <label className="flex items-center space-x-2">
-              <input
-                type="radio"
-                value="stripe"
-                checked={method === "stripe"}
-                onChange={(e) => setMethod(e.target.value)}
-                className="form-radio"
-              />
-              <span>Pay with Card</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Place Order Button */}
-        <button
-          type="submit"
-          disabled={loading || items.length === 0}
-          className="w-full bg-black text-white py-3 rounded font-medium 
+        {/* Footer with Place Order Button */}
+        <div className="px-6 py-4 bg-gray-50 border-t">
+          <button
+            type="submit"
+            disabled={loading || items.length === 0}
+            className="w-full bg-black text-white py-3 rounded font-medium 
                      hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
-        >
-          {loading ? "Processing..." : "Place Order"}
-        </button>
+          >
+            {loading ? "Processing..." : "Place Order"}
+          </button>
+        </div>
       </div>
     </form>
   );

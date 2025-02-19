@@ -288,6 +288,32 @@ const updateUser = async (req, res) => {
   }
 };
 
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user._id; // From auth middleware
+    const user = await userModel.findById(userId).select("-password");
+
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        company: user.company,
+        address: user.address.street || "",
+        postalCode: user.address.postalCode || "",
+      },
+    });
+  } catch (error) {
+    console.error("Get user profile error:", error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export {
   loginUser,
   registerUser,
@@ -296,4 +322,5 @@ export {
   getAllUsers,
   getUserById,
   updateUser,
+  getUserProfile,
 };

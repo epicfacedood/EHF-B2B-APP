@@ -7,6 +7,7 @@ import {
   getAllUsers,
   getUserById,
   updateUser,
+  getUserProfile,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import authUser from "../middleware/auth.js";
@@ -24,5 +25,7 @@ userRouter.get("/name", authenticateToken, getName);
 userRouter.get("/admin/users", authUser, getAllUsers);
 userRouter.get("/admin/:userId", authUser, getUserById);
 userRouter.put("/admin/:userId", authUser, updateUser);
+
+userRouter.get("/profile", authUser, getUserProfile);
 
 export default userRouter;
