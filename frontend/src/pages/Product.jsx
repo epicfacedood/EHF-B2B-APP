@@ -144,7 +144,11 @@ const Product = () => {
               </div>
               <div>
                 <p className="text-gray-500">Unit of Measure</p>
-                <p>{getUOMsArray(productData.uoms).join(", ") || "-"}</p>
+                <p>
+                  {getUOMsArray(productData.uoms)
+                    .map((uom) => uom.replace(/["[\]]/g, ""))
+                    .join(", ") || "-"}
+                </p>
               </div>
               <div>
                 <p className="text-gray-500">Carton Quantity</p>
@@ -167,7 +171,7 @@ const Product = () => {
                       : "bg-gray-100 hover:bg-gray-200"
                   }`}
                 >
-                  {unit}
+                  {unit.replace(/["[\]]/g, "")}
                 </button>
               ))}
             </div>
