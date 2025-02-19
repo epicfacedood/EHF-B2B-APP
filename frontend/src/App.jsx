@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Collection from "./pages/Collection";
@@ -22,35 +22,53 @@ const App = () => {
   const { token, setCartItems, setProductsAvailable } = useContext(ShopContext);
   const location = useLocation();
 
-  // Combined data fetching into a single effect
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      if (!token) return;
+  // Memoize the fetchInitialData function
+  const fetchInitialData = useCallback(async () => {
+    if (!token) return;
 
-      try {
-        // Fetch both cart and products data concurrently
-        const [cartResponse, productsResponse] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart/get`),
-          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/list`),
-        ]);
+    try {
+      const [cartResponse, productsResponse] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/cart/get`),
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/product/list`),
+      ]);
 
-        // Update states only if responses are successful
-        if (cartResponse.data.success) {
-          setCartItems(cartResponse.data.cartData || {});
-        }
-
-        if (productsResponse.data.success) {
-          setProductsAvailable(productsResponse.data.products || []);
-        }
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
+      // Only update state if the data has changed
+      if (cartResponse.data.success) {
+        setCartItems((prev) => {
+          const newCart = cartResponse.data.cartData || {};
+          return JSON.stringify(prev) !== JSON.stringify(newCart)
+            ? newCart
+            : prev;
+        });
       }
-    };
 
-    fetchInitialData();
-  }, [token]);
+      if (productsResponse.data.success) {
+        setProductsAvailable((prev) => {
+          const newProducts = productsResponse.data.products || [];
+          return JSON.stringify(prev) !== JSON.stringify(newProducts)
+            ? newProducts
+            : prev;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
+    }
+  }, [token, setCartItems, setProductsAvailable]);
 
-  // Scroll to top on route change
+  // Set up axios interceptor for auth token
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      fetchInitialData();
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+      // Clear data when token is removed
+      setCartItems({});
+      setProductsAvailable([]);
+    }
+  }, [token, fetchInitialData]);
+
+  // Scroll to top on route change only
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);

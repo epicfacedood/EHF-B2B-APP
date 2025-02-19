@@ -61,12 +61,8 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Add debug logs to pre-save hook
+// Simplify the pre-save hook to only handle password hashing
 userSchema.pre("save", async function (next) {
-  console.log("Pre-save hook triggered");
-  console.log("Is password modified?", this.isModified("password"));
-  console.log("Original password:", this.password);
-
   if (!this.isModified("password")) {
     return next();
   }
@@ -74,7 +70,6 @@ userSchema.pre("save", async function (next) {
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-    console.log("Hashed password in pre-save:", this.password);
     next();
   } catch (error) {
     next(error);

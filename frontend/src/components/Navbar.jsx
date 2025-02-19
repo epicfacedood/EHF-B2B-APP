@@ -1,20 +1,33 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { assets } from "../assets/assets";
 import { NavLink, Link } from "react-router-dom";
-import { useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
-  const { showSearch, setShowSearch, getCartCount, navigate, token, logout } =
-    useContext(ShopContext);
+  const {
+    showSearch,
+    setShowSearch,
+    getCartCount,
+    navigate,
+    token,
+    logout,
+    setToken,
+    setName,
+  } = useContext(ShopContext);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
   const handleLogout = () => {
     try {
       logout();
       setProfileVisible(false);
+      setToken(null);
+      setName("");
+      localStorage.removeItem("token");
+      localStorage.removeItem("name");
+      localStorage.removeItem("productsAvailable");
       toast.success("Logged out successfully");
     } catch (error) {
       console.error("Logout error:", error);
@@ -23,10 +36,7 @@ const Navbar = () => {
   };
 
   const handleProfileClick = () => {
-    if (!token) {
-      navigate("/login");
-    }
-    setProfileVisible(!profileVisible);
+    setDropdownVisible((prev) => !prev);
   };
 
   return (
@@ -53,35 +63,28 @@ const Navbar = () => {
         {token ? (
           <>
             <div className="group relative">
-              <Link to="/login" onClick={handleProfileClick}>
-                <img
-                  className="w-5 cursor-pointer"
-                  src={assets.profile_icon}
-                  alt="Profile"
-                />
-              </Link>
-              {profileVisible && (
-                <div className="hidden group-hover:block dropdown-menu absolute right-0 pt-4">
-                  <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded">
-                    <p className="cursor-pointer hover:text-black">
-                      My Profile
-                    </p>
-                    <p
-                      onClick={() => navigate("/orders")}
-                      className="cursor-pointer hover:text-black"
-                    >
-                      Orders
-                    </p>
-
-                    <p
-                      onClick={handleLogout}
-                      className="cursor-pointer hover:text-black"
-                    >
-                      Logout
-                    </p>
-                  </div>
+              <img
+                className="w-5 cursor-pointer"
+                src={assets.profile_icon}
+                alt="Profile"
+              />
+              <div className="hidden group-hover:block absolute right-0 pt-4">
+                <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-lg">
+                  <p className="cursor-pointer hover:text-black">My Profile</p>
+                  <p
+                    onClick={() => navigate("/orders")}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    Orders
+                  </p>
+                  <p
+                    onClick={handleLogout}
+                    className="cursor-pointer hover:text-black"
+                  >
+                    Logout
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
             <Link to="/cart">
               <div className="relative w-5">

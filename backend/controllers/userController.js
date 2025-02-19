@@ -16,13 +16,6 @@ const loginUser = async (req, res) => {
     console.log("Login attempt for customerId:", customerId);
 
     const user = await userModel.findOne({ customerId });
-    console.log("User data:", {
-      id: user?._id,
-      name: user?.name,
-      productsAvailable: user?.productsAvailable,
-      cartData: user?.cartData,
-    });
-
     if (!user) {
       return res.json({ success: false, message: "Invalid Customer ID" });
     }
@@ -32,12 +25,14 @@ const loginUser = async (req, res) => {
 
     if (isMatch) {
       const token = createToken(user._id);
-      // Send only necessary data
+
+      // Send a consistent response
       res.json({
         success: true,
         token,
         name: user.name,
         productsAvailable: user.productsAvailable || [],
+        message: "Login successful",
       });
     } else {
       res.json({ success: false, message: "Invalid password" });

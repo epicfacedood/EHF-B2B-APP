@@ -38,6 +38,9 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      // Clear any existing auth headers
+      delete axios.defaults.headers.common["Authorization"];
+
       const response = await axios.post(`${backendUrl}/api/user/login`, {
         customerId: formData.customerId,
         password: formData.password,
@@ -46,22 +49,27 @@ const Login = () => {
       console.log("Login response:", response.data);
 
       if (response.data.success) {
-        try {
-          // First update token and name
-          setToken(response.data.token);
-          setName(response.data.name || "");
+        // Batch state updates together
+        const updates = async () => {
+          const newToken = response.data.token;
+          const userName = response.data.name || "";
+          const products = response.data.productsAvailable || [];
 
-          // Show success message
+          // Update localStorage
+          localStorage.setItem("token", newToken);
+          localStorage.setItem("name", userName);
+          localStorage.setItem("productsAvailable", JSON.stringify(products));
+
+          // Update state
+          setToken(newToken);
+          setName(userName);
+
+          // Show success message and navigate
           toast.success("Login successful!");
+          navigate("/");
+        };
 
-          // Then navigate (after state updates are complete)
-          setTimeout(() => {
-            navigate("/");
-          }, 500); // Increased timeout to ensure state updates complete
-        } catch (stateError) {
-          console.error("State update error:", stateError);
-          toast.error("Error updating login state");
-        }
+        await updates();
       } else {
         toast.error(response.data.message);
       }
@@ -123,12 +131,6 @@ const Login = () => {
       toast.error(error.response?.data?.message || "An error occurred");
     }
   };
-
-  useEffect(() => {
-    if (token) {
-      navigate("/");
-    }
-  }, [token]);
 
   return (
     <form

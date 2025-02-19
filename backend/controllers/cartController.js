@@ -52,9 +52,6 @@ const updateCart = async (req, res) => {
     const userId = req.user._id;
     const { itemId, size } = req.body;
 
-    console.log("Updating cart for user:", userId);
-    console.log("Update data:", { itemId, size });
-
     const user = await userModel.findById(userId);
     if (!user) {
       return res.json({
@@ -63,7 +60,7 @@ const updateCart = async (req, res) => {
       });
     }
 
-    // Initialize cartData as an object if it doesn't exist
+    // Initialize cartData if it doesn't exist
     if (!user.cartData) {
       user.cartData = {};
     }
@@ -86,13 +83,9 @@ const updateCart = async (req, res) => {
       user.cartData[itemId][size.uom] = size.quantity;
     }
 
-    console.log("Updated cart data:", user.cartData);
-
-    // Mark cartData as modified to ensure save
+    // Mark cartData as modified and save
     user.markModified("cartData");
     await user.save();
-
-    console.log("Cart saved successfully");
 
     res.json({
       success: true,
