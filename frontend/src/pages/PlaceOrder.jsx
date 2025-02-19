@@ -29,6 +29,8 @@ const PlaceOrder = () => {
     phoneNumber: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const onChangeHandler = (event) => {
     const name = event.target.name;
     const value = event.target.value;
@@ -58,7 +60,7 @@ const PlaceOrder = () => {
       let orderData = {
         address: formData,
         items: orderItems,
-        amount: getCartAmount() + delivery_fee,
+        amount: total,
       };
 
       console.log("Order Data:", orderData); // Log orderData to check its state
@@ -112,6 +114,83 @@ const PlaceOrder = () => {
       }
     } catch (error) {
       console.error("error in onSubmitHandler", error);
+    }
+  };
+
+  // Format price to 2 decimal places
+  const formatPrice = (price) => {
+    return Number(price).toFixed(2);
+  };
+
+  // Calculate cart totals
+  const calculateTotals = () => {
+    let subtotal = 0;
+    const itemsWithDetails = [];
+
+    // Calculate subtotal and gather item details
+    Object.entries(cartItems).forEach(([itemId, sizes]) => {
+      const product = products.find((p) => p._id === itemId);
+      if (product) {
+        Object.entries(sizes).forEach(([size, quantity]) => {
+          const itemTotal = product.price * quantity;
+          subtotal += itemTotal;
+          itemsWithDetails.push({
+            name: product.itemName,
+            size,
+            quantity,
+            price: product.price,
+            total: itemTotal,
+          });
+        });
+      }
+    });
+
+    // Calculate GST (9%)
+    const gst = subtotal * 0.09;
+
+    return {
+      items: itemsWithDetails,
+      subtotal,
+      gst,
+      total: subtotal + gst,
+    };
+  };
+
+  const { items, subtotal, gst, total } = calculateTotals();
+
+  // Place order handler
+  const handlePlaceOrder = async () => {
+    if (!token) {
+      toast.error("Please login to place an order");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/order/create`,
+        {
+          items: cartItems,
+          amount: total,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Order placed successfully!");
+        navigate("/orders");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Place order error:", error);
+      toast.error("Failed to place order");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -195,49 +274,93 @@ const PlaceOrder = () => {
       </div>
 
       {/* RIGHT SIDE */}
-      <div className="mt-8">
-        <div className="mt-8 min-w-80">
-          <CartTotal />
+      <div className="w-full sm:max-w-[480px]">
+        <div className="text-xl sm:text-2xl my-3">
+          <Title text1={"ORDER"} text2={"SUMMARY"} />
         </div>
-        <div className="mt-12">
-          <Title text1={"PAYMENT"} text2={"METHOD"} />
-          {/* PAYMENT METHOD SELECTION */}
-          <div className="flex gap-3 flex-col lg:flex-row">
-            <div
-              onClick={() => setMethod("stripe")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "stripe" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <img className="h-5 mx-4" src={assets.stripe_logo} alt="" />
-            </div>
 
-            <div
-              onClick={() => setMethod("cod")}
-              className="flex items-center gap-3 border p-2 px-3 cursor-pointer"
-            >
-              <p
-                className={`min-w-3.5 h-3.5 border rounded-full ${
-                  method === "cod" ? "bg-green-400" : ""
-                }`}
-              ></p>
-              <p className="text-gray-500 text-sm font-medium mx-4">
-                CASH ON DELIVERY
-              </p>
-            </div>
-          </div>
-          <div className="w-full text-end mt-8">
-            <button
-              type="submit"
-              className="bg-black text-white px-16 py-3 text-sm"
-            >
-              PLACE ORDER
-            </button>
+        {/* Cart Items List */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <div className="divide-y divide-gray-200">
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className="py-4 flex justify-between items-start"
+              >
+                <div className="flex-1">
+                  <h3 className="font-medium">{item.name}</h3>
+                  <p className="text-sm text-gray-600">Size: {item.size}</p>
+                  <p className="text-sm text-gray-600">
+                    Quantity: {item.quantity}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">
+                    ${formatPrice(item.price)} × {item.quantity}
+                  </p>
+                  <p className="font-medium">${formatPrice(item.total)}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
+
+        {/* Order Total */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <div className="space-y-3">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>${formatPrice(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>GST (9%)</span>
+              <span>${formatPrice(gst)}</span>
+            </div>
+            <div className="border-t border-gray-200 pt-3">
+              <div className="flex justify-between font-semibold text-lg">
+                <span>Total</span>
+                <span>${formatPrice(total)}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Payment Method Selection */}
+        <div className="bg-white rounded-lg shadow p-4 mb-4">
+          <h3 className="font-medium mb-3">Payment Method</h3>
+          <div className="space-y-2">
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                value="cod"
+                checked={method === "cod"}
+                onChange={(e) => setMethod(e.target.value)}
+                className="form-radio"
+              />
+              <span>Cash on Delivery</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="radio"
+                value="stripe"
+                checked={method === "stripe"}
+                onChange={(e) => setMethod(e.target.value)}
+                className="form-radio"
+              />
+              <span>Pay with Card</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Place Order Button */}
+        <button
+          type="submit"
+          disabled={loading || items.length === 0}
+          className="w-full bg-black text-white py-3 rounded font-medium 
+                     hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          {loading ? "Processing..." : "Place Order"}
+        </button>
       </div>
     </form>
   );
