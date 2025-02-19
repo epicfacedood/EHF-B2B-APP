@@ -119,7 +119,9 @@ const Product = () => {
           <h1 className="text-4xl font-medium mb-2">{productData.itemName}</h1>
           {productData.packagingSize && (
             <p className="text-lg text-gray-600 mb-4">
-              {productData.packagingSize}
+              {productData.packagingSize !== "nan"
+                ? productData.packagingSize
+                : "-"}
             </p>
           )}
           <p className="text-2xl font-medium mb-6">
