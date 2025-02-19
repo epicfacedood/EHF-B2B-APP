@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { getProductImage } from "../utils/imageUtils";
 import NoImage from "./NoImage";
 import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
+import { toast } from "react-toastify";
 
 const ProductItem = ({
   id,
@@ -37,13 +38,13 @@ const ProductItem = ({
     setQuantity(newQuantity);
   };
 
-  const handleAddToCart = () => {
-    if (quantity > 0) {
-      addToCart(id, {
-        quantity,
-        uom: selectedUOM,
-      });
-      setQuantity(0);
+  const handleAddToCart = async (size) => {
+    try {
+      // Call addToCart and wait for it to complete
+      await addToCart(id, size);
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast.error("Failed to add item to cart");
     }
   };
 
@@ -131,7 +132,12 @@ const ProductItem = ({
             placeholder="Qty"
           />
           <button
-            onClick={handleAddToCart}
+            onClick={() =>
+              handleAddToCart({
+                quantity,
+                uom: selectedUOM,
+              })
+            }
             disabled={quantity === 0}
             className={`px-3 py-1 text-xs rounded ${
               quantity === 0
@@ -166,7 +172,12 @@ const ProductItem = ({
             </button>
           </div>
           <button
-            onClick={handleAddToCart}
+            onClick={() =>
+              handleAddToCart({
+                quantity,
+                uom: selectedUOM,
+              })
+            }
             disabled={quantity === 0}
             className={`px-3 py-1 text-xs rounded ${
               quantity === 0

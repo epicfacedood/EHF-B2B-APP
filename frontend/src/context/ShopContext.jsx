@@ -67,7 +67,18 @@ export const ShopContextProvider = ({ children }) => {
     }
 
     try {
-      console.log("Adding to cart:", { itemId, size, hasToken: !!token });
+      // Store previous cart state for rollback
+      const previousCart = { ...cartItems };
+
+      // Create optimistic update
+      const currentCart = { ...cartItems };
+      if (!currentCart[itemId]) {
+        currentCart[itemId] = {};
+      }
+      currentCart[itemId][size] = (currentCart[itemId][size] || 0) + 1;
+
+      // Update state immediately for better UX
+      setCartItems(currentCart);
 
       const response = await axios.post(
         `${backendUrl}/api/cart/add`,
@@ -75,18 +86,30 @@ export const ShopContextProvider = ({ children }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
 
       if (response.data.success) {
-        setCartItems(response.data.cartData);
+        // Only update if we get valid cart data back
+        if (
+          response.data.cartData &&
+          Object.keys(response.data.cartData).length > 0
+        ) {
+          setCartItems(response.data.cartData);
+        } else {
+          // Keep our optimistic update if server doesn't return cart data
+          setCartItems(currentCart);
+        }
         toast.success("Product added to cart");
       } else {
-        toast.error(response.data.message);
+        // Revert to previous state if operation failed
+        setCartItems(previousCart);
+        toast.error(response.data.message || "Failed to add item to cart");
       }
     } catch (error) {
+      // Revert to previous state on error
+      setCartItems(previousCart);
       console.error(
         "Add to cart error:",
         error.response?.data || error.message
@@ -97,30 +120,97 @@ export const ShopContextProvider = ({ children }) => {
     }
   };
 
+  // Get cart count for navbar - make it more robust
+  const getCartCount = () => {
+    if (!cartItems || typeof cartItems !== "object") return 0;
+
+    let count = 0;
+    Object.values(cartItems).forEach((sizes) => {
+      if (sizes && typeof sizes === "object") {
+        Object.values(sizes).forEach((quantity) => {
+          const qty = Number(quantity);
+          if (!isNaN(qty) && qty > 0) {
+            count += qty;
+          }
+        });
+      }
+    });
+    return count;
+  };
+
+  // Update cart quantity
   const updateQuantity = async (itemId, quantity, uom) => {
-    if (!token) return;
+    if (!token) {
+      toast.error("Please login to update cart");
+      return;
+    }
 
     try {
+      // Store the previous cart state for rollback
+      const previousCart = { ...cartItems };
+
+      // Optimistic update
+      const currentCart = { ...cartItems };
+      if (quantity === 0) {
+        // Remove the size if quantity is 0
+        if (currentCart[itemId]) {
+          delete currentCart[itemId][uom];
+          // Remove the product if no sizes left
+          if (Object.keys(currentCart[itemId]).length === 0) {
+            delete currentCart[itemId];
+          }
+        }
+      } else {
+        // Update quantity
+        if (!currentCart[itemId]) {
+          currentCart[itemId] = {};
+        }
+        currentCart[itemId][uom] = quantity;
+      }
+
+      // Update local state immediately
+      setCartItems(currentCart);
+
       const response = await axios.post(
-        backendUrl + "/api/cart/update",
+        `${backendUrl}/api/cart/update`,
         {
           itemId,
           size: {
             uom,
-            quantity: quantity === null ? 0 : quantity,
+            quantity,
           },
         },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
 
       if (response.data.success) {
-        await getUserCart(token); // Refresh cart from server
+        // Verify the server response has data before updating
+        if (response.data.cartData) {
+          setCartItems(response.data.cartData);
+        } else {
+          // If no cart data in response, keep the optimistic update
+          setCartItems(currentCart);
+        }
+
+        if (quantity === 0) {
+          toast.success("Item removed from cart");
+        } else {
+          toast.success("Cart updated successfully");
+        }
+      } else {
+        // If failed, revert to previous state
+        setCartItems(previousCart);
+        toast.error(response.data.message || "Failed to update cart");
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      // If error, revert to previous state
+      setCartItems(previousCart);
+      console.error("Update cart error:", error);
+      toast.error("Failed to update cart");
     }
   };
 
@@ -137,25 +227,19 @@ export const ShopContextProvider = ({ children }) => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         }
       );
 
       if (response.data.success) {
-        const updatedCart = { ...cartItems };
-        delete updatedCart[productId];
-        setCartItems(updatedCart);
+        setCartItems(response.data.cartData);
         toast.success("Item removed from cart");
       } else {
         toast.error(response.data.message || "Failed to remove item");
       }
     } catch (error) {
-      console.error("Remove from cart error:", {
-        error: error.response?.data || error.message,
-        productId,
-      });
-      throw error;
+      console.error("Remove from cart error:", error);
+      toast.error("Failed to remove item from cart");
     }
   };
 
@@ -181,22 +265,6 @@ export const ShopContextProvider = ({ children }) => {
       setCartItems({});
       toast.error("Failed to fetch cart");
     }
-  };
-
-  const getCartCount = () => {
-    let totalCount = 0;
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        try {
-          if (cartItems[items][item] > 0) {
-            totalCount += cartItems[items][item];
-          }
-        } catch (error) {
-          alert("error with getCartCount");
-        }
-      }
-    }
-    return totalCount;
   };
 
   const getCartAmount = () => {
