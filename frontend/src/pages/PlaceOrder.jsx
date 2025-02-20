@@ -207,72 +207,99 @@ const PlaceOrder = () => {
         </div>
 
         <div className="p-6 space-y-6">
-          {/* Customer Information Section */}
+          {/* Contact Information */}
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">Customer Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+
+            <div>
+              <label
+                htmlFor="name"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Full Name
+              </label>
               <input
-                required
-                name="customerName"
+                id="name"
+                type="text"
                 value={orderInfo.customerName}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full"
-                type="text"
-                placeholder="Full Name"
-              />
-              <input
+                name="customerName"
+                className="w-full p-2 border rounded"
                 required
-                name="email"
-                value={orderInfo.email}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full"
-                type="email"
-                placeholder="Email Address"
-              />
-              <input
-                required
-                name="phone"
-                value={orderInfo.phone}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full"
-                type="tel"
-                placeholder="Phone Number"
-              />
-              <input
-                name="company"
-                value={orderInfo.company}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full"
-                type="text"
-                placeholder="Company Name (Optional)"
-              />
-              <input
-                required
-                name="address"
-                value={orderInfo.address}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full md:col-span-2"
-                type="text"
-                placeholder="Delivery Address"
-              />
-              <input
-                required
-                name="postalCode"
-                value={orderInfo.postalCode}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded py-2 px-4 w-full"
-                type="text"
-                placeholder="Postal Code"
               />
             </div>
-            <textarea
-              name="remarks"
-              value={orderInfo.remarks}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded py-2 px-4 w-full"
-              placeholder="Remarks (Optional)"
-              rows="3"
-            />
+
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={orderInfo.email}
+                onChange={handleInputChange}
+                name="email"
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="phone"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Phone Number
+              </label>
+              <input
+                id="phone"
+                type="tel"
+                value={orderInfo.phone}
+                onChange={handleInputChange}
+                name="phone"
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="address"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Delivery Address
+              </label>
+              <textarea
+                id="address"
+                value={orderInfo.address}
+                onChange={handleInputChange}
+                name="address"
+                className="w-full p-2 border rounded"
+                rows="3"
+                required
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="notes"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Order Notes (Optional)
+              </label>
+              <textarea
+                id="notes"
+                value={orderInfo.remarks}
+                onChange={handleInputChange}
+                name="remarks"
+                className="w-full p-2 border rounded"
+                rows="3"
+                placeholder="Any special instructions for your order?"
+              />
+            </div>
           </div>
 
           {/* Order Details Section */}

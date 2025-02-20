@@ -61,6 +61,7 @@ const Product = () => {
         quantity,
         uom: selectedUOM,
       });
+      toast.success("Item added to cart");
       setQuantity("");
     } else {
       toast.error("Please enter a valid quantity");

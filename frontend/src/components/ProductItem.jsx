@@ -81,6 +81,8 @@ const ProductItem = ({
         uom: selectedUOM,
         quantity: quantity,
       });
+      toast.success("Item added to cart");
+
       setQuantity(0); // Reset quantity after successful add
     } catch (error) {
       console.error("Error adding to cart:", error);

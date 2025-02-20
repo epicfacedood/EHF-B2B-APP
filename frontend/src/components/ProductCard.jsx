@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import NoImage from "./NoImage";
 import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
 import { ShopContext } from "../contexts/ShopContext";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product, currency = "$" }) => {
   const { _id, pcode, itemName, packagingSize, price, uoms = [] } = product;
@@ -30,6 +31,14 @@ const ProductCard = ({ product, currency = "$" }) => {
         uom: selectedUOM,
       });
       setQuantity(0);
+      toast.success(`Added ${quantity} ${selectedUOM} to cart`, {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
     }
   };
 
