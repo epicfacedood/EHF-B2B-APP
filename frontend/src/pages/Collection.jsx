@@ -57,6 +57,7 @@ const Collection = () => {
         });
 
         if (response.data.success) {
+          console.log("Fetched products:", response.data.products); // Debug log
           setFilterProducts(response.data.products);
         }
       } catch (error) {
@@ -263,6 +264,7 @@ const Collection = () => {
                 uoms={item.uoms}
                 cartonQuantity={item.cartonQuantity}
                 packagingSize={item.packagingSize}
+                image={item.image}
               />
             );
           })}

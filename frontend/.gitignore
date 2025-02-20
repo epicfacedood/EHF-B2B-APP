@@ -23,3 +23,11 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
+
+# Image directories
+public/productImages/*
+public/final_images/*
+
+# Keep these files
+!public/productImages/no-image.png
+!public/productImages/placeholder.jpg

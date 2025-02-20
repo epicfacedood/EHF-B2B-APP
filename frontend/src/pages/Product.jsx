@@ -34,7 +34,7 @@ const Product = () => {
       const product = products.find((item) => item._id === productId);
       if (product) {
         setProductData(product);
-        setCurrentImage(getProductImage(product.pcode));
+        setCurrentImage(product.image?.[0] || getFallbackImage());
         const uomsArray = getUOMsArray(product.uoms);
         if (uomsArray.length > 0) {
           setSelectedUOM(uomsArray[0]);
@@ -84,20 +84,18 @@ const Product = () => {
         {/* Product Images */}
         <div className="flex-1 flex flex-col-reverse gap-3 sm:flex-row">
           {/* Thumbnail Images */}
-          <div className="flex sm:flex-col overflow-x-auto sm:overlflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
-            {productData.image?.map((_, index) => (
+          <div className="flex sm:flex-col overflow-x-auto sm:overflow-y-scroll justify-between sm:justify-normal sm:w-[18.7%] w-full">
+            {productData.image?.map((imageUrl, index) => (
               <div
                 key={index}
                 className={`w-20 h-20 border rounded-md overflow-hidden cursor-pointer ${
                   imageError[index] ? "hidden" : ""
                 }`}
-                onClick={() =>
-                  setCurrentImage(getProductImage(productData.pcode, index))
-                }
+                onClick={() => setCurrentImage(imageUrl)}
               >
                 <img
-                  src={getProductImage(productData.pcode, index)}
-                  alt={productData.name}
+                  src={imageUrl}
+                  alt={`${productData.name} ${index + 1}`}
                   className="w-full h-full object-cover"
                   onError={() => handleImageError(index)}
                 />
@@ -110,6 +108,7 @@ const Product = () => {
               src={currentImage || getFallbackImage()}
               alt={productData.name}
               className="w-full h-auto object-cover rounded-md mb-4"
+              onError={() => setImageError(true)}
             />
           </div>
         </div>
@@ -214,11 +213,13 @@ const Product = () => {
               <div className="flex gap-2">
                 {productData.sizes.map((item, index) => (
                   <button
-                    onClick={() => setSelectedSize(item)}
-                    className={`border py-2 px-4 bg-gray-100 ${
-                      item === selectedSize ? "border-orange-500" : ""
-                    }`}
                     key={index}
+                    onClick={() => setSelectedSize(item)}
+                    className={`border py-2 px-4 rounded transition-all duration-200 ${
+                      item === selectedSize
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-100 hover:bg-gray-200"
+                    }`}
                   >
                     {item}
                   </button>
@@ -229,12 +230,14 @@ const Product = () => {
         </div>
       </div>
 
-      {/* Only show RelatedProducts if category exists */}
+      {/* Move RelatedProducts here, outside the product info section */}
       {productData.category && (
-        <RelatedProducts
-          category={productData.category}
-          subCategory={productData.subCategory || ""}
-        />
+        <div className="mt-16">
+          <RelatedProducts
+            category={productData.category}
+            subCategory={productData.subCategory || ""}
+          />
+        </div>
       )}
     </div>
   );

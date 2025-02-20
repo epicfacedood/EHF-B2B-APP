@@ -1,8 +1,8 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { getProductImage } from "../utils/imageUtils";
+import { getProductImage, getFallbackImage } from "../utils/imageUtils";
 import NoImage from "./NoImage";
 import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
 import { toast } from "react-toastify";
@@ -21,6 +21,17 @@ const ProductItem = ({
   const [loading, setLoading] = useState(true);
   const [selectedUOM, setSelectedUOM] = useState("");
   const [quantity, setQuantity] = useState(0);
+
+  console.log("Product image data:", { pcode, image });
+
+  // Add debug logging at the start of component
+  useEffect(() => {
+    console.log("ProductItem received props:", {
+      pcode,
+      image,
+      firstImage: image?.[0],
+    });
+  }, [pcode, image]);
 
   // Parse UOMs safely - handle the JSON string format
   const uomsArray = React.useMemo(() => {
@@ -87,6 +98,16 @@ const ProductItem = ({
 
   const { mainName, details } = formatProductName(name);
 
+  // Add debug logging for image props
+  useEffect(() => {
+    console.log("Product image props:", {
+      pcode,
+      imageArray: image,
+      firstImage: image?.[0],
+      fallbackImage: getFallbackImage(),
+    });
+  }, [pcode, image]);
+
   return (
     <div className="text-gray-700 border rounded-sm bg-white shadow-md hover:shadow-lg transition-shadow duration-300 w-full sm:max-w-[280px] mx-auto p-4">
       <Link
@@ -101,17 +122,29 @@ const ProductItem = ({
         {!imageError ? (
           <img
             className="w-full h-full object-contain hover:scale-110 transition-transform duration-300 ease-in-out"
-            src={image?.[0] || getProductImage(pcode)}
+            src={image?.[0] || getFallbackImage()}
             alt={name}
-            onLoad={() => setLoading(false)}
+            onLoad={() => {
+              setLoading(false);
+            }}
             onError={(e) => {
-              console.error("Image load error:", e);
-              setImageError(true);
+              console.error("Image load error for:", {
+                pcode,
+                attemptedSrc: e.target.src,
+                imageArray: image,
+              });
+              // Use placeholder image on error
+              e.target.src = getFallbackImage();
+              setLoading(false);
             }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
-            <NoImage pcode={pcode} name={name} />
+            <img
+              src={getFallbackImage()}
+              alt={name}
+              className="w-full h-full object-contain"
+            />
           </div>
         )}
       </Link>
@@ -149,7 +182,7 @@ const ProductItem = ({
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {unit.replace(/["\[\]]/g, "")}
+              {unit.replace(/["[\]]/g, "")}
             </button>
           ))}
         </div>

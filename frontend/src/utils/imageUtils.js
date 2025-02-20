@@ -1,18 +1,20 @@
 const getProductImage = (pcode, index = 0) => {
-  // Add logging to debug
-  console.log("Getting product image:", { pcode, index });
-  // If the image is a full URL (like from Cloudinary), return it directly
-  if (pcode?.startsWith("http")) {
+  if (!pcode) {
+    console.warn("No pcode provided to getProductImage");
+    return null;
+  }
+
+  // If it's a Cloudinary URL, return it directly
+  if (pcode.startsWith("http")) {
     return pcode;
   }
-  if (!pcode) return null;
-  const imagePath = `/productImages/${pcode.toUpperCase()}.jpg`;
-  console.log("Attempting to load image:", imagePath); // Debug log
-  return imagePath;
+
+  // Return placeholder image instead of no-image.png
+  return `/productImages/placeholder.jpg`;
 };
 
 const getFallbackImage = () => {
-  return `/productImages/no-image.png`;
+  return `/productImages/placeholder.jpg`;
 };
 
 export { getProductImage, getFallbackImage };

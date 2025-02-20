@@ -61,7 +61,11 @@ const addProduct = async (req, res) => {
       }
     }
 
-    // No need to join the array back to string, just keep the JSON string as is
+    // Debug logs for image upload
+    console.log("Files received:", req.files);
+    console.log("Image files to process:", imageFiles);
+    console.log("Cloudinary URLs:", images);
+
     const productData = {
       itemName,
       pcode,
@@ -69,17 +73,20 @@ const addProduct = async (req, res) => {
       baseUnit,
       packagingSize,
       uom,
-      uoms, // Keep the original JSON string format: '["CTN","PKT"]'
+      uoms,
       category,
       bestseller: bestseller === "true",
       image: images,
       date: Date.now(),
     };
 
-    console.log("Final product data:", productData);
+    console.log("Final product data being saved:", productData);
 
     const product = new productModel(productData);
     await product.save();
+
+    // Log the saved product
+    console.log("Saved product:", product);
 
     res.json({ success: true, message: "Product added successfully" });
   } catch (error) {
@@ -97,38 +104,15 @@ const parseUoms = (uomsString) => {
 
 const listProducts = async (req, res) => {
   try {
-    const { userId } = req;
-    let products;
-
-    if (userId) {
-      // If user is logged in, get their available products
-      const user = await userModel.findById(userId);
-      console.log(
-        "User found:",
-        user?._id,
-        "Available products:",
-        user?.productsAvailable
-      );
-
-      if (user && user.productsAvailable?.length > 0) {
-        products = await productModel
-          .find({ _id: { $in: user.productsAvailable } })
-          .sort({ createdAt: -1 });
-
-        // Transform products to include parsed uoms
-        products = products.map((product) => ({
-          ...product.toObject(),
-          uoms: parseUoms(product.uoms),
-        }));
-      } else {
-        products = [];
-      }
-    } else {
-      // If no user, return empty array (or you could return an error)
-      products = [];
-    }
-
-    console.log("Returning products:", products.length);
+    const products = await productModel.find({}).sort({ itemName: 1 });
+    console.log(
+      "Sending products with images:",
+      products.map((p) => ({
+        pcode: p.pcode,
+        hasImage: p.image?.length > 0,
+        firstImage: p.image?.[0],
+      }))
+    );
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error listing products:", error);

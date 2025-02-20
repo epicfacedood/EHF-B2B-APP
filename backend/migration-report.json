@@ -1,0 +1,1484 @@
+{
+  "date": "2025-02-20T06:13:34.491Z",
+  "totalProducts": 1245,
+  "successCount": 509,
+  "skippedCount": 441,
+  "failureCount": 295,
+  "productsWithoutImages": [
+    {
+      "pcode": "P0003054",
+      "name": "Iberico Pork Belly Rindless (Elpozo) 西班牙黑猪无皮三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003257",
+      "name": "US Pork Loin Baby Back Ribs (IBP) 美国子弹排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003258",
+      "name": "US Pork Bone In Spare Ribs St. Louis (IBP) 美国腩排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003259",
+      "name": "US Pork Shoulder Butts \"Kata-Rosu\" (Hawkeye) 美国梅花肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003262",
+      "name": "US CAB BF Chuck Short Rib Boneless CHOICE (IBP)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003263",
+      "name": "Beef Brisket Point End (GJ) 牛前腩",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0000399",
+      "name": "Seabass Fish GGS 700-800G 鲈鱼",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0001282",
+      "name": "Pork Softbone (Tonnies) 猪软骨",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001285",
+      "name": "Pork Softbone (Macoba) 猪软骨",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003316",
+      "name": "US Angus BF Short Plate Half Cut 美国肥牛切半",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003310",
+      "name": "Pork Cooked Stomach 5KG 猪肚",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003319",
+      "name": "McCain Gold Shoestring Fries 1/4\" 细绳薯条",
+      "category": "VEG"
+    },
+    {
+      "pcode": "P0000753",
+      "name": "Frz Stingray Portion 300-500G (BBQ) 魔鬼鱼",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0001710",
+      "name": "Frz Stingray Portion 500-1000G (BBQ) 魔鬼鱼",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "G0000026",
+      "name": "Confiletas Bamboo 6G #1220303",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000027",
+      "name": "Confiletas Black Basket 33/20MM 2.6G #5251400",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000028",
+      "name": "Confiletas Green Basket 33/20MM 2.6G #5251500",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000029",
+      "name": "Confiletas Red Basket 33/20MM 2.6G #5251600",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000030",
+      "name": "Confiletas Neutral Basket 33/20MM 2.6G #5253300",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000031",
+      "name": "Confiletas Black Mini Flower 3.7G #1512003",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000032",
+      "name": "Confiletas Green Mini Flower 3.7G #1512203",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000033",
+      "name": "Confiletas Pink Mini Flower 3.7G #1512603",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000034",
+      "name": "Confiletas Black Mussel 3.7G #1262002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000035",
+      "name": "Confiletas Neutral Mussel 3.7G #1260002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000036",
+      "name": "Confiletas Éclair 60MM 2.6G #3030400",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000037",
+      "name": "Confiletas Mini Assort Natur 4 Shape 3.7G #1550002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000038",
+      "name": "Confiletas Mini Black Cone Wafer 4.5G #5182400",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000039",
+      "name": "Confiletas Mini Green Cone Wafer 4.5G #5182500",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000040",
+      "name": "Confiletas Mini Red Cone Wafer 4.5G #5182600",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000041",
+      "name": "Confiletas Mini Neutral Cone Wafer 4.5G #5182300",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000042",
+      "name": "Confiletas Mini Bullions 4.7G #1340002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000043",
+      "name": "Confiletas Mini Casserole 3.7G #1350002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000044",
+      "name": "Confiletas Mini Circle 4.7G #1320002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000046",
+      "name": "Confiletas Mini Flower 3.7G #1510002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000047",
+      "name": "Confiletas Mini Macarons Cocoa 0.18G #3640400",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000048",
+      "name": "Confiletas Mini Macarons Neutral 0.18G #3640000",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000049",
+      "name": "Confiletas Mini Macarons Strawberry 0.18G #3640200",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000050",
+      "name": "Confiletas Mini Rnd Gold Almond 38MM #1647203",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000051",
+      "name": "Confiletas Mini Rnd Gold Black Olive 38MM #1647403",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000052",
+      "name": "Confiletas Mini Rnd Gold Hazelnut 38MM #1647003",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000053",
+      "name": "Confiletas Mini Rnd Gold Tomato 38MM #1647603",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000054",
+      "name": "Confiletas Mini Round Cocoa 6.8G #1901902",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000055",
+      "name": "Confiletas Mini Round Graham 40MM 7.5G #1904103",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000056",
+      "name": "Confiletas Mini Scallop Shell 3.7G #1360002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000057",
+      "name": "Confiletas Mini Square 4.7G #1310002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000058",
+      "name": "Confiletas Mini Thimble 4.7G #1230303",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000059",
+      "name": "Confiletas Profiterols 2.5G #3010400",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000060",
+      "name": "Confiletas Saucer 3.7G #1380002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000061",
+      "name": "Confiletas Spheres 1.3G #1490002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000062",
+      "name": "Confiletas Spoon 3.7G #1390002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000063",
+      "name": "Confiletas Tartlet 38MM 6.25G #103000",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000064",
+      "name": "Confiletas Tartlet 45MM 7.2G #1010000",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000065",
+      "name": "Confiletas Tartlet Choc Coated 45MM 11.4G #1010500",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000066",
+      "name": "Confiletas Thimble 6G #1240303",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000067",
+      "name": "Confiletas Vol au Vent 38MM 5.4G #2050100",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000068",
+      "name": "Confiletas Vol au Vent 55MM 14G #2210101",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000069",
+      "name": "Confiletas Vol au Vent 75MM 25.5G #2060100",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "C0000161",
+      "name": "AU CH BF Chuck Tender S Grassfed (AMH) 澳洲牛肩胛肉",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0003313",
+      "name": "Rich Seas Mussel Meat 贻贝肉",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003298",
+      "name": "Chicken Mid Joint IQF (Aurora) 鸡中翅",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002372",
+      "name": "Royal Sea Cocktail Shrimp PTO 61-70",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002914",
+      "name": "Rich Seas Cooked Shrimp PTO 31-40 (Vannamei) 凤尾熟虾",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003111",
+      "name": "Twinfish Cooked Shrimp PND 21-25 熟虾仁",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003217",
+      "name": "Rich Seas Cooked Shrimp PTO 41-50 (Vannamei) 凤尾熟虾",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0001027",
+      "name": "Pork Riblet Cut 3.2CM 5KG 三角骨切",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002436",
+      "name": "Fisher's Catch Half Shell Abalone 半壳鲍鱼",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "C0000006",
+      "name": "AU CH BF Rump YG Grassfed (AMH)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000026",
+      "name": "Emborg Greek Style Feta Cheese Cube 200G",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "C0000077",
+      "name": "AU CH Wagyu BF Striploin S Grainfed MB6-7(Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000085",
+      "name": "AU CH Wagyu BF D Rump S Grainfed MB4-5 (Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000086",
+      "name": "AU CH Wagyu BF Rump Cap S Grainfed MB4-5 (Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000087",
+      "name": "Emborg Culinary Cooking Cream 19%",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "C0000155",
+      "name": "Emborg Blue Brie Cheese 60% 125G",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "C0000156",
+      "name": "Emborg Red Brie Cheese 60% 125G",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "G0000045",
+      "name": "Confiletas Mini Cup 4.7G #1300002",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "P0000916",
+      "name": "Al-Lazat Beef Brisket Cube 3CM 5KG 牛腩丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0000918",
+      "name": "Al-Lazat Beef Knuckle Cube 4.5CM 5KG 牛后侧丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0000925",
+      "name": "Al-Lazat Beef Slice 2MM 5KG 牛肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0000926",
+      "name": "Al-Lazat Beef Slice 4MM 2KG 牛肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0000927",
+      "name": "Al-Lazat Beef Slice 4MM 5KG 牛肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002472",
+      "name": "Mutton Femur Bone (Thomas) MI0105 羊腿骨",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002508",
+      "name": "AU Beef Rump YG Grassfed (AMH)",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002718",
+      "name": "AU Beef Tenderloin SS/off YG Grassfed (AMH) 澳洲牛柳",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002773",
+      "name": "Emborg Shredded Mozzarella Cheese Match Stick 4MM",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "P0002844",
+      "name": "Oriental Delight W Cabbage Pork Dumpling500G猪肉白菜水饺",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002845",
+      "name": "Oriental Delight Chive Pork Dumpling 500G 猪肉韭菜水饺",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002936",
+      "name": "AU Angus BF OP Rib S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002937",
+      "name": "AU Angus BF Tomahawk S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002939",
+      "name": "AU Angus BF PE Brisket Off S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002943",
+      "name": "AU Angus BF Thick Skirt Grainfed (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002946",
+      "name": "AU Wagyu BF Eye Round S Grainfed MB4-5 (Auskobe)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002948",
+      "name": "AU Wagyu BF Striploin S Grainfed MB6-7 (Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0003028",
+      "name": "Emborg Unsalted Butter 82% 250G 无盐黄油",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "P0003176",
+      "name": "Pork Back Bone (Macoba) 猪背骨",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "C0000078",
+      "name": "AU CH Wagyu BF Thick Skirt Grainfed (Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000170",
+      "name": "Frischli Plain Yogurt 3.5% 优格",
+      "category": "DAIRY"
+    },
+    {
+      "pcode": "P0003057",
+      "name": "Iberico Pork Cutting Fat (ICP) 猪油",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003290",
+      "name": "Oriental Delight Egg Yolk Stf Golden Ball 爆浆咸蛋黄鱼蛋",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003291",
+      "name": "Oriental Delight Treasure Bag with Fish Roe 鱼籽福袋",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003292",
+      "name": "Oriental Delight Pollock Fish Tofu 心形鳕鱼芝士豆腐",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003293",
+      "name": "Oriental Delight Sea Urchin Ball 海胆风味鱼蛋",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003294",
+      "name": "Twinfish Pollock Fish Paste with Fish Roe 鳕鱼鱼籽鱼滑",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003295",
+      "name": "Twinfish Pollock Fish Paste with Fish Roe 鳕鱼鱼籽鱼滑",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002712",
+      "name": "US Angus BF Short Rib Bone In CHOICE (IBP)美国带骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002828",
+      "name": "US BF Short Rib Bone In CHOICE (Demkota) 美国带骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003133",
+      "name": "Pork Loin Ribs (Mabella) 子弹排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "C0000163",
+      "name": "AU CH Wagyu BF Rump Cap S Grainfed MB6-7 F1 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0003333",
+      "name": "Salmon Fillet (Rainbow Trout) 500-700G 红鲑",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003334",
+      "name": "Salmon Fillet (Rainbow Trout) 700-1100G 红鲑",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003335",
+      "name": "Salmon Fillet (Rainbow Trout) 1100-1400G 红鲑",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003336",
+      "name": "Premium Smoked Salmon (R.Trout)(Pre-Slice)1KG 烟熏红鲑",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003337",
+      "name": "Salmon Portion (Rainbow Trout) 200G 红鲑切块",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003338",
+      "name": "Salmon Tail Portion (Rainbow Trout) 红鲑尾部",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002764",
+      "name": "Oriental Delight Abalone Slice (Taiwan) 鲍鱼片",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003284",
+      "name": "Okeanoss Razor Clam Meat 蛏子肉",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003355",
+      "name": "Baby Cuttlefish 20-40 (IQF) 墨鱼仔",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003356",
+      "name": "Baby Cuttlefish 40-60 (IQF) 墨鱼仔",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "C0000066",
+      "name": "AU CH Angus BF D Rump S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000121",
+      "name": "AU CH Angus BF Short Rib B/In S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "C0000162",
+      "name": "AU CH Wagyu BF D Rump S Grainfed MB6-7 F1 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002963",
+      "name": "Beef Tenderloin Chain Off (Beauvallet) 牛柳肉",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003112",
+      "name": "Beef Tenderloin Chain Off (Friboi) 牛柳肉",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003175",
+      "name": "AU Angus BF Short Rib B/In S Grainfed MB2 (JC)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0003242",
+      "name": "Tuna Belly - 300G up (Spain) 鲔鱼肚",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003357",
+      "name": "Bone In Lamb Foreshanks (Swift) 带骨羊前腿",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002346",
+      "name": "Al-Lazat Beef Leg Cube 3CM 5KG 牛腿丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002957",
+      "name": "Al-Lazat Beef Leg Cube 95-105G 5KG 牛腿丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003008",
+      "name": "Al-Lazat Beef Leg Cube 5CM 1KG 牛腿丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003346",
+      "name": "Salmon Slice (Rainbow Trout) 红鲑切片",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003347",
+      "name": "Salmon Cube (Rainbow Trout) 红鲑切粒",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003219",
+      "name": "Seabass Fillet 1-1.2KG (Barramundi) 鲈鱼片",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0002013",
+      "name": "Salmon Fish Bone 1KG 三文鱼骨",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003348",
+      "name": "Premium Smoked Salmon (R.Trout)(Pre-Slice)100G烟熏红鲑",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003365",
+      "name": "Pork Skin 猪皮",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "C0000171",
+      "name": "AU CH Wagyu BF Rump Cap S Grainfed MB6-7 (Auskobe)",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "P0002081",
+      "name": "Pork Belly Single Ribbed (Boseler) 三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002362",
+      "name": "Okeanoss Angka Shrimp 31-40 (Bulk) 红脚虾",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002579",
+      "name": "Beef Marrow Bone (Minerva) 牛骨",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003181",
+      "name": "Boneless Lamb Shoulder Y74 (Fletcher) 无骨羊肩肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001189",
+      "name": "Pork Chitterling (PPS) 猪大肠",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003300",
+      "name": "Pork Ear (Frimesa) 猪耳朵",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002316",
+      "name": "Sea Scallop 10-20 (IQF) 带子",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002317",
+      "name": "Sea Scallop 20-30 (IQF) 带子",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002660",
+      "name": "Fukuyama Hokkaido Scallop 10-20 日本带子",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003289",
+      "name": "Beef Chuck Tender (PUL) 牛肩胛肉",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003354",
+      "name": "Butcher’s Reserve Chicken Chipolata Sausage 3” 1KG",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003299",
+      "name": "Pork Belly Sheet Ribbed Skin On (Rainha Da Paz)三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003372",
+      "name": "Fukuyama Hokkaido Scallop 10-20 日本带子",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0000505",
+      "name": "Hon Mirin 18L 味淋",
+      "category": "DRY"
+    },
+    {
+      "pcode": "P0000894",
+      "name": "Boneless Lamb Leg B221 (Fletcher)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002054",
+      "name": "Boneless Lamb Leg Netted (Thomas) LL0161",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003025",
+      "name": "Pork Belly Rindless Sheet Ribbed (Saudali) 无皮薄三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003268",
+      "name": "Boneless Lamb Leg (Thomas) LL0160 羔羊腿",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003359",
+      "name": "Gochujang/Hot Pepper Paste 1KG 韩式拌饭酱",
+      "category": "DRY"
+    },
+    {
+      "pcode": "P0003288",
+      "name": "Beef Brisket Point End (PUL) 牛前腩",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0001011",
+      "name": "Pork Belly Cube Skin On 3CM 5KG 三层肉丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001013",
+      "name": "Pork Belly Cube Skin On 1.5CM 5KG 三层肉丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001014",
+      "name": "Pork Belly Cube Skin On 1CM 5KG 三层肉丁",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001035",
+      "name": "Pork Belly Slice Skin On 4MM 2KG 有皮三层肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002896",
+      "name": "Pork Collar Slice 2MM 1KG 五花肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003014",
+      "name": "Pork Belly Slice Skin On 1CM 5KG 有皮三层肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002375",
+      "name": "Oriental Delight Imitation King Crab Chunk 帝皇蟹肉块",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0000784",
+      "name": "Takumi Hamachi Fillet 1.7-1.99KG 鰤魚片",
+      "category": "JPN"
+    },
+    {
+      "pcode": "P0001181",
+      "name": "Pork Belly Rindless Sheet Ribbed (Frimesa) 无皮薄三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002160",
+      "name": "Okeanoss Yellow Croaker 300-400 黄花鱼",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003032",
+      "name": "Hyogo Murotsu Oyster 40-59G (S) 日本生蚝",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003033",
+      "name": "Hyogo Murotsu Oyster 60-79G (M) 日本生蚝",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003109",
+      "name": "Hyogo Murotsu Oyster (S) 日本生蚝",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003151",
+      "name": "Okeanoss Yellow Croaker 500-600G 黄花鱼",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003331",
+      "name": "Fukuyama Cooked King Crab 300-800g 帝王蟹",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0003373",
+      "name": "Oriental D Cooked Whole Crawfish Tail 清水小龙虾尾",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003374",
+      "name": "Oriental D Cooked Whole Crawfish Meat 小龙虾仁",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003314",
+      "name": "Pork Liver (Scan) 猪肝",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003397",
+      "name": "Dry Wakame/Cut Wakame 干海带",
+      "category": "PM"
+    },
+    {
+      "pcode": "P0003282",
+      "name": "Lamb Weston Crisscut Fries Skin On #LWS901",
+      "category": "VEG"
+    },
+    {
+      "pcode": "P0000037",
+      "name": "Beef Cube Roll/Ribeye (Beauvallet) 牛眼肉心",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002163",
+      "name": "Dory Fillet 200-300G Skin On 有皮多利鱼片",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0002761",
+      "name": "Dory Fish 600-800G (Butterfly) 开边多利鱼",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003089",
+      "name": "Blue Farm Best Dory Flt 170-220G (Non-Treated)多利鱼片",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002335",
+      "name": "US Angus BF Short Rib Boneless CHOICE(Creekstone)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002620",
+      "name": "US Angus BF Short Plate CHOICE (Creekstone) 美国肥牛",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002735",
+      "name": "Aquachile Salmon Fillet TrimC Scale Off 2-3LB 三文鱼片",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002736",
+      "name": "Aquachile Salmon Fillet TrimC Scale Off 3-4LB 三文鱼片",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002766",
+      "name": "Al-Lazat Half Cut BF Short Plate Slice 1.5MM (USA)",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002767",
+      "name": "Al-Lazat Beef Short Plate Slice 3MM (USA) 美国肥牛切片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003122",
+      "name": "US BF Short Rib Boneless CHOICE (CR) 美国无骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003123",
+      "name": "US BF Short Rib Boneless CHOICE(StarRanch)美国无骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003124",
+      "name": "US CAB BF Short Rib Boneless CHOICE(IBP)美国特级无骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003351",
+      "name": "Pork Belly Sheet Ribbed Skin On (Saudali) 三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002711",
+      "name": "US CAB BF Cube Roll/Ribeye LipOn CHOICE(IBP)美国牛小排肉",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003164",
+      "name": "US BF Tenderloin PSMO CHOICE (IBP) 美国牛里脊",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003171",
+      "name": "Heritage Harvest US Beef Ribeye Steak 美国肉眼牛排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003172",
+      "name": "Heritage Harvest US Beef Striploin Steak 美国西冷牛排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003406",
+      "name": "USA Short Ribs Boneless Yakiniku 200G 无骨牛小排",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003407",
+      "name": "Heritage Harvest Beef Ribeye Yakiniku 4MM 日式牛眼肉片",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003408",
+      "name": "Heritage Harvest Beef Striploin Shabu Shabu 2MM",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003409",
+      "name": "Heritage Harvest US Beef Ribeye Shabu Shabu 2MM",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003378",
+      "name": "Soft Shell Crab (80-100) (M) (MY) 软壳蟹",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0001112",
+      "name": "Bone In Ram Carcase R100 (Fletcher)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002874",
+      "name": "Twinfish Tempura Fish Finger 35-40G 天妇罗鱼条",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003362",
+      "name": "Beef Short Ribs Bone In (Beauvallet) 带骨牛肋小排",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003363",
+      "name": "Beef Flanks (Beauvallet) 牛侧腹",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0002526",
+      "name": "Marinated Chicken Leg Boneless Skin On Cut(Gustox)",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003129",
+      "name": "Okeanoss New Zealand Ling Fillet Portion 灵鳕鱼块",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003249",
+      "name": "Beef Golden Coin (PUL) 金钱腱",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003324",
+      "name": "Marinated Pork Liempo Skin Off 2CM 5KG 菲律宾式腌无皮三层肉片",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0001072",
+      "name": "Breaded Pork Chop +/-135G 2KG 面包糠猪扒",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003301",
+      "name": "Royal Delights Beef Bulgogi 2MM (R/Eye) (NonSpicy)",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003352",
+      "name": "Royal Delights Tempura Fish Finger 500G 天妇罗鱼条",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0002624",
+      "name": "Frip Carabinero Shrimp 6-8 红魔虾",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003079",
+      "name": "Frip Carabinero Shrimp 10-20 红魔虾",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003080",
+      "name": "Frip Carabinero Shrimp 20-30 红魔虾",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003353",
+      "name": "Pork Back Fat (Rivasam) 猪背油",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "F0000059",
+      "name": "Fresh Seabass Fillet 500G-1KG (Barramundi) 新鲜鲈鱼片",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003250",
+      "name": "Beef Rib Finger (PUL) 牛肋条",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "C0000088",
+      "name": "Caviar - Huso Dauricus (Hybrid) 50G (Purple) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000089",
+      "name": "Caviar - Huso Dauricus (Hybrid) 100G (Purple) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000090",
+      "name": "Caviar - Huso Dauricus (M) 50G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000091",
+      "name": "Caviar - Huso Dauricus (M) 100G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000092",
+      "name": "Caviar - Russian Sturgeon 50G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000094",
+      "name": "Caviar - Siberian Sturgeon 50G (Black) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000137",
+      "name": "Caviar - Huso Dauricus (M) 10G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000138",
+      "name": "Caviar - Huso Dauricus (M) 30G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000139",
+      "name": "Caviar - Russian Sturgeon 10G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000140",
+      "name": "Caviar - Russian Sturgeon 30G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000141",
+      "name": "Caviar - Russian Sturgeon 500G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000165",
+      "name": "Caviar - Huso Dauricus (Hybrid) 10G (Purple) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000166",
+      "name": "Caviar - Russian Sturgeon 1000G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000167",
+      "name": "Caviar - Huso Dauricus (M) 500G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000168",
+      "name": "Caviar - Huso Dauricus (M) 1000G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000169",
+      "name": "Caviar - Siberian Sturgeon 10G (Black) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000177",
+      "name": "Caviar - Huso Dauricus (M) 1000G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "C0000178",
+      "name": "Caviar - Russian Sturgeon 1000G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002688",
+      "name": "Caviar - Huso Dauricus (Hybrid) 50G (Purple) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002689",
+      "name": "Caviar - Huso Dauricus (Hybrid) 100G (Purple) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002690",
+      "name": "Caviar - Huso Dauricus (M) 50G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002691",
+      "name": "Caviar - Huso Dauricus (M) 100G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002692",
+      "name": "Caviar - Russian Sturgeon 50G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002693",
+      "name": "Caviar - Russian Sturgeon 100G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002694",
+      "name": "Caviar - Siberian Sturgeon 50G (Black) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0002695",
+      "name": "Caviar - Siberian Sturgeon 100G (Black) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003296",
+      "name": "Caviar - Huso Dauricus (M) 10G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003297",
+      "name": "Caviar - Russian Sturgeon 10G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003376",
+      "name": "Caviar - Huso Dauricus (M) 30G (Gold) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003377",
+      "name": "Caviar - Russian Sturgeon 30G (Red) 鱼子酱",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "P0003272",
+      "name": "Pork Belly Rindless Sheet Ribbed (Seara) 无皮薄三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002452",
+      "name": "Al-Lazat Beef Patty 180G 牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002594",
+      "name": "Al-Lazat Beef Patty Gourmet 120G 牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002603",
+      "name": "Crab Patty 120G 蟹肉汉堡",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "P0002742",
+      "name": "Al-Lazat Beef Patty (Herbs) 200G 牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002788",
+      "name": "Al-Lazat Chicken Patty 60G 鸡肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002930",
+      "name": "Fish Patty 620G 鱼肉汉堡",
+      "category": "FRZSF"
+    },
+    {
+      "pcode": "P0003065",
+      "name": "Al-Lazat Beef Patty 100G (Unseasoned)  牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003083",
+      "name": "Al-Lazat Beef Patty 150G (Unseasoned)  牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003245",
+      "name": "Blackhill Meats Beef Patty (Gourmet) 150G 牛肉汉堡",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "F0000001",
+      "name": "Fresh Seabass Whole GGS 1-2KG 新鲜鲈鱼",
+      "category": "FSHMT"
+    },
+    {
+      "pcode": "F0000005",
+      "name": "Fresh Soon Hock 新鲜笋壳鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000006",
+      "name": "Fresh Seabass Whole GGS 3-4KG 新鲜鲈鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000016",
+      "name": "Fresh Red Grouper 新鲜红石斑鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000020",
+      "name": "Fresh Kee Fish 350G up 新鲜记鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000021",
+      "name": "Fresh Flower Grouper 400G up 新鲜花石斑鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000023",
+      "name": "Fresh Red Grouper 450G up 新鲜红石斑鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000024",
+      "name": "Fresh Red Grouper 450G up (Super Grade) 新鲜红石斑鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000027",
+      "name": "Fresh Red Snapper 500G-1KG up 新鲜红鸡鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000033",
+      "name": "Fresh Squid",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000035",
+      "name": "Fresh Seabass Whole GGS 600-800G 新鲜鲈鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000052",
+      "name": "Fresh Grey Grouper 新鲜灰石斑鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000055",
+      "name": "Fresh Black Tiger Shrimp 16-20 新鲜老虎虾",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000061",
+      "name": "Fresh Black Tiger Shrimp 21-25 新鲜老虎虾",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000068",
+      "name": "Fresh Seabass Whole GGS 800G-1KG 新鲜鲈鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000079",
+      "name": "Fresh Black Tiger Shrimp 13-15 新鲜老虎虾",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000080",
+      "name": "Fresh Black Tiger Shrimp 11-13 新鲜老虎虾",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000082",
+      "name": "Fresh Threadfin 新鲜午鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000083",
+      "name": "Fresh Yellow Croaker 新鲜黄花鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000014",
+      "name": "Fresh Salmon 5-6KG 新鲜三文鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000015",
+      "name": "Fresh Salmon Flt Trim C Scale Off 1.7-2.0KG 新鲜三文鱼片",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "F0000018",
+      "name": "Fresh Salmon Scale Off 5-6KG 新鲜三文鱼",
+      "category": "FSHSF"
+    },
+    {
+      "pcode": "F0000037",
+      "name": "Fresh Salmon Flt Trim E Skin Off 1.7-2.0KG去皮新鲜三文鱼片",
+      "category": "PROSF"
+    },
+    {
+      "pcode": "C0000010",
+      "name": "Emborg Grana Padano Cheese 1KG",
+      "category": "OTHERS"
+    },
+    {
+      "pcode": "C0000039",
+      "name": "Emborg Sour Cream 10% 酸奶油",
+      "category": "DRY"
+    },
+    {
+      "pcode": "C0000116",
+      "name": "Emborg Sour Cream 24% 酸奶油",
+      "category": "DRY"
+    },
+    {
+      "pcode": "P0002381",
+      "name": "Beef Marrow Bone (Friboi) 牛骨",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003126",
+      "name": "US Angus BF Brisket CHOICE (IBP) 美国牛腩",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003311",
+      "name": "US Angus BF Heel Muscle CHOICE (Creekstone) #46533",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003339",
+      "name": "US Angus BF Heel Muscle PRIME (Creekstone)美国特级无骨牛腱",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003350",
+      "name": "US Angus BF Heel Muscle CHOICE (Creekstone) #46563",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003381",
+      "name": "US Angus BF Heel Muscle Round Boneless CHOICE(IBP)",
+      "category": "FRZMT"
+    },
+    {
+      "pcode": "P0003411",
+      "name": "Cooked Octopus Legs 100-200G 章鱼脚",
+      "category": "nan"
+    },
+    {
+      "pcode": "P0001006",
+      "name": "Pork Collar (Sulina) 五花肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002319",
+      "name": "Al-Lazat Beef Golden Coin Cut 500G 金钱腱切",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001195",
+      "name": "Pork Collar (Frimesa) 五花肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001273",
+      "name": "Pork Shoulder Boneless (Frimesa) 猪前侧",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0002301",
+      "name": "Pork Belly Sheet Ribbed Skin On (Aurora)",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0001166",
+      "name": "Pork Belly Single Ribbed Brazil (Sulina) 三层肉",
+      "category": "PROMT"
+    },
+    {
+      "pcode": "P0003097",
+      "name": "Pork Belly Single Ribbed (Germany) 三层肉",
+      "category": "PROMT"
+    }
+  ]
+}
