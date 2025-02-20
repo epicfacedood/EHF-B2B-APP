@@ -4,7 +4,7 @@ import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
 import { Link, useNavigate } from "react-router-dom";
-import { getProductImage } from "../utils/imageUtils";
+import { getProductImage, getFallbackImage } from "../utils/imageUtils";
 import NoImage from "../components/NoImage";
 import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
 import { toast } from "react-toastify";
@@ -17,6 +17,7 @@ const Cart = () => {
     currency,
     cartItems = {},
     updateQuantity,
+    removeFromCart,
   } = useContext(ShopContext);
   const [imageError, setImageError] = useState({});
 
@@ -67,17 +68,20 @@ const Cart = () => {
 
             return (
               <div
-                key={productId}
+                key={`${productId}-${quantities[0]}`}
                 className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded shadow"
               >
                 {/* Image section */}
                 <div className="w-full sm:w-24 h-40 sm:h-24 flex-shrink-0">
                   {!imageError[productId] ? (
                     <img
-                      src={getProductImage(product.pcode)}
+                      src={product.image?.[0] || getFallbackImage()}
                       alt={product.itemName}
                       className="w-full h-full object-contain"
-                      onError={() => handleImageError(productId)}
+                      onError={(e) => {
+                        e.target.src = getFallbackImage();
+                        handleImageError(productId);
+                      }}
                     />
                   ) : (
                     <NoImage pcode={product.pcode} name={product.itemName} />
@@ -101,7 +105,7 @@ const Cart = () => {
                   <div className="mt-4 space-y-3">
                     {Object.entries(quantities).map(([uom, quantity]) => (
                       <div
-                        key={uom}
+                        key={`${productId}-${uom}`}
                         className="flex flex-wrap items-center gap-4"
                       >
                         <span className="w-20 text-sm">{uom}</span>
@@ -142,6 +146,16 @@ const Cart = () => {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Remove button */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => removeFromCart(product._id, quantities[0])}
+                    className="text-red-500 hover:text-red-600 text-sm"
+                  >
+                    Remove
+                  </button>
                 </div>
               </div>
             );
