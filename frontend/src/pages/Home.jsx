@@ -18,8 +18,6 @@ const Home = () => {
       <BrandCarousel />
       <LatestCollection />
       <BestSeller />
-      <OurPolicy />
-      <NewsLetterBox />
     </div>
   );
 };
