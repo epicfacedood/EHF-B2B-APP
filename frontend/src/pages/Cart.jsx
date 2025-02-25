@@ -149,14 +149,7 @@ const Cart = () => {
                 </div>
 
                 {/* Remove button */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => removeFromCart(product._id, quantities[0])}
-                    className="text-red-500 hover:text-red-600 text-sm"
-                  >
-                    Remove
-                  </button>
-                </div>
+                <div className="flex items-center gap-2"></div>
               </div>
             );
           })}

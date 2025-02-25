@@ -105,14 +105,7 @@ const parseUoms = (uomsString) => {
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({}).sort({ itemName: 1 });
-    console.log(
-      "Sending products with images:",
-      products.map((p) => ({
-        pcode: p.pcode,
-        hasImage: p.image?.length > 0,
-        firstImage: p.image?.[0],
-      }))
-    );
+
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error listing products:", error);

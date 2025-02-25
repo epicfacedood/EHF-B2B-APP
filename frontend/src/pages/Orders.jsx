@@ -11,6 +11,18 @@ const Orders = () => {
     return Number(price).toFixed(2);
   };
 
+  const formatDeliveryDate = (dateString) => {
+    console.log("Formatting delivery date:", dateString);
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   const loadOrderData = async () => {
     try {
       if (!token) return;
@@ -33,6 +45,7 @@ const Orders = () => {
               orderId: order.orderId,
               date: order.date,
               time: order.time,
+              deliveryDate: order.deliveryDate,
               status: order.status,
               customerName: order.customerName,
               address: order.address,
@@ -87,6 +100,14 @@ const Orders = () => {
     });
   };
 
+  const flattenedOrders = orders.flatMap((order) => {
+    return order.items.map((item) => ({
+      // ... other fields ...
+      "Delivery Date": formatDeliveryDate(order.deliveryDate),
+      // ... rest of the fields ...
+    }));
+  });
+
   return (
     <div className="border-t pt-16">
       <div className="text-2xl mb-8">
@@ -103,6 +124,12 @@ const Orders = () => {
                 <p className="text-lg font-semibold">Order #{order.orderId}</p>
                 <p className="text-sm text-gray-600">
                   {formatDate(order.date)}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Delivery Date:{" "}
+                  <span className="text-gray-800">
+                    {formatDeliveryDate(order.deliveryDate)}
+                  </span>
                 </p>
               </div>
               <div className="text-right">
@@ -144,10 +171,24 @@ const Orders = () => {
                 <div className="md:w-1/3">
                   <h4 className="font-medium mb-2">Delivery Details</h4>
                   <div className="text-sm text-gray-600 space-y-1">
-                    <p>{order.customerName}</p>
-                    <p>{order.address}</p>
-                    <p>{order.postalCode}</p>
-                    <p>{order.phone}</p>
+                    <p>
+                      Customer Name:{" "}
+                      <span className="text-gray-800">
+                        {order.customerName}
+                      </span>
+                    </p>
+                    <p>
+                      Address:{" "}
+                      <span className="text-gray-800">{order.address}</span>
+                    </p>
+                    <p>
+                      Postal Code:{" "}
+                      <span className="text-gray-800">{order.postalCode}</span>
+                    </p>
+                    <p>
+                      Phone:{" "}
+                      <span className="text-gray-800">{order.phone}</span>
+                    </p>
                     {order.remarks && (
                       <p className="mt-2 italic">Note: {order.remarks}</p>
                     )}

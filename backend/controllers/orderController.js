@@ -38,6 +38,7 @@ const placeOrder = async (req, res) => {
         orderId, // Same orderId for all items in this order
         date: orderDate,
         time: orderTime,
+        deliveryDate: new Date(customerInfo.deliveryDate),
         customerName: customerInfo.name,
         customerId: user.customerId,
         productName: item.itemName,
@@ -107,6 +108,7 @@ const placeOrderStripe = async (req, res) => {
         orderId,
         date: now,
         time: now.toLocaleTimeString(),
+        deliveryDate: new Date(customerInfo.deliveryDate),
         customerName: customerInfo.name,
         customerId: req.user._id,
         productName: item.itemName,

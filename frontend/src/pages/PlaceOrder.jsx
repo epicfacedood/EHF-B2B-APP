@@ -17,6 +17,7 @@ const PlaceOrder = () => {
     address: "",
     postalCode: "",
     remarks: "",
+    deliveryDate: "",
   });
 
   // Fetch user data when component mounts
@@ -39,6 +40,7 @@ const PlaceOrder = () => {
             address: userData.address || "", // Street address
             postalCode: userData.postalCode || "",
             remarks: "", // Remarks always start empty
+            deliveryDate: "",
           });
         }
       } catch (error) {
@@ -102,10 +104,34 @@ const PlaceOrder = () => {
   const { items, subtotalPrice, totalPrice } = calculateTotals();
 
   const handleInputChange = (e) => {
+    console.log("Delivery date changed:", e.target.name, e.target.value);
     setOrderInfo({
       ...orderInfo,
       [e.target.name]: e.target.value,
     });
+  };
+
+  // Function to generate available delivery dates
+  const getAvailableDeliveryDates = () => {
+    const dates = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time part to ensure consistent comparison
+
+    // Start from tomorrow
+    for (let i = 1; i <= 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date);
+    }
+    return dates;
+  };
+
+  // Add this helper function to format the date for the select value
+  const formatDateForInput = (date) => {
+    if (!date) return "";
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "";
+    return d.toISOString();
   };
 
   const onSubmitHandler = async (event) => {
@@ -159,6 +185,7 @@ const PlaceOrder = () => {
           address: orderInfo.address,
           postalCode: orderInfo.postalCode,
           remarks: orderInfo.remarks,
+          deliveryDate: orderInfo.deliveryDate,
         },
         subtotalPrice: parseFloat(subtotalPrice) || 0,
         totalPrice: parseFloat(totalPrice) || 0,
@@ -352,6 +379,39 @@ const PlaceOrder = () => {
                   <span>${formatPrice(totalPrice)}</span>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold mb-4">Delivery Information</h2>
+
+            <div>
+              <label
+                htmlFor="deliveryDate"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Delivery Date
+              </label>
+              <select
+                id="deliveryDate"
+                name="deliveryDate"
+                value={formatDateForInput(orderInfo.deliveryDate)}
+                onChange={handleInputChange}
+                className="w-full p-2 border rounded"
+                required
+              >
+                <option value="">Select a delivery date</option>
+                {getAvailableDeliveryDates().map((date) => (
+                  <option key={date.toISOString()} value={date.toISOString()}>
+                    {date.toLocaleDateString("en-US", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>
