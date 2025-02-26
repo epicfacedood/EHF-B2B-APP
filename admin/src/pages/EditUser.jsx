@@ -115,6 +115,16 @@ const EditUser = ({ token }) => {
     setUser({ ...user, productsAvailable: [] });
   };
 
+  const handleAddressChange = (field, value) => {
+    setUser({
+      ...user,
+      address: {
+        ...user.address,
+        [field]: value,
+      },
+    });
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
 
@@ -186,13 +196,27 @@ const EditUser = ({ token }) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Address
+              Street Address
             </label>
-            <textarea
-              value={user.address || ""}
-              onChange={(e) => setUser({ ...user, address: e.target.value })}
+            <input
+              type="text"
+              value={user.address?.street || ""}
+              onChange={(e) => handleAddressChange("street", e.target.value)}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
-              rows={3}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Postal Code
+            </label>
+            <input
+              type="text"
+              value={user.address?.postalCode || ""}
+              onChange={(e) =>
+                handleAddressChange("postalCode", e.target.value)
+              }
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"
             />
           </div>
         </div>

@@ -70,6 +70,9 @@ const Users = ({ token }) => {
                       Customer ID
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Address
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       In Price List
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -96,6 +99,21 @@ const Users = ({ token }) => {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-500">
                           {user.customerId || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">
+                          {user.address && typeof user.address === "object" ? (
+                            <>
+                              {user.address.street || ""}
+                              {user.address.street && user.address.postalCode
+                                ? ", "
+                                : ""}
+                              {user.address.postalCode || ""}
+                            </>
+                          ) : (
+                            "N/A"
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
