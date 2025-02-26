@@ -9,6 +9,7 @@ const EditProduct = ({ token }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [product, setProduct] = useState(null);
 
   // Form state
@@ -23,6 +24,7 @@ const EditProduct = ({ token }) => {
   const [bestseller, setBestSeller] = useState(false);
   const [uomOptions, setUomOptions] = useState([{ code: "", qtyPerUOM: 1 }]);
   const [existingImages, setExistingImages] = useState([]);
+  const [imagesToRemove, setImagesToRemove] = useState([]);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -47,6 +49,7 @@ const EditProduct = ({ token }) => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(`${backendUrl}/api/product/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -62,31 +65,41 @@ const EditProduct = ({ token }) => {
           setPackagingSize(productData.packagingSize || "");
           setBestSeller(productData.bestseller || false);
 
-          // Handle UOM options
+          // Set UOM options
           if (productData.uomOptions && productData.uomOptions.length > 0) {
             setUomOptions(productData.uomOptions);
-          } else {
-            // If no UOM options, create a default one with the base unit
-            setUomOptions([{ code: productData.baseUnit || "", qtyPerUOM: 1 }]);
           }
 
           // Set existing images
-          setExistingImages(productData.image || []);
+          if (productData.image && productData.image.length > 0) {
+            setExistingImages(productData.image);
+          }
         } else {
           toast.error("Failed to fetch product");
-          navigate("/admin/products");
         }
       } catch (error) {
         console.error("Error fetching product:", error);
         toast.error("Error fetching product");
-        navigate("/admin/products");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProduct();
-  }, [id, token, backendUrl, navigate]);
+  }, [id, token, backendUrl]);
+
+  // Handle removing an existing image
+  const handleRemoveImage = (index) => {
+    const updatedImages = [...existingImages];
+    const removedImage = updatedImages[index];
+    updatedImages.splice(index, 1);
+    setExistingImages(updatedImages);
+
+    // Track which images to remove on the server
+    if (removedImage) {
+      setImagesToRemove([...imagesToRemove, removedImage]);
+    }
+  };
 
   // Handle UOM option changes
   const handleUomOptionChange = (index, field, value) => {
@@ -109,12 +122,12 @@ const EditProduct = ({ token }) => {
 
   // Remove UOM option
   const removeUomOption = (index) => {
-    if (uomOptions.length > 1) {
-      const newUomOptions = uomOptions.filter((_, i) => i !== index);
-      setUomOptions(newUomOptions);
-    }
+    const newUomOptions = [...uomOptions];
+    newUomOptions.splice(index, 1);
+    setUomOptions(newUomOptions);
   };
 
+  // Handle form submission
   const onSubmitHandler = async (e) => {
     e.preventDefault();
 
@@ -128,6 +141,10 @@ const EditProduct = ({ token }) => {
     }
 
     try {
+      // Show loading state
+      setSubmitting(true);
+      const loadingToast = toast.loading("Updating product...");
+
       const formData = new FormData();
       formData.append("itemName", itemName);
       formData.append("pcode", pcode);
@@ -138,7 +155,13 @@ const EditProduct = ({ token }) => {
       // Add UOM options as JSON string
       formData.append("uomOptions", JSON.stringify(validUomOptions));
 
-      // Add new images if provided
+      // Add existing images to keep
+      formData.append("existingImages", JSON.stringify(existingImages));
+
+      // Add images to remove
+      formData.append("imagesToRemove", JSON.stringify(imagesToRemove));
+
+      // Add new images
       if (image1) formData.append("image1", image1);
       if (image2) formData.append("image2", image2);
       if (image3) formData.append("image3", image3);
@@ -155,133 +178,223 @@ const EditProduct = ({ token }) => {
         }
       );
 
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
       if (response.data.success) {
-        toast.success(response.data.message);
-        navigate("/admin/products");
+        toast.success("Product updated successfully");
+        // Redirect to products list
+        navigate("/list");
       } else {
         toast.error(response.data.message);
+        setSubmitting(false);
       }
     } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error("Failed to update product");
+      console.error("Error updating product:", error);
+      toast.error(
+        "Failed to update product: " +
+          (error.response?.data?.message || error.message)
+      );
+      setSubmitting(false);
     }
   };
 
   if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
   }
 
   if (!product) {
-    return <div className="text-center py-10">Product not found</div>;
+    return (
+      <div className="text-center py-8">
+        <h2 className="text-xl font-semibold text-red-600">
+          Product not found
+        </h2>
+        <button
+          onClick={() => navigate("/list")}
+          className="mt-4 px-4 py-2 bg-black text-white"
+        >
+          Back to Products
+        </button>
+      </div>
+    );
   }
 
   return (
-    <form onSubmit={onSubmitHandler}>
-      <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
+    <form
+      onSubmit={onSubmitHandler}
+      className="p-4 max-w-4xl mx-auto space-y-6"
+    >
+      <h2 className="text-2xl font-semibold">Edit Product</h2>
 
-      <div>
-        <p className="mb-2">Product Images</p>
-        <div className="flex gap-2 mb-4">
-          {[
-            { state: image1, setState: setImage1, index: 0 },
-            { state: image2, setState: setImage2, index: 1 },
-            { state: image3, setState: setImage3, index: 2 },
-            { state: image4, setState: setImage4, index: 3 },
-          ].map((img, i) => (
-            <label key={i} htmlFor={`image${i + 1}`}>
-              <img
-                className="w-20 h-20 object-cover border"
-                src={
-                  img.state
-                    ? URL.createObjectURL(img.state)
-                    : existingImages[img.index] || assets.upload_area
-                }
-                alt=""
-              />
-              <input
-                onChange={(e) => img.setState(e.target.files[0])}
-                type="file"
-                id={`image${i + 1}`}
-                hidden
-              />
-            </label>
-          ))}
-        </div>
-      </div>
-
-      <div className="w-full mb-4">
-        <p className="mb-2">Product Name</p>
-        <input
-          onChange={(e) => setItemName(e.target.value)}
-          value={itemName}
-          className="w-full max-w-[500px] px-3 py-2 border rounded"
-          type="text"
-          placeholder="Type here"
-          required
-        />
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-4 w-full mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <p className="mb-2">Product Code (Pcode)</p>
+          <label className="block text-gray-700 mb-2">Product Name</label>
           <input
-            onChange={(e) => setPcode(e.target.value)}
+            type="text"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 mb-2">Product Code</label>
+          <input
+            type="text"
             value={pcode}
+            onChange={(e) => setPcode(e.target.value)}
             className="w-full px-3 py-2 border rounded"
-            type="text"
-            placeholder="P12345"
             required
           />
         </div>
+
         <div>
-          <p className="mb-2">Base Unit</p>
+          <label className="block text-gray-700 mb-2">Base Unit</label>
           <input
-            onChange={(e) => setBaseUnit(e.target.value)}
+            type="text"
             value={baseUnit}
+            onChange={(e) => setBaseUnit(e.target.value)}
             className="w-full px-3 py-2 border rounded"
-            type="text"
-            placeholder="PCS"
             required
           />
         </div>
+
         <div>
-          <p className="mb-2">Packaging Size</p>
+          <label className="block text-gray-700 mb-2">Packaging Size</label>
           <input
-            onChange={(e) => setPackagingSize(e.target.value)}
-            value={packagingSize}
-            className="w-full px-3 py-2 border rounded"
             type="text"
-            placeholder="1kg/10pkt"
+            value={packagingSize}
+            onChange={(e) => setPackagingSize(e.target.value)}
+            className="w-full px-3 py-2 border rounded"
             required
           />
         </div>
       </div>
 
-      <div className="mt-4 max-w-[800px] mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <p className="font-medium">Units of Measure (UOM)</p>
-          <button
-            type="button"
-            onClick={addUomOption}
-            className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300 text-sm"
-          >
-            + Add UOM
-          </button>
-        </div>
+      <div className="mb-6">
+        <label className="block text-gray-700 mb-2">Product Images</label>
+
+        {/* Display existing images */}
+        {existingImages.length > 0 && (
+          <div className="mb-4">
+            <p className="text-sm text-gray-600 mb-2">Current Images:</p>
+            <div className="flex flex-wrap gap-4">
+              {existingImages.map((img, index) => (
+                <div key={index} className="relative">
+                  <img
+                    src={img}
+                    alt={`Product ${index + 1}`}
+                    className="w-24 h-24 object-cover border rounded"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Image upload fields - only show if there are fewer than 4 existing images */}
+        {existingImages.length < 4 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {existingImages.length < 1 && (
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  Image 1
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setImage1(e.target.files[0])}
+                  className="w-full text-sm"
+                  accept="image/*"
+                />
+              </div>
+            )}
+            {existingImages.length < 2 && (
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  Image 2
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setImage2(e.target.files[0])}
+                  className="w-full text-sm"
+                  accept="image/*"
+                />
+              </div>
+            )}
+            {existingImages.length < 3 && (
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  Image 3
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setImage3(e.target.files[0])}
+                  className="w-full text-sm"
+                  accept="image/*"
+                />
+              </div>
+            )}
+            {existingImages.length < 4 && (
+              <div>
+                <label className="block text-sm text-gray-600 mb-1">
+                  Image 4
+                </label>
+                <input
+                  type="file"
+                  onChange={(e) => setImage4(e.target.files[0])}
+                  className="w-full text-sm"
+                  accept="image/*"
+                />
+              </div>
+            )}
+          </div>
+        )}
+
+        {existingImages.length >= 4 && (
+          <p className="text-sm text-amber-600">
+            Maximum number of images reached. Remove an image before adding a
+            new one.
+          </p>
+        )}
+      </div>
+
+      <div className="mb-6">
+        <label className="block text-gray-700 mb-2">UOM Options</label>
+        <button
+          type="button"
+          onClick={addUomOption}
+          className="mb-2 px-3 py-1 bg-blue-100 rounded hover:bg-blue-200"
+        >
+          Add UOM Option
+        </button>
 
         {uomOptions.map((option, index) => (
-          <div key={index} className="flex flex-wrap gap-2 mb-3 items-center">
+          <div
+            key={index}
+            className="flex items-center gap-4 mb-2 p-2 border rounded"
+          >
             <select
               value={option.code}
               onChange={(e) =>
                 handleUomOptionChange(index, "code", e.target.value)
               }
-              className="w-32 px-3 py-2 border rounded"
+              className="px-3 py-2 border rounded"
               required
             >
-              <option value="" disabled>
-                Select UOM
-              </option>
+              <option value="">Select UOM</option>
               {availableUoms.map((uom) => (
                 <option key={uom} value={uom}>
                   {uom}
@@ -317,7 +430,7 @@ const EditProduct = ({ token }) => {
         ))}
       </div>
 
-      <div className="flex gap-2 mt-4 mb-4">
+      <div className="flex gap-2 mt-4">
         <input
           onChange={() => setBestSeller((prev) => !prev)}
           checked={bestseller}
@@ -325,18 +438,23 @@ const EditProduct = ({ token }) => {
           id="bestseller"
         />
         <label className="cursor-pointer" htmlFor="bestseller">
-          Bestseller
+          Add to bestseller
         </label>
       </div>
 
-      <div className="flex gap-4">
-        <button className="px-6 py-2 bg-black text-white rounded" type="submit">
-          Update Product
+      <div className="flex gap-4 mt-6">
+        <button
+          className="px-6 py-3 bg-black text-white disabled:bg-gray-400"
+          type="submit"
+          disabled={submitting}
+        >
+          {submitting ? "Updating..." : "Update Product"}
         </button>
         <button
-          className="px-6 py-2 bg-gray-200 rounded"
           type="button"
-          onClick={() => navigate("/admin/products")}
+          className="px-6 py-3 bg-gray-200 text-gray-800"
+          onClick={() => navigate("/list")}
+          disabled={submitting}
         >
           Cancel
         </button>

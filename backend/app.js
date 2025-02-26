@@ -5,9 +5,23 @@ import morgan from "morgan";
 import connectDB from "./config/mongodb.js";
 import routes from "./routes/index.js";
 import userRouter from "./routes/userRoute.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
-// Configure env
-dotenv.config();
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Load environment variables from .env file
+const envPath = path.resolve(__dirname, ".env");
+console.log(`Loading environment variables from: ${envPath}`);
+const result = dotenv.config({ path: envPath });
+
+if (result.error) {
+  console.error("Error loading .env file:", result.error);
+} else {
+  console.log(".env file loaded successfully");
+}
 
 // Database config
 connectDB();

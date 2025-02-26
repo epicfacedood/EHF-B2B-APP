@@ -1,0 +1,234 @@
+[
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000145",
+    "unitPrice": 15.8,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Okeanoss Black Tiger Shrimp PND 31-40 老虎虾仁"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000152",
+    "unitPrice": 2.5,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE)Emborg Buttery Cook & Bake(Butter blend)"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000495",
+    "unitPrice": 3.3,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Bread Crumb/Panko #4 面包糠 (10KG)"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000514",
+    "unitPrice": 7,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Mayonnaise QP No.210 美乃滋"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000826",
+    "unitPrice": 26,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Smoked Salmon (Pre-Slice) 900G 烟熏三文鱼片"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0001663",
+    "unitPrice": 23.849999999999998,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE) Frz Smoked Salmon (Pre-Slice) 烟熏三文鱼片"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0001703",
+    "unitPrice": 31,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE)Ama Ebi Hoso 3L"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "F0000015",
+    "unitPrice": 24,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Fresh Salmon Flt Trim C Scale Off 1.7-2.0KG 新鲜三文鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000171",
+    "unitPrice": 3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Chicken Bone 鸡骨"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000195",
+    "unitPrice": 6.3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Boneless Chicken Leg Skinless (Seara) 无皮无骨鸡腿肉"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000227",
+    "unitPrice": 6.1,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Chicken Nugget (Thailand) 泰国麦金鸡块"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000300",
+    "unitPrice": 8.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Roasted Wing Stick 烘烤鸡槌翅"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000444",
+    "unitPrice": 7,
+    "baseUnit": "BOX",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Cocktail Veg Spring Roll 15G 春卷"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000450",
+    "unitPrice": 23,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Farm Best Dory Fillet 300-400G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000454",
+    "unitPrice": 23,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Farm Best Dory Fillet 400-500G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000459",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Eastern Farm Dory Fillet 300-400G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000624",
+    "unitPrice": 21.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Fresh Salmon Flt TrimC ScaleOff 1.7-2KG"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000812",
+    "unitPrice": 21,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Salmon Fillet Trim C Scale Off 3-4LB 三文鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000935",
+    "unitPrice": 6.7,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Cube Skin Off 3CM 2KG 无皮鸡丁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000937",
+    "unitPrice": 6.7,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Cube Skin Off 3CM 5KG 无皮鸡丁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000945",
+    "unitPrice": 5.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Minced Meat 2KG 鸡肉碎"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001140",
+    "unitPrice": 9,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Karaage Chicken Batter Type 脆香鸡块"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001141",
+    "unitPrice": 9.2,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Crispy Chicken with Seaweed 紫菜鸡"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001548",
+    "unitPrice": 2.6,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Green Peas 青豆"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001549",
+    "unitPrice": 1.8,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Mixed Vegetable 杂豆"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001550",
+    "unitPrice": 2.6,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Sweet Corn 玉米"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001800",
+    "unitPrice": 2.3,
+    "baseUnit": "PKT",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Edamame Beans 毛豆仁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001858",
+    "unitPrice": 2.4,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Broccoli 冷冻西兰花"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001859",
+    "unitPrice": 2.3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Cauliflower 冷冻菜花"
+  }
+]

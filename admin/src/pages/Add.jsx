@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(null);
@@ -21,6 +22,8 @@ const Add = ({ token }) => {
   const [uomOptions, setUomOptions] = useState([{ code: "", qtyPerUOM: 1 }]);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
 
   // List of available UOMs
   const availableUoms = [
@@ -79,6 +82,10 @@ const Add = ({ token }) => {
     }
 
     try {
+      // Show loading toast
+      setSubmitting(true);
+      const loadingToast = toast.loading("Adding product...");
+
       const formData = new FormData();
       formData.append("itemName", itemName);
       formData.append("pcode", pcode);
@@ -89,16 +96,39 @@ const Add = ({ token }) => {
       // Add UOM options as JSON string
       formData.append("uomOptions", JSON.stringify(validUomOptions));
 
-      // Add images
-      if (image1) formData.append("image1", image1);
-      if (image2) formData.append("image2", image2);
-      if (image3) formData.append("image3", image3);
-      if (image4) formData.append("image4", image4);
+      // Add images with better error handling
+      let imageCount = 0;
+      if (image1) {
+        console.log("Adding image1:", image1.name, image1.type, image1.size);
+        formData.append("image1", image1);
+        imageCount++;
+      }
+      if (image2) {
+        console.log("Adding image2:", image2.name, image2.type, image2.size);
+        formData.append("image2", image2);
+        imageCount++;
+      }
+      if (image3) {
+        console.log("Adding image3:", image3.name, image3.type, image3.size);
+        formData.append("image3", image3);
+        imageCount++;
+      }
+      if (image4) {
+        console.log("Adding image4:", image4.name, image4.type, image4.size);
+        formData.append("image4", image4);
+        imageCount++;
+      }
+
+      console.log(`Adding ${imageCount} images to the product`);
 
       // Log the form data for debugging
       console.log("UOM Options being sent:", validUomOptions);
       for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1]);
+        if (pair[0].startsWith("image")) {
+          console.log(pair[0], "File object included");
+        } else {
+          console.log(pair[0], pair[1]);
+        }
       }
 
       const response = await axios.post(
@@ -112,8 +142,12 @@ const Add = ({ token }) => {
         }
       );
 
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
       if (response.data.success) {
         toast.success(response.data.message);
+        // Reset form
         setItemName("");
         setPcode("");
         setBaseUnit("");
@@ -123,12 +157,20 @@ const Add = ({ token }) => {
         setImage3(null);
         setImage4(null);
         setUomOptions([{ code: "", qtyPerUOM: 1 }]);
+
+        // Redirect to products list after successful add
+        navigate("/admin/products");
       } else {
         toast.error(response.data.message);
+        setSubmitting(false);
       }
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("Failed to add product");
+      toast.error(
+        "Failed to add product: " +
+          (error.response?.data?.message || error.message)
+      );
+      setSubmitting(false);
     }
   };
 

@@ -11,6 +11,9 @@ import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
 import productModel from "../models/productModel.js";
+import fs from "fs";
+import path from "path";
+import { v2 as cloudinary } from "cloudinary";
 
 const productRouter = express.Router();
 
@@ -65,6 +68,64 @@ productRouter.get("/:id", adminAuth, async (req, res) => {
   } catch (error) {
     console.error("Error fetching product:", error);
     res.status(500).json({ success: false, message: "Error fetching product" });
+  }
+});
+
+// Add this route to test Cloudinary configuration
+productRouter.get("/test-cloudinary", adminAuth, async (req, res) => {
+  try {
+    // Check if Cloudinary is configured
+    const cloudinaryConfig = {
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? "Set" : "Not set",
+      api_key: process.env.CLOUDINARY_API_KEY ? "Set" : "Not set",
+      api_secret: process.env.CLOUDINARY_API_SECRET ? "Set" : "Not set",
+    };
+
+    res.json({
+      success: true,
+      message: "Cloudinary configuration check",
+      config: cloudinaryConfig,
+      uploadsDir: path.join(process.cwd(), "uploads"),
+      uploadsExists: fs.existsSync(path.join(process.cwd(), "uploads")),
+    });
+  } catch (error) {
+    console.error("Error testing Cloudinary:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error testing Cloudinary" });
+  }
+});
+
+// Add this route to test Cloudinary directly
+productRouter.get("/test-cloudinary-direct", adminAuth, async (req, res) => {
+  try {
+    // Create a simple string to upload
+    const testData =
+      "data:text/plain;base64," +
+      Buffer.from("Test data from API").toString("base64");
+
+    console.log("Testing direct Cloudinary upload from API...");
+    const result = await cloudinary.uploader.upload(testData, {
+      folder: "test",
+      resource_type: "raw",
+    });
+
+    res.json({
+      success: true,
+      message: "Cloudinary upload successful",
+      result: {
+        public_id: result.public_id,
+        url: result.url,
+        secure_url: result.secure_url,
+      },
+    });
+  } catch (error) {
+    console.error("Error testing Cloudinary from API:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error testing Cloudinary",
+      error: error.message,
+    });
   }
 });
 
