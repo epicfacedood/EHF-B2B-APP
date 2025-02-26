@@ -55,5 +55,17 @@ productRouter.post(
   ]),
   updateProduct
 );
+productRouter.get("/:id", adminAuth, async (req, res) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product) {
+      return res.json({ success: false, message: "Product not found" });
+    }
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    res.status(500).json({ success: false, message: "Error fetching product" });
+  }
+});
 
 export default productRouter;

@@ -27,17 +27,20 @@ const uploadToCloudinary = async (file) => {
 
 const addProduct = async (req, res) => {
   try {
-    const {
-      itemName,
-      pcode,
-      price,
-      baseUnit,
-      packagingSize,
-      uom,
-      uoms,
-      category,
-      bestseller,
-    } = req.body;
+    const { itemName, pcode, baseUnit, packagingSize, bestseller, uomOptions } =
+      req.body;
+
+    // Parse uomOptions from JSON string
+    let parsedUomOptions;
+    try {
+      parsedUomOptions = JSON.parse(uomOptions);
+    } catch (error) {
+      console.error("Error parsing uomOptions:", error);
+      return res.json({
+        success: false,
+        message: "Invalid UOM options format",
+      });
+    }
 
     // Handle image uploads
     const images = [];
@@ -48,10 +51,6 @@ const addProduct = async (req, res) => {
       req.files?.image4?.[0],
     ].filter(Boolean);
 
-    // Debug logs
-    console.log("Files received:", req.files);
-    console.log("Image files to process:", imageFiles);
-
     // Upload all images to Cloudinary
     for (const file of imageFiles) {
       const imageUrl = await uploadToCloudinary(file);
@@ -61,32 +60,26 @@ const addProduct = async (req, res) => {
       }
     }
 
-    // Debug logs for image upload
-    console.log("Files received:", req.files);
-    console.log("Image files to process:", imageFiles);
-    console.log("Cloudinary URLs:", images);
-
+    // Create product data object with only the new schema fields
     const productData = {
       itemName,
       pcode,
-      price: Number(price),
       baseUnit,
       packagingSize,
-      uom,
-      uoms,
-      category,
-      bestseller: bestseller === "true",
+      bestseller: bestseller === "true" || bestseller === true,
+      uomOptions: parsedUomOptions,
       image: images,
       date: Date.now(),
     };
 
+    // Log the data being saved
     console.log("Final product data being saved:", productData);
 
+    // Create and save the product
     const product = new productModel(productData);
     await product.save();
 
-    // Log the saved product
-    console.log("Saved product:", product);
+    console.log("Saved product:", JSON.stringify(product, null, 2));
 
     res.json({ success: true, message: "Product added successfully" });
   } catch (error) {
@@ -159,17 +152,20 @@ const getAllProducts = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      itemName,
-      pcode,
-      price,
-      baseUnit,
-      packagingSize,
-      uom,
-      uoms,
-      category,
-      bestseller,
-    } = req.body;
+    const { itemName, pcode, baseUnit, packagingSize, bestseller, uomOptions } =
+      req.body;
+
+    // Parse uomOptions from JSON string
+    let parsedUomOptions;
+    try {
+      parsedUomOptions = JSON.parse(uomOptions);
+    } catch (error) {
+      console.error("Error parsing uomOptions:", error);
+      return res.json({
+        success: false,
+        message: "Invalid UOM options format",
+      });
+    }
 
     // Handle image files
     const image1 = req.files?.image1?.[0];
@@ -204,19 +200,16 @@ const updateProduct = async (req, res) => {
       if (imageUrl) images[3] = imageUrl;
     }
 
-    // Update product
+    // Update product with only the new schema fields
     const updatedProduct = await productModel.findByIdAndUpdate(
       id,
       {
         itemName,
         pcode,
-        price: Number(price),
         baseUnit,
         packagingSize,
-        uom,
-        uoms,
-        category,
         bestseller: bestseller === "true" || bestseller === true,
+        uomOptions: parsedUomOptions,
         image: images.filter(Boolean),
       },
       { new: true }

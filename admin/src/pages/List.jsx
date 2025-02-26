@@ -135,7 +135,7 @@ const List = ({ token }) => {
           <div>Name</div>
           <div>Code</div>
           <div>Price</div>
-          <div>Package</div>
+          <div>Packaging Size</div>
           <div>UOM</div>
           <div>UOMs</div>
           <div className="text-center">Actions</div>
