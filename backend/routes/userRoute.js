@@ -8,6 +8,7 @@ import {
   getUserById,
   updateUser,
   getUserProfile,
+  getUsersWithPriceListInfo,
 } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import authUser from "../middleware/auth.js";
@@ -22,7 +23,7 @@ userRouter.post("/admin", adminLogin);
 userRouter.get("/name", authenticateToken, getName);
 
 // Admin routes
-userRouter.get("/admin/users", authUser, getAllUsers);
+userRouter.get("/admin/users", authUser, getUsersWithPriceListInfo);
 userRouter.get("/admin/:userId", authUser, getUserById);
 userRouter.put("/admin/:userId", authUser, updateUser);
 

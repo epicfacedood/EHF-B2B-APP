@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 const Users = ({ token }) => {
   const [users, setUsers] = useState([]);
@@ -15,6 +16,9 @@ const Users = ({ token }) => {
         const response = await axios.get(`${backendUrl}/api/user/admin/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
+          },
+          params: {
+            includePriceListInfo: true,
           },
         });
 
@@ -66,6 +70,9 @@ const Users = ({ token }) => {
                       Customer ID
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      In Price List
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Joined
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -90,6 +97,14 @@ const Users = ({ token }) => {
                         <div className="text-sm text-gray-500">
                           {user.customerId || "N/A"}
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {user.inPriceList && (
+                          <CheckCircleIcon
+                            className="h-5 w-5 text-green-500"
+                            aria-hidden="true"
+                          />
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {new Date(user.createdAt).toLocaleDateString()}

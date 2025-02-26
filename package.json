@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "dotenv": "^16.4.7",
     "mongoose": "^8.10.2",
     "mssql": "^11.0.1"

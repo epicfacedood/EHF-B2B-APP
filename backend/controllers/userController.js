@@ -5,6 +5,7 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import PriceList from "../models/priceListModel.js";
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
@@ -314,6 +315,45 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+// Add this function to check if a user is in the price list
+const getUsersWithPriceListInfo = async (req, res) => {
+  try {
+    const users = await userModel.find({}).sort({ createdAt: -1 });
+
+    // If includePriceListInfo is not requested, return users as is
+    if (req.query.includePriceListInfo !== "true") {
+      return res.status(200).json({
+        success: true,
+        users,
+      });
+    }
+
+    // Get all customer IDs from the price list collection
+    const priceLists = await PriceList.find({}, { customerId: 1 });
+    const priceListCustomerSet = new Set(priceLists.map((pl) => pl.customerId));
+
+    // Add inPriceList field to each user
+    const usersWithPriceListInfo = users.map((user) => {
+      const userData = user.toObject();
+      userData.inPriceList =
+        user.customerId && priceListCustomerSet.has(user.customerId);
+      return userData;
+    });
+
+    res.status(200).json({
+      success: true,
+      users: usersWithPriceListInfo,
+    });
+  } catch (error) {
+    console.error("Error fetching users with price list info:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch users",
+      error: error.message,
+    });
+  }
+};
+
 export {
   loginUser,
   registerUser,
@@ -323,4 +363,5 @@ export {
   getUserById,
   updateUser,
   getUserProfile,
+  getUsersWithPriceListInfo,
 };

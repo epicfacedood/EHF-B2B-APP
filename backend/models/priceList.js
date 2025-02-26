@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const priceListSchema = new mongoose.Schema(
   {
@@ -30,4 +30,4 @@ const priceListSchema = new mongoose.Schema(
 // Compound index for faster lookups
 priceListSchema.index({ customerId: 1, productId: 1 });
 
-export default mongoose.model("PriceList", priceListSchema);
+module.exports = mongoose.model("PriceList", priceListSchema);
