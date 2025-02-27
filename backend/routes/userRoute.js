@@ -10,7 +10,7 @@ import {
   getUserProfile,
   getUsersWithPriceListInfo,
 } from "../controllers/userController.js";
-import { authenticateToken } from "../middleware/authMiddleware.js";
+import { isAuth, isAdmin } from "../middleware/authMiddleware.js";
 import authUser from "../middleware/auth.js";
 
 const userRouter = express.Router(); // Call the function to create a new router instance
@@ -20,7 +20,7 @@ userRouter.post("/login", loginUser);
 userRouter.post("/admin", adminLogin);
 
 // Add a new route for getting the user profile
-userRouter.get("/name", authenticateToken, getName);
+userRouter.get("/name", isAuth, getName);
 
 // Admin routes
 userRouter.get("/admin/users", authUser, getUsersWithPriceListInfo);

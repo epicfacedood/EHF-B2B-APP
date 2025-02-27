@@ -14,6 +14,10 @@ const EditUser = ({ token }) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 10;
+  const [priceListItems, setPriceListItems] = useState([]);
+  const [loadingPriceList, setLoadingPriceList] = useState(false);
+  const PRICE_LIST_API_KEY =
+    import.meta.env.VITE_PRICE_LIST_API_KEY || "price-list-api-key-123";
 
   useEffect(() => {
     if (!userId) {
@@ -23,7 +27,19 @@ const EditUser = ({ token }) => {
     }
     fetchUser();
     fetchProducts();
+
+    return () => {
+      setPriceListItems([]);
+    };
   }, [userId, token, navigate]);
+
+  useEffect(() => {
+    if (user?.customerId) {
+      fetchPriceList(user.customerId);
+    } else {
+      setPriceListItems([]);
+    }
+  }, [user?.customerId, token]);
 
   const fetchUser = async () => {
     try {
@@ -65,6 +81,45 @@ const EditUser = ({ token }) => {
     }
   };
 
+  const fetchPriceList = async (customerId) => {
+    if (!customerId) return;
+
+    setLoadingPriceList(true);
+    try {
+      console.log(`Using API Key: ${PRICE_LIST_API_KEY}`);
+      console.log(`Using API Key auth route for customer ID: ${customerId}`);
+      const response = await axios.get(
+        `${backendUrl}/api/pricelist/apikey/customer/${customerId}`,
+        {
+          headers: {
+            "X-API-Key": PRICE_LIST_API_KEY,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        console.log("Price list fetch successful:", response.data);
+
+        // Process the price list data
+        const items = response.data.priceList?.items || [];
+        const formattedItems = items.map((item) => ({
+          pcode: item.pcode,
+          itemName: item.itemName || item.pcode,
+          price: item.price || item.unitPrice || 0,
+        }));
+        setPriceListItems(formattedItems);
+      } else {
+        setPriceListItems([]);
+        console.log("No price list found for this customer ID");
+      }
+    } catch (error) {
+      console.error("Error fetching price list:", error);
+      setPriceListItems([]);
+    } finally {
+      setLoadingPriceList(false);
+    }
+  };
+
   const filteredProducts = products.filter(
     (product) =>
       product.itemName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,11 +134,6 @@ const EditUser = ({ token }) => {
     indexOfLastProduct
   );
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-  // Get available product details
-  const availableProducts = products.filter((product) =>
-    user.productsAvailable?.includes(product._id)
-  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -221,27 +271,32 @@ const EditUser = ({ token }) => {
           </div>
         </div>
 
-        {/* Available Products Display */}
         <div className="mt-6">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Available Products
+            Price List Items (Customer ID: {user.customerId || "Not Set"})
           </label>
           <div className="bg-gray-50 p-4 rounded-md">
-            {availableProducts.length > 0 ? (
+            {loadingPriceList ? (
+              <p className="text-gray-500 text-sm">Loading price list...</p>
+            ) : priceListItems.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {availableProducts.map((product) => (
-                  <div
-                    key={product._id}
-                    className="bg-white p-3 rounded shadow-sm"
-                  >
-                    <div className="font-medium">{product.itemName}</div>
-                    <div className="text-sm text-gray-500">{product.pcode}</div>
+                {priceListItems.map((item, index) => (
+                  <div key={index} className="bg-white p-3 rounded shadow-sm">
+                    <div className="font-medium">{item.itemName}</div>
+                    <div className="text-sm text-gray-500">{item.pcode}</div>
+                    <div className="text-sm font-semibold text-blue-600">
+                      ${item.price}
+                    </div>
                   </div>
                 ))}
               </div>
+            ) : user.customerId ? (
+              <p className="text-gray-500 text-sm">
+                No price list items found for this customer
+              </p>
             ) : (
               <p className="text-gray-500 text-sm">
-                No products available for this user
+                Set a Customer ID to view price list items
               </p>
             )}
           </div>
@@ -264,7 +319,6 @@ const EditUser = ({ token }) => {
         </div>
       </form>
 
-      {/* Products Section */}
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">
@@ -288,7 +342,6 @@ const EditUser = ({ token }) => {
           </div>
         </div>
 
-        {/* Search Bar */}
         <div className="mb-4">
           <input
             type="text"
@@ -299,7 +352,6 @@ const EditUser = ({ token }) => {
           />
         </div>
 
-        {/* Products Table */}
         <div className="bg-white shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -351,7 +403,6 @@ const EditUser = ({ token }) => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="mt-4 flex justify-between items-center">
           <div className="text-sm text-gray-700">
             Showing {indexOfFirstProduct + 1} to{" "}

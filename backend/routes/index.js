@@ -4,6 +4,7 @@ import productRouter from "./productRoute.js";
 import cartRouter from "./cartRoute.js";
 import orderRouter from "./orderRoute.js";
 // import authRoutes from "./authRoutes.js";
+import { isAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -25,13 +26,14 @@ router.use("/order", orderRouter);
 // Remove or comment out the auth routes mounting
 // router.use("/auth", authRoutes);
 
-// Debug 404 handler for API routes
-router.use((req, res) => {
-  console.log("❌ API route not found:", req.method, req.originalUrl);
-  res.status(404).json({
-    message: "API route not found",
-    requestedPath: req.originalUrl,
-  });
-});
+// IMPORTANT: Remove or comment out the catch-all 404 handler from here
+// It should only be in app.js, not in the index.js router
+// router.use((req, res) => {
+//   console.log("❌ API route not found:", req.method, req.originalUrl);
+//   res.status(404).json({
+//     message: "API route not found",
+//     requestedPath: req.originalUrl,
+//   });
+// });
 
 export default router;

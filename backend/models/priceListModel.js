@@ -1,33 +1,35 @@
 import mongoose from "mongoose";
 
+const priceListItemSchema = new mongoose.Schema({
+  pcode: {
+    type: String,
+    required: true,
+  },
+  itemName: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+});
+
 const priceListSchema = new mongoose.Schema(
   {
     customerId: {
       type: String,
       required: true,
-      index: true,
+      unique: true,
     },
-    productId: {
+    customerName: {
       type: String,
-      required: true,
     },
-    price: {
-      type: Number,
-      required: true,
-    },
-    currency: {
-      type: String,
-      default: "USD",
-    },
-    effectiveDate: {
-      type: Date,
-      default: Date.now,
-    },
+    items: [priceListItemSchema],
   },
   { timestamps: true }
 );
 
-// Compound index for faster lookups
-priceListSchema.index({ customerId: 1, productId: 1 });
+const PriceList = mongoose.model("PriceList", priceListSchema);
 
-export default mongoose.model("PriceList", priceListSchema);
+export default PriceList;
