@@ -5,6 +5,7 @@ import productModel from "../models/productModel.js";
 import userModel from "../models/userModel.js";
 import fs from "fs";
 import path from "path";
+import PriceList from "../models/priceListModel.js";
 
 // Simplified uploadToCloudinary function
 const uploadToCloudinary = async (file) => {
@@ -310,6 +311,95 @@ const updateProduct = async (req, res) => {
   }
 };
 
+const getFilteredProducts = async (req, res) => {
+  try {
+    const {
+      page = 1,
+      limit = 12,
+      search = "",
+      sort = "relevant",
+      customerId,
+      category = [],
+    } = req.query;
+
+    // Convert page and limit to numbers
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Parse category array if it's a string
+    const categories = Array.isArray(category)
+      ? category
+      : category
+      ? [category]
+      : [];
+
+    // Build the filter query
+    let filterQuery = {};
+
+    // If customerId is provided, get the price list and filter by PCodes
+    if (customerId) {
+      const priceList = await PriceList.findOne({ customerId });
+      if (priceList && priceList.items && priceList.items.length > 0) {
+        const pcodes = priceList.items.map((item) => item.pcode);
+        filterQuery.pcode = { $in: pcodes };
+      }
+    }
+
+    // Add search filter if provided
+    if (search) {
+      filterQuery.$or = [
+        { itemName: { $regex: search, $options: "i" } },
+        { pcode: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Add category filter if provided
+    if (categories.length > 0) {
+      filterQuery.category = { $in: categories };
+    }
+
+    // Build the sort options
+    let sortOptions = {};
+    if (sort === "low-high") {
+      sortOptions.price = 1;
+    } else if (sort === "high-low") {
+      sortOptions.price = -1;
+    } else {
+      // Default sort by createdAt
+      sortOptions.createdAt = -1;
+    }
+
+    // Execute the query with pagination
+    const products = await productModel
+      .find(filterQuery)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limitNum);
+
+    // Get total count for pagination
+    const totalProducts = await productModel.countDocuments(filterQuery);
+
+    res.json({
+      success: true,
+      products,
+      pagination: {
+        total: totalProducts,
+        page: pageNum,
+        limit: limitNum,
+        pages: Math.ceil(totalProducts / limitNum),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching products",
+      error: error.message,
+    });
+  }
+};
+
 export {
   addProduct,
   listProducts,
@@ -317,4 +407,5 @@ export {
   singleProduct,
   getAllProducts,
   updateProduct,
+  getFilteredProducts,
 };

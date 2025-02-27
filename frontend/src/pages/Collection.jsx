@@ -28,6 +28,8 @@ const Collection = () => {
   const itemsPerPage = 12; // Show 12 products per page
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   // Available categories
   const categories = [
@@ -50,13 +52,13 @@ const Collection = () => {
     "VEG",
   ];
 
-  // First, fetch the price list
+  // First, fetch the price list (but don't fetch products here)
   useEffect(() => {
     const fetchCustomerPriceList = async () => {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       if (!token || !userCustomerId) {
         console.log("Cannot fetch price list: No token or customer ID");
-        setIsLoading(false); // End loading even if we can't fetch
+        // Don't end loading here - let the product fetch handle that
         return;
       }
 
@@ -85,68 +87,94 @@ const Collection = () => {
             );
             console.log("Extracted PCodes:", pcodes);
             setPriceListPcodes(pcodes);
-
-            // Now that we have PCodes, fetch and filter products
-            await fetchFilteredProducts(pcodes);
-          } else {
-            // If no price list items, fetch all products
-            await fetchFilteredProducts([]);
           }
         } else {
           console.error("Failed to fetch price list:", response.data.message);
-          // Fetch all products if price list fetch fails
-          await fetchFilteredProducts([]);
         }
       } catch (error) {
         console.error("Error fetching customer price list:", error);
-        // Fetch all products if price list fetch fails
-        await fetchFilteredProducts([]);
-      } finally {
-        setIsLoading(false); // End loading regardless of outcome
       }
-    };
-
-    // Function to fetch and filter products based on PCodes
-    const fetchFilteredProducts = async (pcodes) => {
-      try {
-        if (!token) {
-          console.log("No token available");
-          return;
-        }
-
-        console.log("Fetching products with PCodes filter:", pcodes);
-        const response = await axios.get(`${backendUrl}/api/product/list`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (response.data.success) {
-          let filteredProducts = response.data.products;
-
-          // First apply price list filtering
-          if (pcodes && pcodes.length > 0) {
-            console.log("Filtering products by price list PCodes");
-            filteredProducts = filteredProducts.filter((product) =>
-              pcodes.includes(product.pcode)
-            );
-            console.log(
-              "Filtered products by PCodes:",
-              filteredProducts.length
-            );
-          }
-
-          // Store these filtered products as the base for other filters
-          setFilterProducts(filteredProducts);
-        }
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        toast.error("Failed to load products");
-      }
+      // Don't end loading here - let the product fetch handle that
     };
 
     fetchCustomerPriceList();
   }, [token, userCustomerId, backendUrl]);
+
+  // Keep this useEffect for server-side filtering, but make it depend on priceListPcodes
+  useEffect(() => {
+    const fetchFilteredProducts = async () => {
+      setIsLoading(true);
+
+      try {
+        if (!token) {
+          console.log("No token available");
+          setIsLoading(false);
+          return;
+        }
+
+        // Build query parameters
+        const params = new URLSearchParams();
+        params.append("page", currentPage);
+        params.append("limit", itemsPerPage);
+
+        if (search) {
+          params.append("search", search);
+        }
+
+        if (sortType !== "relevant") {
+          params.append("sort", sortType);
+        }
+
+        if (userCustomerId) {
+          params.append("customerId", userCustomerId);
+        }
+
+        if (category.length > 0) {
+          category.forEach((cat) => params.append("category", cat));
+        }
+
+        console.log(
+          "Fetching filtered products with params:",
+          params.toString()
+        );
+
+        const response = await axios.get(
+          `${backendUrl}/api/product/filtered?${params.toString()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          console.log("Filtered products:", response.data.products);
+          setFilterProducts(response.data.products);
+
+          // Update pagination data
+          const { total, pages } = response.data.pagination;
+          setTotalPages(pages);
+          setTotalProducts(total);
+        }
+      } catch (error) {
+        console.error("Error fetching filtered products:", error);
+        toast.error("Failed to load products");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFilteredProducts();
+  }, [
+    token,
+    search,
+    category,
+    sortType,
+    currentPage,
+    userCustomerId,
+    backendUrl,
+    priceListPcodes, // Add this dependency
+  ]);
 
   // Add debug logging
   useEffect(() => {
@@ -161,54 +189,12 @@ const Collection = () => {
     }
   };
 
-  const applyFilter = () => {
-    // Skip filtering if we're still loading the initial data
-    if (isLoading) return;
-
-    // Start with the products that match the price list
-    let filteredProducts = [...filterProducts];
-
-    // Apply search filter
-    if (search) {
-      filteredProducts = filteredProducts.filter(
-        (item) =>
-          item.itemName?.toLowerCase().includes(search.toLowerCase()) ||
-          item.pcode?.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-
-    // Apply category filter
-    if (category.length > 0) {
-      filteredProducts = filteredProducts.filter((item) =>
-        category.includes(item.category)
-      );
-    }
-
-    // Apply price sorting
-    if (sortType !== "relevant") {
-      filteredProducts = [...filteredProducts].sort((a, b) => {
-        const priceA = parseFloat(a.price);
-        const priceB = parseFloat(b.price);
-        return sortType === "low-high" ? priceA - priceB : priceB - priceA;
-      });
-    }
-
-    setFilterProducts(filteredProducts);
-  };
-
-  // Remove separate sortProduct function and combine with applyFilter
-  useEffect(() => {
-    applyFilter();
-  }, [search, category, sortType, products]);
-
   // Calculate pagination
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
-  const currentProducts = filterProducts.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
-  const totalPages = Math.ceil(filterProducts.length / itemsPerPage);
+  const currentProducts = isLoading
+    ? []
+    : filterProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
   // Pagination controls
   const paginate = (pageNumber) => {
@@ -318,17 +304,7 @@ const Collection = () => {
       </div>
       <div className="flex-1">
         <div className="flex justify-between text-base sm:text-2xl mb-4">
-          {/* Display price list info and PCodes */}
-          {priceList && (
-            <div className="text-sm text-gray-600 mb-2">
-              <h3 className="font-semibold">Customer Price List</h3>
-              <p>Code: {priceList.code || "N/A"}</p>
-              <p>Items: {priceList.items?.length || 0}</p>
-
-              {/* Display PCodes in a scrollable container */}
-            </div>
-          )}
-          <Title text1={`ALL`} text2={`COLLECTIONS`} />
+          <Title text1={`ALL`} text2={`PRODUCTS`} />
           {/* Product Sort */}
           <select
             onChange={(e) => {

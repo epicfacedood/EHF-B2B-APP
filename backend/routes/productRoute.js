@@ -6,6 +6,7 @@ import {
   singleProduct,
   getAllProducts,
   updateProduct,
+  getFilteredProducts,
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
@@ -59,6 +60,18 @@ productRouter.post(
   ]),
   updateProduct
 );
+productRouter.get("/apikey/list", apiKeyAuth, async (req, res) => {
+  try {
+    const products = await productModel.find().sort({ createdAt: -1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error("Error listing products:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching products" });
+  }
+});
+productRouter.get("/filtered", authUser, getFilteredProducts);
 productRouter.get("/:id", adminAuth, async (req, res) => {
   try {
     const product = await productModel.findById(req.params.id);
@@ -153,19 +166,6 @@ productRouter.get("/admin/:productId", authUser, async (req, res) => {
       success: false,
       message: "Server error",
     });
-  }
-});
-
-// Add this route to get products using API key
-productRouter.get("/apikey/list", apiKeyAuth, async (req, res) => {
-  try {
-    const products = await productModel.find().sort({ createdAt: -1 });
-    res.json({ success: true, products });
-  } catch (error) {
-    console.error("Error listing products:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error fetching products" });
   }
 });
 
