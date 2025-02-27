@@ -436,4 +436,66 @@ router.post("/sync", apiKeyAuth, async (req, res) => {
   }
 });
 
+// Add a route to remove an item from a customer's price list
+router.delete(
+  "/apikey/customer/:customerId/item/:pcode",
+  apiKeyAuth,
+  async (req, res) => {
+    try {
+      const { customerId, pcode } = req.params;
+
+      console.log(
+        `Removing item ${pcode} from price list for customer ${customerId}`
+      );
+
+      if (!customerId || !pcode) {
+        return res.status(400).json({
+          success: false,
+          message: "Customer ID and product code are required",
+        });
+      }
+
+      // Find the price list for this customer
+      const priceList = await PriceList.findOne({ customerId });
+
+      if (!priceList) {
+        return res.status(404).json({
+          success: false,
+          message: "Price list not found for this customer",
+        });
+      }
+
+      // Check if the item exists in the price list
+      const initialItemCount = priceList.items.length;
+
+      // Remove the item from the items array
+      priceList.items = priceList.items.filter((item) => item.pcode !== pcode);
+
+      // If no items were removed, the item wasn't in the list
+      if (priceList.items.length === initialItemCount) {
+        return res.status(404).json({
+          success: false,
+          message: "Item not found in price list",
+        });
+      }
+
+      // Save the updated price list
+      await priceList.save();
+
+      return res.json({
+        success: true,
+        message: "Item removed from price list",
+        priceList,
+      });
+    } catch (error) {
+      console.error("Error removing item from price list:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error while removing item from price list",
+        error: error.message,
+      });
+    }
+  }
+);
+
 export default router;

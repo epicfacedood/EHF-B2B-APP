@@ -235,6 +235,37 @@ const EditUser = ({ token }) => {
     navigate(`/add-to-price-list/${user.customerId}/${product._id}`);
   };
 
+  const handleRemoveFromPriceList = async (pcode) => {
+    if (!user.customerId) {
+      toast.error("Customer ID is required");
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `${backendUrl}/api/pricelist/apikey/customer/${user.customerId}/item/${pcode}`,
+        {
+          headers: {
+            "X-API-Key": PRICE_LIST_API_KEY,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success("Item removed from price list");
+        // Update the local state to remove the item
+        setPriceListItems(
+          priceListItems.filter((item) => item.pcode !== pcode)
+        );
+      } else {
+        toast.error(response.data.message || "Failed to remove item");
+      }
+    } catch (error) {
+      console.error("Error removing item from price list:", error);
+      toast.error(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (!user) return <div>User not found</div>;
 
@@ -343,8 +374,26 @@ const EditUser = ({ token }) => {
                 {priceListItems.map((item, index) => (
                   <div
                     key={index}
-                    className="bg-white p-4 rounded shadow-sm border border-gray-200"
+                    className="bg-white p-4 rounded shadow-sm border border-gray-200 relative"
                   >
+                    <button
+                      onClick={() => handleRemoveFromPriceList(item.pcode)}
+                      className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+                      title="Remove from price list"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
                     <div className="flex items-start">
                       {item.imageUrl ? (
                         <img
