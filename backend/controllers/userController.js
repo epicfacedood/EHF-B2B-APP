@@ -11,6 +11,19 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET);
 };
 
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      role: user.role || "user",
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "30d" }
+  );
+};
+
 const loginUser = async (req, res) => {
   try {
     const { customerId, password } = req.body;
@@ -25,7 +38,7 @@ const loginUser = async (req, res) => {
     console.log("Password match:", isMatch);
 
     if (isMatch) {
-      const token = createToken(user._id);
+      const token = generateToken(user);
 
       // Send a consistent response
       res.json({
@@ -108,7 +121,7 @@ const registerUser = async (req, res) => {
     });
 
     const user = await newUser.save();
-    const token = createToken(user._id);
+    const token = generateToken(user);
 
     // Return success without sensitive data
     res.json({
@@ -137,17 +150,31 @@ const registerUser = async (req, res) => {
 const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (
-      email === process.env.ADMIN_EMAIL &&
-      password === process.env.ADMIN_PASSWORD
-    ) {
-      const token = jwt.sign(email + password, `${process.env.JWT_SECRET}`);
-      res.json({ success: true, token });
-    } else {
-      res.json({ success: false, message: "invalid credentials" });
+
+    // Find user by email
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: false, message: "Invalid credentials" });
     }
+
+    // Check password
+    const isMatch = await user.matchPassword(password);
+
+    if (!isMatch) {
+      return res.json({ success: false, message: "Invalid credentials" });
+    }
+
+    // Use the proper token generation function
+    const token = generateToken(user);
+
+    res.json({
+      success: true,
+      token,
+      name: user.name,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Admin login error:", error);
     res.json({ success: false, message: error.message });
   }
 };
@@ -354,6 +381,41 @@ const getUsersWithPriceListInfo = async (req, res) => {
   }
 };
 
+// Add this new function to fetch a user by customerId
+const getUserByCustomerId = async (req, res) => {
+  try {
+    const { customerId } = req.params;
+
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID is required",
+      });
+    }
+
+    const user = await userModel.findOne({ customerId });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    console.error("Error fetching user by customer ID:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+      error: error.message,
+    });
+  }
+};
+
 export {
   loginUser,
   registerUser,
@@ -364,4 +426,5 @@ export {
   updateUser,
   getUserProfile,
   getUsersWithPriceListInfo,
+  getUserByCustomerId,
 };

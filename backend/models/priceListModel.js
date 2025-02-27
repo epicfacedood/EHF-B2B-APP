@@ -13,6 +13,16 @@ const priceListItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  notes: {
+    type: String,
+    default: "",
+  },
+});
+
+// Add pre-save hook for debugging
+priceListItemSchema.pre("save", function (next) {
+  console.log("Saving price list item:", this);
+  next();
 });
 
 const priceListSchema = new mongoose.Schema(
@@ -29,6 +39,13 @@ const priceListSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Add pre-save hook for debugging
+priceListSchema.pre("save", function (next) {
+  console.log("Saving price list for customer:", this.customerId);
+  console.log("Number of items:", this.items.length);
+  next();
+});
 
 const PriceList = mongoose.model("PriceList", priceListSchema);
 

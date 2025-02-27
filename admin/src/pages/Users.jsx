@@ -7,39 +7,84 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 const Users = ({ token }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [syncing, setSyncing] = useState(false);
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const PRICE_LIST_API_KEY =
+    import.meta.env.VITE_PRICE_LIST_API_KEY || "price-list-api-key-123";
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`${backendUrl}/api/user/admin/users`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params: {
-            includePriceListInfo: true,
-          },
-        });
-
-        if (response.data.success) {
-          setUsers(response.data.users);
-        } else {
-          toast.error("Failed to fetch users");
-        }
-      } catch (error) {
-        console.error("Error fetching users:", error);
-        toast.error("Failed to load users");
-        if (error.response?.status === 401) {
-          navigate("/login");
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchUsers();
   }, [token, backendUrl, navigate]);
+
+  const fetchUsers = async (retryCount = 0) => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${backendUrl}/api/user/admin/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          includePriceListInfo: true,
+        },
+      });
+
+      if (response.data.success) {
+        setUsers(response.data.users);
+      } else {
+        toast.error("Failed to fetch users");
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+
+      // If we get a 500 error and haven't retried too many times, wait and retry
+      if (error.response?.status === 500 && retryCount < 3) {
+        toast.info("Connection issue detected. Retrying in 3 seconds...");
+        setTimeout(() => {
+          fetchUsers(retryCount + 1);
+        }, 3000);
+        return;
+      }
+
+      toast.error("Failed to load users");
+      if (error.response?.status === 401) {
+        navigate("/login");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncPriceLists = async () => {
+    try {
+      setSyncing(true);
+
+      const response = await axios.post(
+        `${backendUrl}/api/pricelist/sync`,
+        {},
+        {
+          headers: {
+            "X-API-Key": PRICE_LIST_API_KEY,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.success(response.data.message);
+        // Wait a bit and then refresh the user list to show updated price list status
+        setTimeout(() => {
+          fetchUsers();
+        }, 5000);
+      } else {
+        toast.error("Failed to sync price lists");
+      }
+    } catch (error) {
+      console.error("Error syncing price lists:", error);
+      toast.error(`Failed to sync price lists: ${error.message}`);
+    } finally {
+      setSyncing(false);
+    }
+  };
 
   if (loading) return <div>Loading...</div>;
 
@@ -51,6 +96,18 @@ const Users = ({ token }) => {
           <p className="mt-2 text-sm text-gray-700">
             A list of all users in the system
           </p>
+        </div>
+        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+          <button
+            type="button"
+            onClick={handleSyncPriceLists}
+            disabled={syncing}
+            className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
+              syncing ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+            } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
+          >
+            {syncing ? "Syncing..." : "Sync Price Lists"}
+          </button>
         </div>
       </div>
       <div className="mt-8 flex flex-col">

@@ -34,12 +34,10 @@ const EditUser = ({ token }) => {
   }, [userId, token, navigate]);
 
   useEffect(() => {
-    if (user?.customerId) {
+    if (user?.customerId && products.length > 0) {
       fetchPriceList(user.customerId);
-    } else {
-      setPriceListItems([]);
     }
-  }, [user?.customerId, token]);
+  }, [user?.customerId, products]);
 
   const fetchUser = async () => {
     try {
@@ -81,6 +79,40 @@ const EditUser = ({ token }) => {
     }
   };
 
+  const enhancePriceListWithProductDetails = (priceListItems, products) => {
+    console.log("Enhancing price list items:");
+    console.log("First price list item sample:", priceListItems[0]);
+    console.log("First product sample:", products[0]);
+
+    const productMap = {};
+    products.forEach((product) => {
+      if (product.pcode) {
+        productMap[product.pcode] = product;
+      }
+    });
+
+    return priceListItems.map((item) => {
+      if (!item.pcode) return item;
+
+      const matchingProduct = productMap[item.pcode];
+
+      if (!matchingProduct) {
+        return item;
+      }
+
+      return {
+        ...item,
+        itemName: matchingProduct.itemName || item.itemName || item.pcode,
+        description: matchingProduct.description || "",
+        category: matchingProduct.category || "",
+        imageUrl:
+          matchingProduct.image && matchingProduct.image.length > 0
+            ? matchingProduct.image[0] // Use the first image from the array
+            : "",
+      };
+    });
+  };
+
   const fetchPriceList = async (customerId) => {
     if (!customerId) return;
 
@@ -100,14 +132,22 @@ const EditUser = ({ token }) => {
       if (response.data.success) {
         console.log("Price list fetch successful:", response.data);
 
-        // Process the price list data
         const items = response.data.priceList?.items || [];
         const formattedItems = items.map((item) => ({
           pcode: item.pcode,
           itemName: item.itemName || item.pcode,
           price: item.price || item.unitPrice || 0,
         }));
-        setPriceListItems(formattedItems);
+
+        if (products.length > 0) {
+          const enhancedItems = enhancePriceListWithProductDetails(
+            formattedItems,
+            products
+          );
+          setPriceListItems(enhancedItems);
+        } else {
+          setPriceListItems(formattedItems);
+        }
       } else {
         setPriceListItems([]);
         console.log("No price list found for this customer ID");
@@ -173,6 +213,26 @@ const EditUser = ({ token }) => {
         [field]: value,
       },
     });
+  };
+
+  const navigateToAddToPriceList = (product) => {
+    if (!user.customerId) {
+      toast.error("Please set a Customer ID first");
+      return;
+    }
+
+    // Check if product is already in the price list
+    const existingItem = priceListItems.find(
+      (item) => item.pcode === product.pcode
+    );
+
+    if (existingItem) {
+      toast.info(`${product.itemName} is already in the price list`);
+      return;
+    }
+
+    // Navigate to the add to price list page with product and customer info
+    navigate(`/add-to-price-list/${user.customerId}/${product._id}`);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -281,11 +341,50 @@ const EditUser = ({ token }) => {
             ) : priceListItems.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {priceListItems.map((item, index) => (
-                  <div key={index} className="bg-white p-3 rounded shadow-sm">
-                    <div className="font-medium">{item.itemName}</div>
-                    <div className="text-sm text-gray-500">{item.pcode}</div>
-                    <div className="text-sm font-semibold text-blue-600">
-                      ${item.price}
+                  <div
+                    key={index}
+                    className="bg-white p-4 rounded shadow-sm border border-gray-200"
+                  >
+                    <div className="flex items-start">
+                      {item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.itemName}
+                          className="w-16 h-16 object-cover rounded mr-3"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src =
+                              "https://via.placeholder.com/64?text=No+Image";
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-200 rounded mr-3 flex items-center justify-center text-gray-400">
+                          <span className="text-xs">No image</span>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-900">
+                          {item.itemName}
+                        </div>
+                        <div className="text-sm text-gray-500 mb-1">
+                          Code: {item.pcode}
+                        </div>
+                        {item.description && (
+                          <div className="text-sm text-gray-600 mb-1 line-clamp-2">
+                            {item.description}
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center mt-2">
+                          <div className="text-sm font-semibold text-blue-600">
+                            ${item.price.toFixed(2)}
+                          </div>
+                        </div>
+                        {item.category && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            Category: {item.category}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -322,24 +421,17 @@ const EditUser = ({ token }) => {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">
-            Manage Available Products
+            Available Products
           </h3>
-          <div className="space-x-4">
-            <button
-              type="button"
-              onClick={handleSelectAll}
-              className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-600 rounded-md hover:bg-blue-50"
-            >
-              Select All
-            </button>
-            <button
-              type="button"
-              onClick={handleDeselectAll}
-              className="px-4 py-2 text-sm font-medium text-red-600 border border-red-600 rounded-md hover:bg-red-50"
-            >
-              Deselect All
-            </button>
-          </div>
+          {user.customerId ? (
+            <div className="text-sm text-gray-600">
+              Adding products to price list for customer: {user.customerId}
+            </div>
+          ) : (
+            <div className="text-sm text-red-600">
+              Set a Customer ID to enable adding products to price list
+            </div>
+          )}
         </div>
 
         <div className="mb-4">
@@ -366,7 +458,7 @@ const EditUser = ({ token }) => {
                   Price
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Available
+                  Action
                 </th>
               </tr>
             </thead>
@@ -383,19 +475,31 @@ const EditUser = ({ token }) => {
                     ${product.price}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <input
-                      type="checkbox"
-                      checked={user.productsAvailable?.includes(product._id)}
-                      onChange={(e) => {
-                        const newProducts = e.target.checked
-                          ? [...(user.productsAvailable || []), product._id]
-                          : (user.productsAvailable || []).filter(
-                              (id) => id !== product._id
-                            );
-                        setUser({ ...user, productsAvailable: newProducts });
-                      }}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
+                    <button
+                      type="button"
+                      onClick={() => navigateToAddToPriceList(product)}
+                      disabled={
+                        !user.customerId ||
+                        priceListItems.some(
+                          (item) => item.pcode === product.pcode
+                        )
+                      }
+                      className={`px-3 py-1 rounded text-xs font-medium ${
+                        !user.customerId
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : priceListItems.some(
+                              (item) => item.pcode === product.pcode
+                            )
+                          ? "bg-green-100 text-green-800 cursor-not-allowed"
+                          : "bg-blue-100 text-blue-800 hover:bg-blue-200"
+                      }`}
+                    >
+                      {priceListItems.some(
+                        (item) => item.pcode === product.pcode
+                      )
+                        ? "In Price List"
+                        : "Add to Price List"}
+                    </button>
                   </td>
                 </tr>
               ))}

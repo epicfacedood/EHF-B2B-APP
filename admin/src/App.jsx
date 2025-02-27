@@ -12,6 +12,8 @@ import { useEffect } from "react";
 import Users from "./pages/Users";
 import EditUser from "./pages/EditUser";
 import EditProduct from "./pages/EditProduct";
+import AddToPriceList from "./pages/AddToPriceList";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   const [token, setToken] = useState(
@@ -49,6 +51,10 @@ const App = () => {
                 <Route
                   path="/admin/product/edit/:id"
                   element={<EditProduct token={token} />}
+                />
+                <Route
+                  path="/add-to-price-list/:customerId/:productId"
+                  element={<AddToPriceList token={token} />}
                 />
               </Routes>
             </div>

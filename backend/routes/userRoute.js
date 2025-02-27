@@ -9,6 +9,7 @@ import {
   updateUser,
   getUserProfile,
   getUsersWithPriceListInfo,
+  getUserByCustomerId,
 } from "../controllers/userController.js";
 import { isAuth, isAdmin } from "../middleware/authMiddleware.js";
 import authUser from "../middleware/auth.js";
@@ -28,5 +29,7 @@ userRouter.get("/admin/:userId", authUser, getUserById);
 userRouter.put("/admin/:userId", authUser, updateUser);
 
 userRouter.get("/profile", authUser, getUserProfile);
+
+userRouter.get("/admin/customer/:customerId", isAuth, getUserByCustomerId);
 
 export default userRouter;

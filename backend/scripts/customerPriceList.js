@@ -94,9 +94,7 @@ async function saveToJson(data, filename, description) {
 // Function to get customer IDs from MongoDB
 async function getCustomerIdsFromMongoDB() {
   try {
-    console.log("Connecting to MongoDB...");
-    await mongoose.connect(MONGODB_URI);
-    console.log("Connected to MongoDB");
+    console.log("Using existing MongoDB connection...");
 
     // Import the User model dynamically
     const { default: User } = await import("../models/userModel.js");
@@ -167,8 +165,8 @@ async function savePriceListsToMongoDB(priceLists) {
       customerPriceLists[item.customerId].items.push({
         pcode: item.pcode,
         itemName: item.itemName,
-        unitPrice: item.unitPrice,
-        baseUnit: item.baseUnit,
+        price: item.unitPrice, // Make sure we're using the right field name
+        notes: "",
       });
     }
 
@@ -181,13 +179,17 @@ async function savePriceListsToMongoDB(priceLists) {
 
     // Update or insert price lists
     for (const priceList of priceListArray) {
+      // Use $set to update only the specified fields, not replace the entire document
       await PriceList.findOneAndUpdate(
         { customerId: priceList.customerId },
         {
           $set: {
             customerName: priceList.customerName,
-            items: priceList.items,
             lastUpdated: new Date(),
+          },
+          // Use $addToSet to add items only if they don't already exist
+          $addToSet: {
+            items: { $each: priceList.items },
           },
         },
         { upsert: true, new: true }
@@ -204,9 +206,8 @@ async function savePriceListsToMongoDB(priceLists) {
   }
 }
 
-// Main function
-async function main() {
-  let mongoConnection = null;
+// Export the main function so it can be imported
+export async function main() {
   let sqlPool = null;
 
   try {
@@ -263,11 +264,9 @@ async function main() {
     console.log("\nExport completed successfully.");
   } catch (err) {
     console.error("Error in main execution:", err);
+    throw err; // Re-throw to allow caller to handle
   } finally {
-    // Close connections
-    await mongoose.disconnect();
-    console.log("Disconnected from MongoDB");
-
+    // Only close SQL connection, not MongoDB
     if (sqlPool) {
       await sql.close();
       console.log("Disconnected from SQL Server");
@@ -275,8 +274,10 @@ async function main() {
   }
 }
 
-// Run the main function
-main().catch((err) => {
-  console.error("Unhandled error:", err);
-  process.exit(1);
-});
+// Only run the main function if this script is executed directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error("Unhandled error:", err);
+    process.exit(1);
+  });
+}

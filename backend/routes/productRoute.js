@@ -14,6 +14,7 @@ import productModel from "../models/productModel.js";
 import fs from "fs";
 import path from "path";
 import { v2 as cloudinary } from "cloudinary";
+import apiKeyAuth from "../middleware/apiKeyAuth.js";
 
 const productRouter = express.Router();
 
@@ -126,6 +127,45 @@ productRouter.get("/test-cloudinary-direct", adminAuth, async (req, res) => {
       message: "Error testing Cloudinary",
       error: error.message,
     });
+  }
+});
+
+// Add this route to your product routes
+productRouter.get("/admin/:productId", authUser, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
+// Add this route to get products using API key
+productRouter.get("/apikey/list", apiKeyAuth, async (req, res) => {
+  try {
+    const products = await productModel.find().sort({ createdAt: -1 });
+    res.json({ success: true, products });
+  } catch (error) {
+    console.error("Error listing products:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error fetching products" });
   }
 });
 
