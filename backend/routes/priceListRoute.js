@@ -498,4 +498,39 @@ router.delete(
   }
 );
 
+// Add this route to your price list routes
+router.get("/customer", isAuth, async (req, res) => {
+  try {
+    const { customerId } = req.query;
+
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        message: "Customer ID is required",
+      });
+    }
+
+    // Find the price list for this customer
+    const priceList = await PriceList.findOne({ customerId });
+
+    if (!priceList) {
+      return res.status(404).json({
+        success: false,
+        message: "No price list found for this customer",
+      });
+    }
+
+    res.json({
+      success: true,
+      priceList,
+    });
+  } catch (error) {
+    console.error("Error fetching customer price list:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
+
 export default router;

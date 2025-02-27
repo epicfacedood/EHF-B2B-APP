@@ -16,14 +16,18 @@ const Collection = () => {
     setShowSearch,
     token,
     productsAvailable,
+    userCustomerId,
   } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
   const [currentPage, setCurrentPage] = useState(1);
+  const [priceList, setPriceList] = useState(null);
+  const [priceListPcodes, setPriceListPcodes] = useState([]);
   const itemsPerPage = 12; // Show 12 products per page
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const [isLoading, setIsLoading] = useState(true);
 
   // Available categories
   const categories = [
@@ -46,10 +50,71 @@ const Collection = () => {
     "VEG",
   ];
 
-  // Initialize filterProducts with all products
+  // First, fetch the price list
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCustomerPriceList = async () => {
+      setIsLoading(true); // Start loading
+      if (!token || !userCustomerId) {
+        console.log("Cannot fetch price list: No token or customer ID");
+        setIsLoading(false); // End loading even if we can't fetch
+        return;
+      }
+
       try {
+        console.log("Fetching price list for customer ID:", userCustomerId);
+        const response = await axios.get(
+          `${backendUrl}/api/pricelist/customer`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            params: {
+              customerId: userCustomerId,
+            },
+          }
+        );
+
+        if (response.data.success) {
+          console.log("Customer price list:", response.data.priceList);
+          setPriceList(response.data.priceList);
+
+          // Extract PCodes from the price list items
+          if (response.data.priceList && response.data.priceList.items) {
+            const pcodes = response.data.priceList.items.map(
+              (item) => item.pcode
+            );
+            console.log("Extracted PCodes:", pcodes);
+            setPriceListPcodes(pcodes);
+
+            // Now that we have PCodes, fetch and filter products
+            await fetchFilteredProducts(pcodes);
+          } else {
+            // If no price list items, fetch all products
+            await fetchFilteredProducts([]);
+          }
+        } else {
+          console.error("Failed to fetch price list:", response.data.message);
+          // Fetch all products if price list fetch fails
+          await fetchFilteredProducts([]);
+        }
+      } catch (error) {
+        console.error("Error fetching customer price list:", error);
+        // Fetch all products if price list fetch fails
+        await fetchFilteredProducts([]);
+      } finally {
+        setIsLoading(false); // End loading regardless of outcome
+      }
+    };
+
+    // Function to fetch and filter products based on PCodes
+    const fetchFilteredProducts = async (pcodes) => {
+      try {
+        if (!token) {
+          console.log("No token available");
+          return;
+        }
+
+        console.log("Fetching products with PCodes filter:", pcodes);
         const response = await axios.get(`${backendUrl}/api/product/list`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,8 +122,22 @@ const Collection = () => {
         });
 
         if (response.data.success) {
-          console.log("Fetched products:", response.data.products); // Debug log
-          setFilterProducts(response.data.products);
+          let filteredProducts = response.data.products;
+
+          // First apply price list filtering
+          if (pcodes && pcodes.length > 0) {
+            console.log("Filtering products by price list PCodes");
+            filteredProducts = filteredProducts.filter((product) =>
+              pcodes.includes(product.pcode)
+            );
+            console.log(
+              "Filtered products by PCodes:",
+              filteredProducts.length
+            );
+          }
+
+          // Store these filtered products as the base for other filters
+          setFilterProducts(filteredProducts);
         }
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -66,8 +145,8 @@ const Collection = () => {
       }
     };
 
-    fetchProducts();
-  }, [token, productsAvailable]);
+    fetchCustomerPriceList();
+  }, [token, userCustomerId, backendUrl]);
 
   // Add debug logging
   useEffect(() => {
@@ -83,7 +162,11 @@ const Collection = () => {
   };
 
   const applyFilter = () => {
-    let filteredProducts = products;
+    // Skip filtering if we're still loading the initial data
+    if (isLoading) return;
+
+    // Start with the products that match the price list
+    let filteredProducts = [...filterProducts];
 
     // Apply search filter
     if (search) {
@@ -235,6 +318,16 @@ const Collection = () => {
       </div>
       <div className="flex-1">
         <div className="flex justify-between text-base sm:text-2xl mb-4">
+          {/* Display price list info and PCodes */}
+          {priceList && (
+            <div className="text-sm text-gray-600 mb-2">
+              <h3 className="font-semibold">Customer Price List</h3>
+              <p>Code: {priceList.code || "N/A"}</p>
+              <p>Items: {priceList.items?.length || 0}</p>
+
+              {/* Display PCodes in a scrollable container */}
+            </div>
+          )}
           <Title text1={`ALL`} text2={`COLLECTIONS`} />
           {/* Product Sort */}
           <select
@@ -249,107 +342,116 @@ const Collection = () => {
           </select>
         </div>
 
-        {/* Map Products */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-          {currentProducts.map((item, index) => {
-            console.log("Mapping product:", item); // Debug log
-            return (
-              <ProductItem
-                key={index}
-                id={item._id}
-                name={item.itemName}
-                price={item.price}
-                pcode={item.pcode}
-                uoms={item.uoms}
-                cartonQuantity={item.cartonQuantity}
-                packagingSize={item.packagingSize}
-                image={item.image}
-              />
-            );
-          })}
-        </div>
+        {/* Show loading indicator or products */}
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-500">Loading products...</p>
+          </div>
+        ) : (
+          <>
+            {/* Map Products */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
+              {currentProducts.map((item, index) => {
+                console.log("Mapping product:", item); // Debug log
+                return (
+                  <ProductItem
+                    key={index}
+                    id={item._id}
+                    name={item.itemName}
+                    price={item.price}
+                    pcode={item.pcode}
+                    uoms={item.uoms}
+                    cartonQuantity={item.cartonQuantity}
+                    packagingSize={item.packagingSize}
+                    image={item.image}
+                  />
+                );
+              })}
+            </div>
 
-        {/* Pagination Controls */}
-        {filterProducts.length > itemsPerPage && (
-          <div className="flex flex-wrap justify-center items-center gap-2 mt-8 mb-4">
-            <button
-              onClick={() => paginate(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`px-2 py-1 text-sm rounded ${
-                currentPage === 1
-                  ? "bg-gray-200 text-gray-500"
-                  : "bg-black text-white hover:bg-gray-800"
-              }`}
-            >
-              Previous
-            </button>
-
-            {/* First page */}
-            {currentPage > 3 && (
-              <>
+            {/* Pagination Controls */}
+            {filterProducts.length > itemsPerPage && (
+              <div className="flex flex-wrap justify-center items-center gap-2 mt-8 mb-4">
                 <button
-                  onClick={() => paginate(1)}
-                  className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
-                >
-                  1
-                </button>
-                {currentPage > 4 && <span className="px-1">...</span>}
-              </>
-            )}
-
-            {/* Page numbers */}
-            {[...Array(totalPages)].map((_, index) => {
-              const pageNumber = index + 1;
-              const showPage =
-                pageNumber === 1 ||
-                pageNumber === totalPages ||
-                (pageNumber >= currentPage - 2 &&
-                  pageNumber <= currentPage + 2);
-
-              if (!showPage) return null;
-
-              return (
-                <button
-                  key={index}
-                  onClick={() => paginate(pageNumber)}
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
                   className={`px-2 py-1 text-sm rounded ${
-                    currentPage === pageNumber
-                      ? "bg-black text-white"
-                      : "bg-gray-200 hover:bg-gray-300"
+                    currentPage === 1
+                      ? "bg-gray-200 text-gray-500"
+                      : "bg-black text-white hover:bg-gray-800"
                   }`}
                 >
-                  {pageNumber}
+                  Previous
                 </button>
-              );
-            })}
 
-            {/* Last page */}
-            {currentPage < totalPages - 2 && (
-              <>
-                {currentPage < totalPages - 3 && (
-                  <span className="px-1">...</span>
+                {/* First page */}
+                {currentPage > 3 && (
+                  <>
+                    <button
+                      onClick={() => paginate(1)}
+                      className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
+                    >
+                      1
+                    </button>
+                    {currentPage > 4 && <span className="px-1">...</span>}
+                  </>
                 )}
-                <button
-                  onClick={() => paginate(totalPages)}
-                  className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
-                >
-                  {totalPages}
-                </button>
-              </>
-            )}
 
-            <button
-              onClick={() => paginate(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`px-2 py-1 text-sm rounded ${
-                currentPage === totalPages
-                  ? "bg-gray-200 text-gray-500"
-                  : "bg-black text-white hover:bg-gray-800"
-              }`}
-            >
-              Next
-            </button>
-          </div>
+                {/* Page numbers */}
+                {[...Array(totalPages)].map((_, index) => {
+                  const pageNumber = index + 1;
+                  const showPage =
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= currentPage - 2 &&
+                      pageNumber <= currentPage + 2);
+
+                  if (!showPage) return null;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => paginate(pageNumber)}
+                      className={`px-2 py-1 text-sm rounded ${
+                        currentPage === pageNumber
+                          ? "bg-black text-white"
+                          : "bg-gray-200 hover:bg-gray-300"
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                })}
+
+                {/* Last page */}
+                {currentPage < totalPages - 2 && (
+                  <>
+                    {currentPage < totalPages - 3 && (
+                      <span className="px-1">...</span>
+                    )}
+                    <button
+                      onClick={() => paginate(totalPages)}
+                      className="px-2 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300"
+                    >
+                      {totalPages}
+                    </button>
+                  </>
+                )}
+
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-2 py-1 text-sm rounded ${
+                    currentPage === totalPages
+                      ? "bg-gray-200 text-gray-500"
+                      : "bg-black text-white hover:bg-gray-800"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

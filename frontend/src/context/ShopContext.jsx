@@ -21,6 +21,7 @@ export const ShopContextProvider = ({ children }) => {
   const [productsAvailable, setProductsAvailable] = useState(
     JSON.parse(localStorage.getItem("productsAvailable")) || []
   );
+  const [userCustomerId, setUserCustomerId] = useState(null);
   const navigate = useNavigate();
 
   // Initialize axios default headers when token changes
@@ -288,6 +289,9 @@ export const ShopContextProvider = ({ children }) => {
         "productsAvailable",
         JSON.stringify(data.productsAvailable || [])
       );
+
+      // Call getUserCustomerId after setting the token
+      setTimeout(() => getUserCustomerId(), 500);
     }
     return data;
   };
@@ -340,6 +344,7 @@ export const ShopContextProvider = ({ children }) => {
       setToken(storedToken);
       getUserCart(storedToken);
       getUserName(storedToken);
+      getUserCustomerId();
     }
   }, []);
 
@@ -360,6 +365,87 @@ export const ShopContextProvider = ({ children }) => {
     } else {
       localStorage.removeItem("name");
       setName("");
+    }
+  };
+
+  const getUserCustomerId = async () => {
+    if (!token) {
+      console.log("Cannot fetch customer ID: No token available");
+      return null;
+    }
+
+    try {
+      console.log(
+        "Fetching user profile from:",
+        `${backendUrl}/api/user/profile`
+      );
+
+      // First try to get the user profile from the current API
+      const response = await axios.get(`${backendUrl}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      console.log("User profile response:", response.data);
+
+      if (response.data.success && response.data.user) {
+        // Check if customerId exists in the current user object
+        if (response.data.user.customerId) {
+          console.log(
+            "Found customerId in user profile:",
+            response.data.user.customerId
+          );
+          setUserCustomerId(response.data.user.customerId);
+          return response.data.user.customerId;
+        }
+
+        // If not, try to fetch the updated user data from MongoDB
+        console.log("Fetching updated user data from MongoDB...");
+        const userId = response.data.user._id;
+        const email = response.data.user.email;
+
+        // Make a request to a new endpoint that fetches the latest user data
+        const updatedUserResponse = await axios.get(
+          `${backendUrl}/api/user/latest-profile`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            params: { userId, email },
+          }
+        );
+
+        if (updatedUserResponse.data.success && updatedUserResponse.data.user) {
+          console.log("Updated user data:", updatedUserResponse.data.user);
+
+          if (updatedUserResponse.data.user.customerId) {
+            console.log(
+              "Found customerId in updated user data:",
+              updatedUserResponse.data.user.customerId
+            );
+            setUserCustomerId(updatedUserResponse.data.user.customerId);
+            return updatedUserResponse.data.user.customerId;
+          }
+        }
+
+        // If still no customerId, use user ID as fallback
+        console.log(
+          "No customerId found in updated data, using user ID as fallback:",
+          userId
+        );
+        setUserCustomerId(userId);
+        return userId;
+      } else {
+        console.error("Failed to fetch user details:", response.data.message);
+        return null;
+      }
+    } catch (error) {
+      console.error("Error fetching user customerId:", error);
+      if (error.response) {
+        console.error("Error response:", error.response.data);
+        console.error("Status:", error.response.status);
+      }
+      if (error.response?.status === 401) {
+        handleLogout();
+      }
+      return null;
     }
   };
 
@@ -388,6 +474,8 @@ export const ShopContextProvider = ({ children }) => {
     setProductsAvailable,
     handleLogin,
     logout: handleLogout,
+    userCustomerId,
+    getUserCustomerId,
   };
 
   return <ShopContext.Provider value={value}>{children}</ShopContext.Provider>;

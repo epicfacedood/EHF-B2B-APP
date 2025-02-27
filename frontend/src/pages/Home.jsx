@@ -9,15 +9,17 @@ import WelcomeUser from "../components/WelcomeUser";
 import BrandCarousel from "../components/BrandCarousel";
 
 const Home = () => {
-  const { name } = useContext(ShopContext); // Get the name from context
+  const { name, token } = useContext(ShopContext); // Get the name and token from context
 
   return (
     <div className="home-container">
-      <WelcomeUser />
-      <Hero />
-      <BrandCarousel />
-      <LatestCollection />
-      <BestSeller />
+      <div className="container mx-auto px-4">
+        {token && <WelcomeUser />}
+        <Hero />
+        <BrandCarousel />
+        <LatestCollection />
+        <BestSeller />
+      </div>
     </div>
   );
 };
