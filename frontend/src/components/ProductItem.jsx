@@ -41,7 +41,7 @@ const ProductItem = ({
   React.useEffect(() => {
     if (uomsArray.length > 0) {
       const firstUOM = uomsArray[0];
-      setSelectedUOM(firstUOM);
+      setSelectedUOM(firstUOM.code);
 
       // Calculate price based on qtyPerUOM
       if (firstUOM.qtyPerUOM && price) {
@@ -55,7 +55,7 @@ const ProductItem = ({
 
   // Update price when UOM changes
   const handleUOMChange = (unit) => {
-    setSelectedUOM(unit);
+    setSelectedUOM(unit.code);
     // Calculate new price based on selected UOM's qtyPerUOM
     if (unit.qtyPerUOM && price) {
       const calculatedPrice = price * unit.qtyPerUOM;
@@ -88,12 +88,20 @@ const ProductItem = ({
     }
 
     try {
+      // Find the selected UOM option
+      const uomOption = uomsArray.find((opt) => opt.code === selectedUOM);
+      if (!uomOption) {
+        toast.error("Invalid unit of measure");
+        return;
+      }
+
       await addToCart(id, {
         uom: selectedUOM,
         quantity: quantity,
+        qtyPerUOM: uomOption.qtyPerUOM || 1,
       });
-      toast.success("Item added to cart");
 
+      toast.success("Item added to cart");
       setQuantity(0); // Reset quantity after successful add
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -191,7 +199,7 @@ const ProductItem = ({
               key={unit.code}
               onClick={() => handleUOMChange(unit)}
               className={`px-2 py-1 text-xs rounded ${
-                selectedUOM === unit
+                selectedUOM === unit.code
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
               }`}

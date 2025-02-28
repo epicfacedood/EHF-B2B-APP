@@ -7,6 +7,8 @@ const addToCart = async (req, res) => {
     const userId = req.user._id;
     const { itemId, size } = req.body;
 
+    console.log("Adding to cart:", { itemId, size }); // Debug log
+
     const user = await userModel.findById(userId);
     if (!user) {
       return res.json({
@@ -25,9 +27,11 @@ const addToCart = async (req, res) => {
       user.cartData[itemId] = {};
     }
 
-    // Add or update the quantity for the specific size
+    // Add or update the quantity for the specific UOM
     const currentQty = user.cartData[itemId][size.uom] || 0;
     user.cartData[itemId][size.uom] = currentQty + size.quantity;
+
+    console.log("Updated cart data:", user.cartData); // Debug log
 
     // Mark cartData as modified since we're updating a nested object
     user.markModified("cartData");
@@ -66,10 +70,10 @@ const updateCart = async (req, res) => {
     }
 
     if (size.quantity === 0) {
-      // Remove the size if quantity is 0
+      // Remove the UOM if quantity is 0
       if (user.cartData[itemId]) {
         delete user.cartData[itemId][size.uom];
-        // Remove the product if no sizes left
+        // Remove the product if no UOMs left
         if (Object.keys(user.cartData[itemId]).length === 0) {
           delete user.cartData[itemId];
         }
@@ -79,7 +83,7 @@ const updateCart = async (req, res) => {
       if (!user.cartData[itemId]) {
         user.cartData[itemId] = {};
       }
-      // Update the quantity for the specific size
+      // Update the quantity for the specific UOM
       user.cartData[itemId][size.uom] = size.quantity;
     }
 

@@ -65,7 +65,6 @@ export const ShopContextProvider = ({ children }) => {
     }
 
     try {
-      // Store previous cart state for rollback
       const prevCartItems = { ...cartItems };
 
       // Create optimistic update
@@ -73,15 +72,24 @@ export const ShopContextProvider = ({ children }) => {
       if (!updatedCart[itemId]) {
         updatedCart[itemId] = {};
       }
-      updatedCart[itemId][size.uom] =
-        (updatedCart[itemId][size.uom] || 0) + size.quantity;
+
+      // Update the quantity for the specific UOM
+      const currentQty = updatedCart[itemId][size.uom] || 0;
+      updatedCart[itemId][size.uom] = currentQty + size.quantity;
 
       // Update state immediately for better UX
       setCartItems(updatedCart);
 
       const response = await axios.post(
         `${backendUrl}/api/cart/add`,
-        { itemId, size },
+        {
+          itemId,
+          size: {
+            uom: size.uom,
+            quantity: size.quantity,
+            qtyPerUOM: size.qtyPerUOM,
+          },
+        },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,20 +98,13 @@ export const ShopContextProvider = ({ children }) => {
       );
 
       if (!response.data.success) {
-        // Revert to previous state if operation failed
         setCartItems(prevCartItems);
         toast.error(response.data.message || "Failed to add item to cart");
       }
     } catch (error) {
-      // Revert to previous state on error
       setCartItems(prevCartItems);
-      console.error(
-        "Add to cart error:",
-        error.response?.data || error.message
-      );
-      toast.error(
-        error.response?.data?.message || "Failed to add item to cart"
-      );
+      console.error("Add to cart error:", error);
+      toast.error("Failed to add item to cart");
     }
   };
 
@@ -126,46 +127,46 @@ export const ShopContextProvider = ({ children }) => {
   };
 
   // Update cart quantity
-  const updateQuantity = async (itemId, quantity, uom) => {
+  const updateQuantity = async (itemId, newQuantity, uom) => {
     if (!token) {
       toast.error("Please login to update cart");
       return;
     }
 
     try {
-      // Store the previous cart state for rollback
-      const prevCartItems = { ...cartItems };
+      // Store previous cart state for rollback
+      const previousCartItems = { ...cartItems };
 
-      // Optimistic update
+      // Create optimistic update
       const updatedCart = { ...cartItems };
-      if (quantity === 0) {
-        // Remove the size if quantity is 0
+      if (newQuantity === 0) {
+        // Remove the UOM if quantity is 0
         if (updatedCart[itemId]) {
           delete updatedCart[itemId][uom];
-          // Remove the product if no sizes left
+          // Remove the product if no UOMs left
           if (Object.keys(updatedCart[itemId]).length === 0) {
             delete updatedCart[itemId];
           }
         }
       } else {
-        // Update quantity
+        // Initialize product entry if it doesn't exist
         if (!updatedCart[itemId]) {
           updatedCart[itemId] = {};
         }
-        updatedCart[itemId][uom] = quantity;
+        // Update the quantity for the specific UOM
+        updatedCart[itemId][uom] = newQuantity;
       }
 
-      // Update local state immediately
+      // Update state immediately for better UX
       setCartItems(updatedCart);
 
-      // Send update to server
       const response = await axios.post(
         `${backendUrl}/api/cart/update`,
         {
           itemId,
           size: {
             uom,
-            quantity,
+            quantity: newQuantity,
           },
         },
         {
@@ -176,13 +177,13 @@ export const ShopContextProvider = ({ children }) => {
       );
 
       if (!response.data.success) {
-        // Revert to previous state if server update failed
-        setCartItems(prevCartItems);
+        // Revert to previous state if operation failed
+        setCartItems(previousCartItems);
         toast.error(response.data.message || "Failed to update cart");
       }
     } catch (error) {
       // Revert to previous state on error
-      setCartItems(prevCartItems);
+      setCartItems(previousCartItems);
       console.error("Update cart error:", error);
       toast.error("Failed to update cart");
     }
