@@ -1,0 +1,962 @@
+[
+  {
+    "customerId": "E0000004",
+    "pcode": "P0000140",
+    "unitPrice": 20.3,
+    "baseUnit": "KG",
+    "customerName": "Singapore Daochi Restaurants Management Pte. Ltd.",
+    "itemName": "Okeanoss Black Tiger Shrimp PND 16-20 老虎虾仁"
+  },
+  {
+    "customerId": "E0000004",
+    "pcode": "P0001023",
+    "unitPrice": 4.5,
+    "baseUnit": "KG",
+    "customerName": "Singapore Daochi Restaurants Management Pte. Ltd.",
+    "itemName": "Pork Minced Meat 2KG 猪肉碎"
+  },
+  {
+    "customerId": "E0000004",
+    "pcode": "P0001199",
+    "unitPrice": 4.2,
+    "baseUnit": "KG",
+    "customerName": "Singapore Daochi Restaurants Management Pte. Ltd.",
+    "itemName": "(OBSOLETE) Pork Collar (Pamplona) 五花肉"
+  },
+  {
+    "customerId": "E0000004",
+    "pcode": "P0001212",
+    "unitPrice": 1.6,
+    "baseUnit": "KG",
+    "customerName": "Singapore Daochi Restaurants Management Pte. Ltd.",
+    "itemName": "(OBSOLETE)Pork Humerous Bone (Baucells) 猪大骨"
+  },
+  {
+    "customerId": "E0000004",
+    "pcode": "P0001439",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Singapore Daochi Restaurants Management Pte. Ltd.",
+    "itemName": "Okeanoss Squid Flower Cut 苏东花"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000145",
+    "unitPrice": 15.8,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Okeanoss Black Tiger Shrimp PND 31-40 老虎虾仁"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000152",
+    "unitPrice": 2.5,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE)Emborg Buttery Cook & Bake(Butter blend)"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000495",
+    "unitPrice": 3.3,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Bread Crumb/Panko #4 面包糠 (10KG)"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000514",
+    "unitPrice": 7,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Mayonnaise QP No.210 美乃滋"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0000826",
+    "unitPrice": 26,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "Smoked Salmon (Pre-Slice) 900G 烟熏三文鱼片"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0001663",
+    "unitPrice": 23.849999999999998,
+    "baseUnit": "PKT",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE) Frz Smoked Salmon (Pre-Slice) 烟熏三文鱼片"
+  },
+  {
+    "customerId": "E0000005",
+    "pcode": "P0001703",
+    "unitPrice": 31,
+    "baseUnit": "KG",
+    "customerName": "Capitol Hotel Management Pte. Ltd.",
+    "itemName": "(OBSOLETE)Ama Ebi Hoso 3L"
+  },
+  {
+    "customerId": "E0000007",
+    "pcode": "P0000206",
+    "unitPrice": 4.7,
+    "baseUnit": "KG",
+    "customerName": "Nanyang Curry Pte Ltd - 7 Mandai Estate",
+    "itemName": "Boneless Chicken Leg 260-280G (Seara) 无骨鸡腿肉"
+  },
+  {
+    "customerId": "E0000007",
+    "pcode": "P0000222",
+    "unitPrice": 6.6,
+    "baseUnit": "KG",
+    "customerName": "Nanyang Curry Pte Ltd - 7 Mandai Estate",
+    "itemName": "Chicken Mid Joint (Seara) 鸡中翅"
+  },
+  {
+    "customerId": "E0000007",
+    "pcode": "P0000276",
+    "unitPrice": 2.6,
+    "baseUnit": "KG",
+    "customerName": "Nanyang Curry Pte Ltd - 7 Mandai Estate",
+    "itemName": "Chicken Whole Leg (Seara) 鸡大腿"
+  },
+  {
+    "customerId": "E0000007",
+    "pcode": "P0000282",
+    "unitPrice": 4.5,
+    "baseUnit": "KG",
+    "customerName": "Nanyang Curry Pte Ltd - 7 Mandai Estate",
+    "itemName": "Chicken Wing 100-120G (Seara) 鸡翅膀"
+  },
+  {
+    "customerId": "E0000007",
+    "pcode": "P0001029",
+    "unitPrice": 6.5,
+    "baseUnit": "KG",
+    "customerName": "Nanyang Curry Pte Ltd - 7 Mandai Estate",
+    "itemName": "Bak Kut Teh Cut (4 Inch)(R) 5KG 肉骨茶切"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "F0000015",
+    "unitPrice": 24,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Fresh Salmon Flt Trim C Scale Off 1.7-2.0KG 新鲜三文鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000171",
+    "unitPrice": 3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Chicken Bone 鸡骨"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000195",
+    "unitPrice": 6.3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Boneless Chicken Leg Skinless (Seara) 无皮无骨鸡腿肉"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000227",
+    "unitPrice": 6.1,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Chicken Nugget (Thailand) 泰国麦金鸡块"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000300",
+    "unitPrice": 8.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Roasted Wing Stick 烘烤鸡槌翅"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000444",
+    "unitPrice": 7,
+    "baseUnit": "BOX",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Cocktail Veg Spring Roll 15G 春卷"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000450",
+    "unitPrice": 23,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Farm Best Dory Fillet 300-400G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000454",
+    "unitPrice": 23,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Farm Best Dory Fillet 400-500G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000459",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Eastern Farm Dory Fillet 300-400G 多利鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000624",
+    "unitPrice": 21.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "(OBSOLETE)Fresh Salmon Flt TrimC ScaleOff 1.7-2KG"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000812",
+    "unitPrice": 21,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Salmon Fillet Trim C Scale Off 3-4LB 三文鱼片"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000935",
+    "unitPrice": 6.7,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Cube Skin Off 3CM 2KG 无皮鸡丁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000937",
+    "unitPrice": 6.7,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Cube Skin Off 3CM 5KG 无皮鸡丁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0000945",
+    "unitPrice": 5.5,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Al-Lazat Chicken Minced Meat 2KG 鸡肉碎"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001140",
+    "unitPrice": 9,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Karaage Chicken Batter Type 脆香鸡块"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001141",
+    "unitPrice": 9.2,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "Royal Delights Crispy Chicken with Seaweed 紫菜鸡"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001548",
+    "unitPrice": 2.6,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Green Peas 青豆"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001549",
+    "unitPrice": 1.8,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Mixed Vegetable 杂豆"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001550",
+    "unitPrice": 2.6,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Sweet Corn 玉米"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001800",
+    "unitPrice": 2.3,
+    "baseUnit": "PKT",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Edamame Beans 毛豆仁"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001858",
+    "unitPrice": 2.4,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Broccoli 冷冻西兰花"
+  },
+  {
+    "customerId": "E0000009",
+    "pcode": "P0001859",
+    "unitPrice": 2.3,
+    "baseUnit": "KG",
+    "customerName": "Middleton International School Pte. Ltd. @Tampines",
+    "itemName": "SunnyFarm Cauliflower 冷冻菜花"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000016",
+    "unitPrice": 7.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss Indonesia Batang Steak (Grade A) 印尼巴当鱼块"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000107",
+    "unitPrice": 2.4,
+    "baseUnit": "PKT",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss Breaded Pollack Fillet 60G 面包鱼柳"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000189",
+    "unitPrice": 5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Chicken Inner Fillet Tendon Tip Off (Seara) 鸡柳肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000195",
+    "unitPrice": 4.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Boneless Chicken Leg Skinless (Seara) 无皮无骨鸡腿肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000201",
+    "unitPrice": 3.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Boneless Chicken Leg 200G up (Seara) 无骨鸡腿肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000222",
+    "unitPrice": 5.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Chicken Mid Joint (Seara) 鸡中翅"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000264",
+    "unitPrice": 3.3,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Whole Chicken (Seara) 1400G 整只鸡"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000284",
+    "unitPrice": 3.4,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Chicken Wing 100G Up (Seara) 鸡翅膀"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000322",
+    "unitPrice": 1.9,
+    "baseUnit": "PKT",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "TF Cooked Short Neck Clam with Shell (Asari) 40-50"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000341",
+    "unitPrice": 11,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Rich Seas Cooked Shrimp HOSO 41-50 (Vannamei) 南美熟虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000431",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Cuttlefish Paste 苏东酱"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000454",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Farm Best Dory Fillet 400-500G 多利鱼片"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000457",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Farm Best Dory Fillet 170-220G 多利鱼片"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000458",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Farm Best Dory Fillet 220-300G 多利鱼片"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0000571",
+    "unitPrice": 3.8,
+    "baseUnit": "TRAY",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Oriental Delight Ebi Fry 30G (White) 面包虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001019",
+    "unitPrice": 3.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Fat Cube 2CM 5KG 猪油丁"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001020",
+    "unitPrice": 3.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Hock 1/2 Cut (C2) 5KG 猪脚竖切1/2"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001133",
+    "unitPrice": 8.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Oyster Meat 9-11G Up 蚝肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001163",
+    "unitPrice": 7,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE)Pork Belly Single Ribbed Brazil(Pif Paf)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001166",
+    "unitPrice": 6.3,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed Brazil (Sulina) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001167",
+    "unitPrice": 7.3,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Holland) 189A  三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001169",
+    "unitPrice": 4.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Sheet Ribbed Skin On (Seara)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001178",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Sheet Ribbed Skin On (Frimesa)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001184",
+    "unitPrice": 6.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Denmark) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001186",
+    "unitPrice": 3.9,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Brisket Bone (Swithfield)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001189",
+    "unitPrice": 4.3,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Chitterling (PPS) 猪大肠"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001195",
+    "unitPrice": 4.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Collar (Frimesa) 五花肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001233",
+    "unitPrice": 4.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Leg Boneless (Frimesa) 猪后侧"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001243",
+    "unitPrice": 4.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Loin Boneless (Frimesa) 肉头"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001248",
+    "unitPrice": 4.7,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Loin Boneless (Sulina) 肉头"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001251",
+    "unitPrice": 3.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Loin Bone In (Frimesa) 毛骨"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001253",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Loin Back Ribs (Frimesa) 子弹排"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001257",
+    "unitPrice": 7.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Rectum (PPS) 大肠头"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001265",
+    "unitPrice": 4,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Riblet (Sulina) 三角排"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001273",
+    "unitPrice": 4.1,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Shoulder Boneless (Frimesa) 猪前侧"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001282",
+    "unitPrice": 5.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Softbone (Tonnies) 猪软骨"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001307",
+    "unitPrice": 4.1,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Tenderloins (Frimesa)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001323",
+    "unitPrice": 1.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Prawn Head 虾头"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001404",
+    "unitPrice": 8.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Shrimp Meat PND 100-200 (Vannamei) 南美虾仁"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001439",
+    "unitPrice": 4.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss Squid Flower Cut 苏东花"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001442",
+    "unitPrice": 5.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss China Squid Ring 苏东圈"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001449",
+    "unitPrice": 5.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss China Squid Tube 苏东管"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001552",
+    "unitPrice": 15,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss Angka Shrimp 16-20 红脚虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001553",
+    "unitPrice": 14.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Okeanoss Angka Shrimp 21-25 红脚虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001579",
+    "unitPrice": 8.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "HOSO Vannamei 41-50 (A) 南美白虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001634",
+    "unitPrice": 12,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "White Shrimp PTO 21-25 (Vannamei) 南美凤尾虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001636",
+    "unitPrice": 10.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "White Shrimp PTO 31-40 (Vannamei) 南美凤尾虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001637",
+    "unitPrice": 9.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "White Shrimp PTO 41-50 (Vannamei) 南美凤尾虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001638",
+    "unitPrice": 9,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "White Shrimp PTO 51-60 (Vannamei) 南美凤尾虾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001706",
+    "unitPrice": 7.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Indonesia Squid Cut 6-8 (WB) 苏东切"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001716",
+    "unitPrice": 20,
+    "baseUnit": "CTN",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Shark Box Dory Fillet (IQF) 400-500G 多利鱼片"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001719",
+    "unitPrice": 7,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed Belgium 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001767",
+    "unitPrice": 6.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE)Pork Ear (Bernard) 猪耳朵"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001782",
+    "unitPrice": 6.4,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Alibem) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001811",
+    "unitPrice": 2.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE) Pork Belly Strips Rindless 无皮三层肉边"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001818",
+    "unitPrice": 2.8,
+    "baseUnit": "PKT",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Fish Fillet 10PCS 香脆鱼柳片"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001943",
+    "unitPrice": 1.3,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE)Pork Humerous Bone (Alegra)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001947",
+    "unitPrice": 4,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Chitterling (ICP) 猪大肠"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0001973",
+    "unitPrice": 4.9,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Loin Ribs (Seara) 子弹排"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002027",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Seara)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002074",
+    "unitPrice": 4.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE)Pork Middles Bone In (Frimesa) 带皮带骨中段"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002081",
+    "unitPrice": 7.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Boseler) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002091",
+    "unitPrice": 1.1,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Humerous Bone (Poland) 猪大骨"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002176",
+    "unitPrice": 5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "(OBSOLETE)Pork Belly Sheet Ribbed Skin On(Saudali)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002253",
+    "unitPrice": 5.5,
+    "baseUnit": "PKT",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Taiwan Sausage 台湾香肠"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002301",
+    "unitPrice": 5.8,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Sheet Ribbed Skin On (Aurora)"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002342",
+    "unitPrice": 4.1,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Shoulder Boneless (Aurora) 猪前侧"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002517",
+    "unitPrice": 6.4,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Tails (Boseler) 猪尾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002548",
+    "unitPrice": 6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed Brazil (Sulina) CF 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002597",
+    "unitPrice": 4.9,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Alibem) CF 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002715",
+    "unitPrice": 2.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Skin 猪皮"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002756",
+    "unitPrice": 2.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Liver (Danish Crown) 猪肝"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002993",
+    "unitPrice": 5.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Sheet Ribbed Skin On (Alibem) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0002994",
+    "unitPrice": 6.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Tail (Frimesa) 猪尾"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003022",
+    "unitPrice": 3.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Shoulder Boneless (Mabella) 猪前侧"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003049",
+    "unitPrice": 6.5,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Jademo) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003049",
+    "unitPrice": 6.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Jademo) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003097",
+    "unitPrice": 7.2,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Germany) 三层肉"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003102",
+    "unitPrice": 1.9,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Front Feet/Trotters (Frimesa) 猪脚尖"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003108",
+    "unitPrice": 4.1,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Riblet (Patel) 三角排"
+  },
+  {
+    "customerId": "E0000018",
+    "pcode": "P0003135",
+    "unitPrice": 5.6,
+    "baseUnit": "KG",
+    "customerName": "Pork Stall Lim Keing Hong #01-116 - 117 Aljunied",
+    "itemName": "Pork Belly Single Ribbed (Pamplona) CF 三层肉"
+  }
+]

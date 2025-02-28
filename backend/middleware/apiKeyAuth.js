@@ -1,33 +1,32 @@
-// Simple API key authentication middleware for price list routes
+import dotenv from "dotenv";
+dotenv.config();
+
 const apiKeyAuth = (req, res, next) => {
   try {
-    // Get API key from request header
     const apiKey = req.headers["x-api-key"];
+    const validApiKey = process.env.PRICE_LIST_API_KEY;
 
-    // For testing - hardcoded API key
-    const expectedApiKey =
-      process.env.PRICE_LIST_API_KEY || "price-list-api-key-123";
+    if (!validApiKey) {
+      console.error("No API key configured in environment variables");
+      return res.status(500).json({
+        success: false,
+        message: "Server configuration error",
+      });
+    }
 
-    console.log("🔑 API Key Debug:");
-    console.log(`Received API key: ${apiKey || "none"}`);
-    console.log(`Expected API key: ${expectedApiKey}`);
-
-    // Check if API key is provided and matches the expected value
-    if (!apiKey || apiKey !== expectedApiKey) {
-      console.log("❌ API Key auth failed");
+    if (!apiKey || apiKey !== validApiKey) {
       return res.status(401).json({
         success: false,
         message: "Invalid API key",
       });
     }
 
-    console.log("✅ API Key auth successful");
     next();
   } catch (error) {
-    console.error("API Key auth error:", error);
-    return res.status(401).json({
+    console.error("Error in API key auth:", error);
+    return res.status(500).json({
       success: false,
-      message: "Authentication failed",
+      message: "Server error during authentication",
     });
   }
 };

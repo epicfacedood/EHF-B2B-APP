@@ -145,10 +145,10 @@ async function getCustomerPriceList(pool, customerId) {
   }
 }
 
-// Add this function to save price lists to MongoDB
+// Modify savePriceListsToMongoDB function to be additive
 async function savePriceListsToMongoDB(priceLists) {
   try {
-    console.log("Saving price lists to MongoDB...");
+    console.log("Processing price lists to MongoDB...");
 
     // Group price lists by customerId
     const customerPriceLists = {};
@@ -165,41 +165,135 @@ async function savePriceListsToMongoDB(priceLists) {
       customerPriceLists[item.customerId].items.push({
         pcode: item.pcode,
         itemName: item.itemName,
-        price: item.unitPrice, // Make sure we're using the right field name
+        price: item.unitPrice,
         notes: "",
       });
     }
 
     // Convert to array
     const priceListArray = Object.values(customerPriceLists);
+    console.log(`Processing ${priceListArray.length} customer price lists`);
 
-    console.log(
-      `Prepared ${priceListArray.length} customer price lists for MongoDB`
-    );
+    const syncStats = {
+      customersProcessed: 0,
+      newCustomers: 0,
+      existingCustomers: 0,
+      totalItemsAdded: 0,
+      totalItemsUpdated: 0,
+      totalItemsUnchanged: 0,
+    };
 
     // Update or insert price lists
     for (const priceList of priceListArray) {
-      // Use $set to update only the specified fields, not replace the entire document
-      await PriceList.findOneAndUpdate(
-        { customerId: priceList.customerId },
-        {
-          $set: {
-            customerName: priceList.customerName,
-            lastUpdated: new Date(),
-          },
-          // Use $addToSet to add items only if they don't already exist
-          $addToSet: {
-            items: { $each: priceList.items },
-          },
-        },
-        { upsert: true, new: true }
-      );
+      syncStats.customersProcessed++;
+
+      // First, check if customer already has a price list
+      const existingPriceList = await PriceList.findOne({
+        customerId: priceList.customerId,
+      });
+
+      if (!existingPriceList) {
+        // Case 1: New customer - just create a new price list
+        await PriceList.create({
+          customerId: priceList.customerId,
+          customerName: priceList.customerName,
+          items: priceList.items,
+          lastUpdated: new Date(),
+        });
+
+        syncStats.newCustomers++;
+        syncStats.totalItemsAdded += priceList.items.length;
+
+        console.log(
+          `Created new price list for ${priceList.customerId} with ${priceList.items.length} items`
+        );
+      } else {
+        // Case 2: Existing customer - add only new items or update changed prices
+        syncStats.existingCustomers++;
+
+        // Keep track of items we process
+        const itemsAdded = [];
+        const itemsUpdated = [];
+        const itemsUnchanged = [];
+
+        // Create a map of existing items for easy lookup
+        const existingItemsMap = {};
+        existingPriceList.items.forEach((item) => {
+          existingItemsMap[item.pcode] = {
+            price: item.price,
+            itemName: item.itemName,
+            notes: item.notes || "",
+          };
+        });
+
+        // Process each item in the new price list
+        for (const newItem of priceList.items) {
+          const existingItem = existingItemsMap[newItem.pcode];
+
+          if (!existingItem) {
+            // This is a new item - add it
+            existingPriceList.items.push(newItem);
+            itemsAdded.push(newItem.pcode);
+          } else if (Number(existingItem.price) !== Number(newItem.price)) {
+            // Price has changed - update it
+            const itemIndex = existingPriceList.items.findIndex(
+              (item) => item.pcode === newItem.pcode
+            );
+
+            if (itemIndex !== -1) {
+              // Preserve existing notes
+              const existingNotes =
+                existingPriceList.items[itemIndex].notes || "";
+
+              // Update the item with new price but keep existing notes
+              existingPriceList.items[itemIndex] = {
+                ...newItem,
+                notes: existingNotes,
+              };
+
+              itemsUpdated.push(newItem.pcode);
+            }
+          } else {
+            // Item exists with same price - no change needed
+            itemsUnchanged.push(newItem.pcode);
+          }
+        }
+
+        // Update stats
+        syncStats.totalItemsAdded += itemsAdded.length;
+        syncStats.totalItemsUpdated += itemsUpdated.length;
+        syncStats.totalItemsUnchanged += itemsUnchanged.length;
+
+        // Only save if we made changes
+        if (itemsAdded.length > 0 || itemsUpdated.length > 0) {
+          existingPriceList.lastUpdated = new Date();
+          existingPriceList.customerName = priceList.customerName; // Update customer name
+          await existingPriceList.save();
+
+          console.log(
+            `Updated price list for ${priceList.customerId}: ` +
+              `${itemsAdded.length} items added, ` +
+              `${itemsUpdated.length} prices updated, ` +
+              `${itemsUnchanged.length} unchanged`
+          );
+        } else {
+          console.log(
+            `No changes for ${priceList.customerId} (${itemsUnchanged.length} items unchanged)`
+          );
+        }
+      }
     }
 
-    console.log(
-      `Successfully saved ${priceListArray.length} price lists to MongoDB`
-    );
-    return true;
+    console.log("\n===== Price List Sync Summary =====");
+    console.log(`Customers Processed: ${syncStats.customersProcessed}`);
+    console.log(`New Customers: ${syncStats.newCustomers}`);
+    console.log(`Existing Customers: ${syncStats.existingCustomers}`);
+    console.log(`Total Items Added: ${syncStats.totalItemsAdded}`);
+    console.log(`Total Prices Updated: ${syncStats.totalItemsUpdated}`);
+    console.log(`Total Items Unchanged: ${syncStats.totalItemsUnchanged}`);
+    console.log("==================================\n");
+
+    return syncStats;
   } catch (err) {
     console.error("Error saving price lists to MongoDB:", err);
     return false;
@@ -255,10 +349,22 @@ export async function main() {
       );
       console.log(`Total price list entries: ${allPriceLists.length}`);
 
-      // Save to MongoDB
-      await savePriceListsToMongoDB(allPriceLists);
+      // Save to MongoDB with the improved function
+      const syncStats = await savePriceListsToMongoDB(allPriceLists);
+
+      // Return the sync stats so the API can use it
+      return syncStats;
     } else {
       console.log("No price list entries found for any customers.");
+      return {
+        customersProcessed: 0,
+        newCustomers: 0,
+        existingCustomers: 0,
+        totalItemsAdded: 0,
+        totalItemsUpdated: 0,
+        totalItemsUnchanged: 0,
+        message: "No price list entries found",
+      };
     }
 
     console.log("\nExport completed successfully.");

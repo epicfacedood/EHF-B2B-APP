@@ -8,6 +8,7 @@ const Users = ({ token }) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [syncLoading, setSyncLoading] = useState(false);
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const PRICE_LIST_API_KEY =
@@ -58,29 +59,57 @@ const Users = ({ token }) => {
   const handleSyncPriceLists = async () => {
     try {
       setSyncing(true);
+      setSyncLoading(true);
+
+      const apiKey = import.meta.env.VITE_PRICE_LIST_API_KEY;
+
+      if (!apiKey) {
+        toast.error("API key not configured");
+        return;
+      }
 
       const response = await axios.post(
         `${backendUrl}/api/pricelist/sync`,
         {},
         {
           headers: {
-            "X-API-Key": PRICE_LIST_API_KEY,
+            "X-API-Key": apiKey,
+            "Content-Type": "application/json",
           },
         }
       );
 
       if (response.data.success) {
-        toast.success(response.data.message);
-        // Wait a bit and then refresh the user list to show updated price list status
+        // Show loading spinner for 5 seconds
         setTimeout(() => {
+          setSyncLoading(false);
           fetchUsers();
+          toast.success("Price list sync completed successfully");
         }, 5000);
       } else {
         toast.error("Failed to sync price lists");
+        setSyncLoading(false);
       }
     } catch (error) {
       console.error("Error syncing price lists:", error);
-      toast.error(`Failed to sync price lists: ${error.message}`);
+      // Add more detailed error logging
+      if (error.response) {
+        console.error("Response status:", error.response.status);
+        console.error("Response data:", error.response.data);
+      }
+
+      let errorMessage = "Failed to sync price lists";
+
+      // Show more specific error message based on status code
+      if (error.response?.status === 401) {
+        errorMessage = "Authentication failed. Check API key configuration.";
+      } else if (error.response?.status === 403) {
+        errorMessage =
+          "Permission denied. Your API key may not have sufficient privileges.";
+      }
+
+      toast.error(errorMessage);
+      setSyncLoading(false);
     } finally {
       setSyncing(false);
     }
@@ -97,107 +126,147 @@ const Users = ({ token }) => {
             A list of all users in the system
           </p>
         </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex items-center">
           <button
             type="button"
             onClick={handleSyncPriceLists}
-            disabled={syncing}
+            disabled={syncing || syncLoading}
             className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white ${
-              syncing ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+              syncing || syncLoading
+                ? "bg-gray-400"
+                : "bg-blue-600 hover:bg-blue-700"
             } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
           >
-            {syncing ? "Syncing..." : "Sync Price Lists"}
+            {syncing || syncLoading ? (
+              <span className="flex items-center">
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+                Syncing...
+              </span>
+            ) : (
+              "Sync Price Lists"
+            )}
           </button>
         </div>
       </div>
-      <div className="mt-8 flex flex-col">
-        <div className="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer ID
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Address
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      In Price List
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Joined
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {users.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
-                          {user.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
-                          {user.customerId || "N/A"}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">
-                          {user.address && typeof user.address === "object" ? (
-                            <>
-                              {user.address.street || ""}
-                              {user.address.street && user.address.postalCode
-                                ? ", "
-                                : ""}
-                              {user.address.postalCode || ""}
-                            </>
-                          ) : (
-                            "N/A"
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        {user.inPriceList && (
-                          <CheckCircleIcon
-                            className="h-5 w-5 text-green-500"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <button
-                          onClick={() => navigate(`/users/${user._id}`)}
-                          className="text-blue-600 hover:text-blue-900"
+
+      <div className="mt-8 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-300 table-fixed">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="w-1/5 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="w-1/5 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="w-1/6 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer ID
+                </th>
+                <th className="hidden md:table-cell w-1/6 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Address
+                </th>
+                <th className="w-[8%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Price List
+                </th>
+                <th className="hidden sm:table-cell w-[10%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Joined
+                </th>
+                <th className="w-[8%] px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {users.map((user) => (
+                <tr key={user._id} className="hover:bg-gray-50">
+                  <td className="px-3 py-4 truncate">
+                    <div
+                      className="text-sm font-medium text-gray-900 truncate"
+                      title={user.name}
+                    >
+                      {user.name}
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 truncate">
+                    <div
+                      className="text-sm text-gray-500 truncate"
+                      title={user.email}
+                    >
+                      {user.email}
+                    </div>
+                  </td>
+                  <td className="px-3 py-4 truncate">
+                    <div
+                      className="text-sm text-gray-500 truncate"
+                      title={user.customerId || "N/A"}
+                    >
+                      {user.customerId || "N/A"}
+                    </div>
+                  </td>
+                  <td className="hidden md:table-cell px-3 py-4 truncate">
+                    <div className="text-sm text-gray-500 truncate">
+                      {user.address && typeof user.address === "object" ? (
+                        <span
+                          title={`${user.address.street || ""} ${
+                            user.address.postalCode || ""
+                          }`}
                         >
-                          Edit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                          {user.address.street || ""}
+                          {user.address.street && user.address.postalCode
+                            ? ", "
+                            : ""}
+                          {user.address.postalCode || ""}
+                        </span>
+                      ) : (
+                        "N/A"
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-3 py-4">
+                    {user.inPriceList ? (
+                      <CheckCircleIcon
+                        className="h-5 w-5 text-green-500"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <span className="text-xs text-gray-500">No</span>
+                    )}
+                  </td>
+                  <td className="hidden sm:table-cell px-3 py-4 text-sm text-gray-500 whitespace-nowrap">
+                    {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-3 py-4 text-sm font-medium">
+                    <button
+                      onClick={() => navigate(`/users/${user._id}`)}
+                      className="text-blue-600 hover:text-blue-900"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

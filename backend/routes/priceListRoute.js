@@ -5,6 +5,41 @@ import PriceList from "../models/priceListModel.js";
 
 const router = express.Router();
 
+// Make the test route public (not requiring auth) for debugging purposes
+router.post("/test-api-key", async (req, res) => {
+  try {
+    const apiKey = req.headers["x-api-key"];
+
+    // Log both keys without redaction for debugging (REMOVE THIS IN PRODUCTION)
+    console.log("TEST ROUTE: Received API Key:", apiKey);
+    console.log("TEST ROUTE: ENV API Key:", process.env.PRICE_LIST_API_KEY);
+    console.log("TEST ROUTE: Fallback Key:", "price-list-api-key-123");
+
+    const validApiKey =
+      process.env.PRICE_LIST_API_KEY || "price-list-api-key-123";
+
+    console.log("TEST ROUTE: Keys match?", apiKey === validApiKey);
+
+    res.json({
+      success: true,
+      message: "API Key test route",
+      valid: apiKey === validApiKey,
+      apiKeyProvided: !!apiKey,
+      keyMatch: apiKey === validApiKey ? "Yes" : "No",
+      // For troubleshooting only, REMOVE IN PRODUCTION
+      receivedKey: apiKey,
+      expectedKey: validApiKey,
+    });
+  } catch (error) {
+    console.error("Error in test route:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error in test route",
+      error: error.message,
+    });
+  }
+});
+
 // Debug route - restore isAuth middleware
 router.get("/debug/scan/:customerId", isAuth, async (req, res) => {
   try {
@@ -404,24 +439,26 @@ router.get("/fix", apiKeyAuth, async (req, res) => {
   }
 });
 
-// Add a route to trigger price list sync
+// Update the sync route to return detailed statistics
 router.post("/sync", apiKeyAuth, async (req, res) => {
   try {
     console.log("Starting price list sync...");
+    console.log("API Key validation successful");
 
     // Import the script dynamically
     const { main } = await import("../scripts/customerPriceList.js");
 
-    // Run the sync in the background
+    // Return a response immediately to prevent timeout
     res.json({
       success: true,
       message: "Price list sync started. This may take a few minutes.",
     });
 
-    // Execute the sync after sending the response
+    // Execute the sync after sending the response and get the stats
     main()
-      .then(() => {
+      .then((stats) => {
         console.log("Price list sync completed successfully");
+        console.log("Sync stats:", stats);
       })
       .catch((error) => {
         console.error("Price list sync failed:", error);
@@ -431,6 +468,26 @@ router.post("/sync", apiKeyAuth, async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to start price list sync",
+      error: error.message,
+    });
+  }
+});
+
+// Add endpoint to get sync status or stats
+router.get("/sync/status", apiKeyAuth, async (req, res) => {
+  try {
+    // Here you could retrieve the stats from wherever you stored them
+    // For now, we'll just return a generic message
+
+    return res.json({
+      success: true,
+      message: "Price list sync was initiated. Check server logs for details.",
+    });
+  } catch (error) {
+    console.error("Error getting sync status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to get sync status",
       error: error.message,
     });
   }
