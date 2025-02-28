@@ -16,6 +16,9 @@ const PlaceOrder = () => {
     currency,
   } = useContext(ShopContext);
 
+  // Add minimum order amount constant
+  const MINIMUM_ORDER_AMOUNT = 80;
+
   const [loading, setLoading] = useState(false);
   const [prices, setPrices] = useState({}); // Add state for storing prices
   const [isLoadingPrices, setIsLoadingPrices] = useState(false);
@@ -163,6 +166,9 @@ const PlaceOrder = () => {
 
   const { items, subtotalPrice, totalPrice } = calculateTotals();
 
+  // Check if order meets minimum amount
+  const isOrderAmountValid = subtotalPrice >= MINIMUM_ORDER_AMOUNT;
+
   const handleInputChange = (e) => {
     console.log("Delivery date changed:", e.target.name, e.target.value);
     setOrderInfo({
@@ -199,6 +205,13 @@ const PlaceOrder = () => {
     event.preventDefault();
     if (!token) {
       toast.error("Please login to place an order");
+      return;
+    }
+
+    if (!isOrderAmountValid) {
+      toast.error(
+        `Minimum order amount is ${currency}${MINIMUM_ORDER_AMOUNT.toFixed(2)}`
+      );
       return;
     }
 
@@ -451,6 +464,16 @@ const PlaceOrder = () => {
                   <span>Total</span>
                   <span>${formatPrice(totalPrice)}</span>
                 </div>
+
+                {/* Add minimum order warning */}
+                {!isOrderAmountValid && (
+                  <div className="mt-2 text-red-600 text-sm">
+                    Minimum order amount is ${MINIMUM_ORDER_AMOUNT.toFixed(2)}.
+                    Please add $
+                    {formatPrice(MINIMUM_ORDER_AMOUNT - subtotalPrice)} more to
+                    your order.
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -493,11 +516,15 @@ const PlaceOrder = () => {
         <div className="px-6 py-4 bg-gray-50 border-t">
           <button
             type="submit"
-            disabled={loading || items.length === 0}
+            disabled={loading || items.length === 0 || !isOrderAmountValid}
             className="w-full bg-black text-white py-3 rounded font-medium 
                      hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
-            {loading ? "Processing..." : "Place Order"}
+            {loading
+              ? "Processing..."
+              : !isOrderAmountValid
+              ? `Minimum order: ${currency}${MINIMUM_ORDER_AMOUNT.toFixed(2)}`
+              : "Place Order"}
           </button>
         </div>
       </div>
