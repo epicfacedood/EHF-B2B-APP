@@ -5,10 +5,20 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const PlaceOrder = () => {
-  const { navigate, backendUrl, token, cartItems, setCartItems, products } =
-    useContext(ShopContext);
+  const {
+    navigate,
+    backendUrl,
+    token,
+    cartItems,
+    setCartItems,
+    products,
+    userCustomerId, // Add this to get the customer ID
+    currency,
+  } = useContext(ShopContext);
 
   const [loading, setLoading] = useState(false);
+  const [prices, setPrices] = useState({}); // Add state for storing prices
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
   const [orderInfo, setOrderInfo] = useState({
     customerName: "",
     email: "",
@@ -52,12 +62,55 @@ const PlaceOrder = () => {
     fetchUserData();
   }, [token, backendUrl]);
 
+  // Add new effect to fetch prices
+  useEffect(() => {
+    const fetchPrices = async () => {
+      if (!userCustomerId || !token) return;
+
+      setIsLoadingPrices(true);
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/pricelist/customer/${userCustomerId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.success && response.data.priceList?.items) {
+          // Transform the prices into a map for easy lookup
+          const priceMap = {};
+          response.data.priceList.items.forEach((item) => {
+            if (item.pcode && item.price) {
+              priceMap[item.pcode] = Number(item.price);
+            }
+          });
+          setPrices(priceMap);
+        }
+      } catch (error) {
+        console.error("Error loading prices:", error);
+      } finally {
+        setIsLoadingPrices(false);
+      }
+    };
+
+    fetchPrices();
+  }, [userCustomerId, token, backendUrl]);
+
   // Format price to 2 decimal places
   const formatPrice = (price) => {
     return Number(price).toFixed(2);
   };
 
-  // Calculate cart totals with GST
+  // Add helper function to get product price
+  const getPrice = (product) => {
+    if (!product) return 0;
+    // First check the custom price list
+    if (prices[product.pcode]) {
+      return Number(prices[product.pcode]);
+    }
+    // Fallback to product's base price
+    return Number(product.price) || 0;
+  };
+
+  // Calculate cart totals with GST - update to use the price map
   const calculateTotals = () => {
     let subtotal = 0;
     const itemsWithDetails = [];
@@ -67,10 +120,16 @@ const PlaceOrder = () => {
       const product = products.find((p) => p._id === itemId);
       if (product) {
         Object.entries(sizes).forEach(([uom, quantity]) => {
-          // Ensure all numbers are valid
-          const unitPrice = parseFloat(product.price) || 0;
+          // Get the price from our price map
+          const unitPrice = getPrice(product);
           const qty = parseInt(quantity) || 0;
-          const orderPrice = unitPrice * qty;
+
+          // Apply UOM multiplier if applicable
+          const uomOption = product.uomOptions?.find((opt) => opt.code === uom);
+          const qtyPerUOM = uomOption?.qtyPerUOM || 1;
+
+          // Calculate the actual price including UOM multiplier
+          const orderPrice = unitPrice * qtyPerUOM * qty;
 
           // Add to subtotal only if we have valid numbers
           if (!isNaN(orderPrice)) {
@@ -78,11 +137,12 @@ const PlaceOrder = () => {
           }
 
           itemsWithDetails.push({
-            itemName: product.itemName,
+            itemName: product.itemName || product.name,
             pcode: product.pcode,
             uom,
             quantity: qty,
             unitPrice: unitPrice,
+            qtyPerUOM: qtyPerUOM,
             orderPrice: orderPrice,
           });
         });
@@ -134,6 +194,7 @@ const PlaceOrder = () => {
     return d.toISOString();
   };
 
+  // Update onSubmitHandler to include UOM multiplier info
   const onSubmitHandler = async (event) => {
     event.preventDefault();
     if (!token) {
@@ -145,13 +206,6 @@ const PlaceOrder = () => {
     try {
       const { items, subtotalPrice, totalPrice } = calculateTotals();
 
-      // Log the data we're about to send
-      console.log("Order Data:", {
-        items,
-        subtotalPrice,
-        totalPrice,
-      });
-
       // Validate the data before sending
       const formattedItems = items.map((item) => {
         const formattedItem = {
@@ -160,6 +214,7 @@ const PlaceOrder = () => {
           uom: item.uom,
           quantity: parseInt(item.quantity) || 0,
           unitPrice: parseFloat(item.unitPrice) || 0,
+          qtyPerUOM: item.qtyPerUOM || 1, // Add this field
           orderPrice: parseFloat(item.orderPrice) || 0,
         };
 
@@ -332,6 +387,13 @@ const PlaceOrder = () => {
           {/* Order Details Section */}
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Order Details</h2>
+
+            {isLoadingPrices && (
+              <div className="bg-yellow-50 p-2 rounded text-center text-sm">
+                Loading your customized prices...
+              </div>
+            )}
+
             <div className="divide-y divide-gray-200">
               {items.map((item, index) => (
                 <div
@@ -343,17 +405,28 @@ const PlaceOrder = () => {
                     <p className="text-sm text-gray-600">
                       Product Code: {item.pcode}
                     </p>
-                    <p className="text-sm text-gray-600">Size: {item.uom}</p>
+                    <p className="text-sm text-gray-600">
+                      Size: {item.uom}
+                      {item.qtyPerUOM > 1 && (
+                        <span className="text-xs text-gray-500 ml-1">
+                          ({item.qtyPerUOM} units)
+                        </span>
+                      )}
+                    </p>
                     <p className="text-sm text-gray-600">
                       Quantity: {item.quantity}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">
-                      ${formatPrice(item.unitPrice)} × {item.quantity}
+                      {currency}
+                      {formatPrice(item.unitPrice)}
+                      {item.qtyPerUOM > 1 && ` × ${item.qtyPerUOM}`}
+                      {` × ${item.quantity}`}
                     </p>
                     <p className="font-medium">
-                      ${formatPrice(item.orderPrice)}
+                      {currency}
+                      {formatPrice(item.orderPrice)}
                     </p>
                   </div>
                 </div>
