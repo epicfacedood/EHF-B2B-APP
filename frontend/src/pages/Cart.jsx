@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
@@ -9,6 +9,7 @@ import NoImage from "../components/NoImage";
 import { formatPrice, formatPackagingSize } from "../utils/formatUtils";
 import { toast } from "react-toastify";
 import EmptyCart from "../components/EmptyCart";
+import axios from "axios";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -18,8 +19,51 @@ const Cart = () => {
     cartItems = {},
     updateQuantity,
     removeFromCart,
+    userCustomerId, // Note the correct variable name
+    backendUrl,
+    token,
   } = useContext(ShopContext);
   const [imageError, setImageError] = useState({});
+  const [prices, setPrices] = useState({});
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false);
+
+  // Fetch prices when customer ID is available
+  useEffect(() => {
+    const fetchPrices = async () => {
+      if (!userCustomerId || !token) return;
+
+      setIsLoadingPrices(true);
+      try {
+        const response = await axios.get(
+          `${backendUrl}/api/pricelist/customer/${userCustomerId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (response.data.success && response.data.priceList?.items) {
+          // Transform the prices into a map for easy lookup
+          const priceMap = {};
+          response.data.priceList.items.forEach((item) => {
+            if (item.pcode && item.price) {
+              priceMap[item.pcode] = Number(item.price);
+            }
+          });
+          setPrices(priceMap);
+        }
+      } catch (error) {
+        console.error("Error loading prices:", error);
+      } finally {
+        setIsLoadingPrices(false);
+      }
+    };
+
+    fetchPrices();
+  }, [userCustomerId, token, backendUrl]);
+
+  // Simple function to get price for a product
+  const getPrice = (product) => {
+    if (!product) return 0;
+    return prices[product.pcode] || product.price || 0;
+  };
 
   const handleQuantityChange = async (productId, uom, newQuantity) => {
     if (newQuantity < 0) return; // Only prevent negative quantities
@@ -42,7 +86,15 @@ const Cart = () => {
       const product = products?.find((p) => p._id === productId);
       if (product) {
         const productTotal = Object.entries(uomData || {}).reduce(
-          (sum, [uom, quantity]) => sum + product.price * (quantity || 0),
+          (sum, [uom, quantity]) => {
+            const basePrice = getPrice(product);
+            const uomOption = product.uomOptions?.find(
+              (opt) => opt.code === uom
+            );
+            const qtyPerUOM = uomOption?.qtyPerUOM || 1;
+            const itemPrice = basePrice * qtyPerUOM * quantity;
+            return sum + itemPrice;
+          },
           0
         );
         return acc + productTotal;
@@ -140,7 +192,13 @@ const Cart = () => {
                           </div>
                           <span className="text-gray-600 min-w-[80px]">
                             {currency}
-                            {formatPrice(product.price * quantity)}
+                            {formatPrice(
+                              getPrice(product) *
+                                (product.uomOptions?.find(
+                                  (opt) => opt.code === uom
+                                )?.qtyPerUOM || 1) *
+                                quantity
+                            )}
                           </span>
                         </div>
                       </div>
