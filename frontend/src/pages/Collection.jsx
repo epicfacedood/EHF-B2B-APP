@@ -29,6 +29,7 @@ const Collection = () => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoading, setIsLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [itemsPriceList, setItemsPriceList] = useState([]);
   const [totalProducts, setTotalProducts] = useState(0);
 
   // Available categories
@@ -79,6 +80,8 @@ const Collection = () => {
         if (response.data.success) {
           console.log("Customer price list:", response.data.priceList);
           setPriceList(response.data.priceList);
+
+          setItemsPriceList(response.data.priceList.items);
 
           // Extract PCodes from the price list items
           if (response.data.priceList && response.data.priceList.items) {
@@ -132,11 +135,6 @@ const Collection = () => {
         if (category.length > 0) {
           category.forEach((cat) => params.append("category", cat));
         }
-
-        console.log(
-          "Fetching filtered products with params:",
-          params.toString()
-        );
 
         const response = await axios.get(
           `${backendUrl}/api/product/filtered?${params.toString()}`,
@@ -327,19 +325,21 @@ const Collection = () => {
           <>
             {/* Map Products */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6">
-              {currentProducts.map((item, index) => {
+              {filterProducts.map((item, index) => {
                 console.log("Mapping product:", item); // Debug log
                 return (
                   <ProductItem
                     key={index}
                     id={item._id}
                     name={item.itemName}
-                    price={item.price}
                     pcode={item.pcode}
-                    uoms={item.uoms}
-                    cartonQuantity={item.cartonQuantity}
+                    uoms={item.uomOptions}
                     packagingSize={item.packagingSize}
                     image={item.image}
+                    price={
+                      itemsPriceList.find((price) => price.pcode === item.pcode)
+                        ?.price
+                    }
                   />
                 );
               })}

@@ -10,35 +10,25 @@ import { toast } from "react-toastify";
 const ProductItem = ({
   id,
   name = "No name",
-  price = 0,
   pcode = "No code",
   uoms = "[]",
   packagingSize,
   image = [],
+  price = 0, // Base price from price list
 }) => {
   const { currency, addToCart } = useContext(ShopContext);
   const [imageError, setImageError] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedUOM, setSelectedUOM] = useState("");
   const [quantity, setQuantity] = useState(0);
+  const [currentPrice, setCurrentPrice] = useState(0);
 
   console.log("Product image data:", { pcode, image });
-
-  // Add debug logging at the start of component
-  useEffect(() => {
-    console.log("ProductItem received props:", {
-      pcode,
-      image,
-      firstImage: image?.[0],
-    });
-  }, [pcode, image]);
 
   // Parse UOMs safely - handle the JSON string format
   const uomsArray = React.useMemo(() => {
     try {
-      // If it's already an array, return it
       if (Array.isArray(uoms)) return uoms;
-      // Parse the JSON string but don't modify the data
       const parsed = JSON.parse(uoms || "[]");
       return parsed;
     } catch (error) {
@@ -47,12 +37,33 @@ const ProductItem = ({
     }
   }, [uoms]);
 
-  // Set initial UOM if not set and options are available
+  // Set initial UOM and calculate initial price
   React.useEffect(() => {
-    if (uomsArray.length > 0 && !selectedUOM) {
-      setSelectedUOM(uomsArray[0]);
+    if (uomsArray.length > 0) {
+      const firstUOM = uomsArray[0];
+      setSelectedUOM(firstUOM);
+
+      // Calculate price based on qtyPerUOM
+      if (firstUOM.qtyPerUOM && price) {
+        const calculatedPrice = price * firstUOM.qtyPerUOM;
+        setCurrentPrice(calculatedPrice);
+      } else {
+        setCurrentPrice(price); // Fallback to base price
+      }
     }
-  }, [uomsArray, selectedUOM]);
+  }, [uomsArray, price]);
+
+  // Update price when UOM changes
+  const handleUOMChange = (unit) => {
+    setSelectedUOM(unit);
+    // Calculate new price based on selected UOM's qtyPerUOM
+    if (unit.qtyPerUOM && price) {
+      const calculatedPrice = price * unit.qtyPerUOM;
+      setCurrentPrice(calculatedPrice);
+    } else {
+      setCurrentPrice(price); // Fallback to base price
+    }
+  };
 
   const handleQuantityAdjust = (increment) => {
     const newValue = increment ? quantity + 1 : Math.max(0, quantity - 1);
@@ -170,21 +181,22 @@ const ProductItem = ({
         </p>
         <p className="text-lg sm:text-sm font-medium">
           {currency}
-          {formatPrice(price)}
+          {formatPrice(currentPrice)}
+          {selectedUOM && selectedUOM.qtyPerUOM > 1}
         </p>
 
         <div className="flex flex-wrap justify-center gap-1">
           {uomsArray.map((unit) => (
             <button
-              key={unit}
-              onClick={() => setSelectedUOM(unit)}
+              key={unit.code}
+              onClick={() => handleUOMChange(unit)}
               className={`px-2 py-1 text-xs rounded ${
                 selectedUOM === unit
                   ? "bg-blue-500 text-white"
                   : "bg-gray-100 hover:bg-gray-200"
               }`}
             >
-              {unit.replace(/["[\]]/g, "")}
+              {unit.code}
             </button>
           ))}
         </div>
@@ -253,9 +265,17 @@ const ProductItem = ({
 ProductItem.propTypes = {
   id: PropTypes.string.isRequired,
   name: PropTypes.string,
-  price: PropTypes.number,
   pcode: PropTypes.string,
-  uoms: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
+  price: PropTypes.number, // Base price from price list
+  uoms: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.arrayOf(
+      PropTypes.shape({
+        code: PropTypes.string,
+        qtyPerUOM: PropTypes.number,
+      })
+    ),
+  ]),
   packagingSize: PropTypes.string,
   image: PropTypes.array,
 };
